@@ -67,6 +67,7 @@ dbg_bboxNpause :=0
 dbg_bbox_click :=0
 
 global newPlayerName, renameMode, renameAndSaveAndReload, targetUsername, renameXML, renameOcrText, renameXMLwithFC, userFriendCode
+global ChangeLNMode, targetLN 
 
 scriptName := StrReplace(A_ScriptName, ".ahk")
 winTitle := scriptName
@@ -163,6 +164,9 @@ IniRead, renameXML, %A_ScriptDir%\..\Settings.ini, UserSettings, renameXML, 0
 IniRead, renameXMLwithFC, %A_ScriptDir%\..\Settings.ini, UserSettings, renameXMLwithFC, 0
 IniRead, DelayOfExtraPack, %A_ScriptDir%\..\Settings.ini, UserSettings, DelayOfExtraPack%scriptName%, 4000
 IniRead, tesseractPath, %A_ScriptDir%\..\Settings.ini, UserSettings, tesseractPath, C:\Program Files\Tesseract-OCR\tesseract.exe
+IniRead, ChangeLNMode, %A_ScriptDir%\..\Settings.ini, UserSettings, ChangeLNMode, 0
+IniRead, targetLN, %A_ScriptDir%\..\Settings.ini, UserSettings, targetLN, "None"
+
 
 MuMuv5 := isMuMuv5()
 pokemonList := ["Mewtwo", "Charizard", "Pikachu", "Mew", "Dialga", "Palkia", "Arceus", "Shining", "Solgaleo", "Lunala", "Buzzwole", "Eevee", "HoOh", "Lugia", "Suicune", "Deluxe", "MegaBlaziken", "MegaGyarados", "MegaAltaria"]
@@ -442,6 +446,11 @@ Loop {
                         adbClick_wbb(203, 436) ; 203 436
                         FindImageAndClick(236, 198, 266, 226, , "Hourglass2", 180, 436, 500) ;stop at hourglasses tutorial 2 180 to 203?
                     }
+                    else if(FindOrLoseImage(81, 351, 101, 391, , "titleok", 0, failSafeTime)){
+                        adbClick_wbb(141, 370)
+                        Delay(3)
+                    }
+
 
                     failSafeTime := (A_TickCount - failSafe) // 1000
                     CreateStatusMessage("Waiting for Points`n(" . failSafeTime . "/90 seconds)")
@@ -475,6 +484,9 @@ Loop {
                     adbClick(137, 78)
                     Delay(3)
                 }
+
+		Delay(10)
+                FindImageAndClick(209,277,224,292, , "playerrenamepencilicon", 205, 365)
 
                 ; Take a screenshot of the profile page with the username
                 tempDir := A_ScriptDir . "\temp"
@@ -602,6 +614,100 @@ Loop {
                 }
 
             }
+
+            LanguageMap := {"en": 0, "es": 1, "fr": 2, "de": 3, "it": 4, "pt": 5, "jp": 6, "ko": 7, "cn": 8}
+            Displacement := 34
+            if (LanguageMap.HasKey(targetLN)) {
+                Multiplier := LanguageMap[targetLN]
+                changeLNposY := 141 + Multiplier * Displacement ; 
+            } else {
+                ChangeLNMode := 0
+            }
+        
+            if (ChangeLNMode) {
+                    
+                failSafe := A_TickCount
+                failSafeTime := 0
+                ; Click for hamburger menu and wait for profile
+                Loop {
+                    adbClick_wbb(140, 203) ;
+                    Delay(1)
+                    if(FindOrLoseImage(233, 400, 264, 428, , "Points", 0, failSafeTime)) {
+                        break
+                    }else if(!renew && !getFC) {
+                        if(FindOrLoseImage(241, 377, 269, 407, , "closeduringpack", 0)) {
+                            adbClick_wbb(139, 371)
+                        }
+                    }else if(FindOrLoseImage(175, 165, 255, 235, , "Hourglass3", 0)) {
+                        ;TODO hourglass tutorial still broken after injection
+                        Delay(3)
+                        adbClick_wbb(146, 441) ; 146 440
+                        Delay(3)
+                        adbClick_wbb(146, 441)
+                        Delay(3)
+                        adbClick_wbb(146, 441)
+                        Delay(3)
+
+                        FindImageAndClick(98, 184, 151, 224, , "Hourglass1", 168, 438, 500, 5) ;stop at hourglasses tutorial 2
+                        Delay(1)
+
+                        adbClick_wbb(203, 436) ; 203 436
+                        FindImageAndClick(236, 198, 266, 226, , "Hourglass2", 180, 436, 500) ;stop at hourglasses tutorial 2 180 to 203?
+                    }else if(FindOrLoseImage(81, 351, 101, 391, , "titleok", 0, failSafeTime)){
+                        adbClick_wbb(141, 370)
+                        Delay(3)
+                    }
+                    failSafeTime := (A_TickCount - failSafe) // 1000
+                    CreateStatusMessage("Waiting for Points`n(" . failSafeTime . "/90 seconds)")
+                }
+                FindImageAndClick(230, 120, 260, 150, , "UserProfile", 240, 499 , 500)
+                Delay(1)
+                FindImageAndClick(26, 162, 47, 185, , "Settings2", 134, 442, sleepTime)
+                Delay(3)
+                adbClick_wbb(145,176)
+                Delay(3)
+                loop {
+                    if(FindOrLoseImage(176, 250, 200, 270, , "volume", 0, failSafeTime))
+                        break
+                }
+                Delay(15)
+                adbSwipe_wbb("135 400 135 200 200")
+                Delay(10)
+                adbSwipe_wbb("135 400 135 200 2000")
+                Delay(10)
+                adbSwipe_wbb("135 400 135 200 1500")
+                Delay(15)
+                
+                LNcount := 0
+                Loop{
+                    if(FindOrLoseImage(115, 130, 161, 146, , "LNEnglish", 0, failSafeTime))
+                        Break
+                    else if(FindOrLoseImage(115, 131, 161, 145, , "LNEnglish2", 0, failSafeTime))
+                        Break
+                    else if(LNcount > 10){
+                        Delay(10)
+                        adbSwipe_wbb("135 400 135 350 1500")
+                        Delay(10)
+                        LNcount := 0
+                    }
+                    adbClick_wbb(35,520)
+                    Delay(3)
+                    adbClick_wbb(35,499)
+                    Delay(3)
+                    adbClick_wbb(35,489)
+                    Delay(3)
+                    LNcount += 1
+                }
+                FindImageAndClick(115, 131, 161, 145, , "LNEnglish2", 220, 141, sleepTime)
+                Delay(5)
+                adbclick_wbb(220, changeLNposY)
+                Delay(3)
+                adbClick_wbb(137, 485)
+            }
+
+
+
+
 
             if(deleteMethod = "5 Pack" || deleteMethod = "5 Pack (Fast)" || deleteMethod = "13 Pack")
                 wonderPicked := DoWonderPick()
@@ -786,6 +892,18 @@ Loop {
 				}
                 else
                     GetEventRewards(false) ; collects all the Bonus week hourglass
+            }
+            
+            ; Anniv. Countdown
+            IniRead, claimAnnivCountdown, %A_ScriptDir%\..\Settings.ini, UserSettings, claimAnnivCountdown, 1
+            if (A_NowUTC > 20251108060000 || AnnivCountdownDone)
+                claimAnnivCountdown := 0
+            if (claimAnnivCountdown = 1) {
+				if (!openExtraPack) {
+					GoToMain(true)
+                    FindImageAndClick(175, 490, 198, 515, , "Missions2", 261, 478, 500)
+				}
+                FirstAnnivCountdown()
             }
 
             if(deleteMethod = "Inject" && !renameAndSaveAndReload) {
@@ -3744,8 +3862,8 @@ SelectPack(HG := false) {
     PackScreenAllPackY := 320
 
     SelectExpansionTopRowY := 121
-    SelectExpansionFirstRowY := 275
-    SelectExpansionSecondRowY := 431
+    SelectExpansionFirstRowY := 228
+    SelectExpansionSecondRowY := 394
 
     SelectExpansionRightCollumnMiddleX := 203
     SelectExpansionLeftCollumnMiddleX := 73
@@ -3854,64 +3972,76 @@ SelectPack(HG := false) {
     if(inselectexpansionscreen) {
         adbClick(61, 472)
         Delay(1)
-        if (openPack == "Suicune" || openPack == "HoOh" || openPack == "Lugia" || openPack == "Eevee" || openPack = "Buzzwole") {
+        FindImageAndClick(250, 405, 267, 421, , "Apacks", 164, 465, sleepTime)
+        Delay(10)
+        adbSwipe("135 400 135 200 200")
+        Delay(10)
+        if (openPack == "Suicune" || openPack == "HoOh" || openPack == "Lugia" || openPack == "Eevee" || openPack = "Deluxe") {
             ; No swipe, top row
-            if (openPack == "Suicune") {
+            if (openPack == "Deluxe"){
+                packy := SelectExpansionSecondRowY
+                packx := SelectExpansionRightCollumnMiddleX
+                openPack := "Eevee"
+            } else if (openPack == "Suicune") {
                 packy := SelectExpansionFirstRowY
-                packx := SelectExpansionLeftCollumnMiddleX
+                packx := SelectExpansionRightCollumnMiddleX
             } else if (openPack == "HoOh") {
                 packy := SelectExpansionFirstRowY
-                packx := SelectExpansionRightCollumnMiddleX + 2PackExpansionLeft
+                packx := SelectExpansionLeftCollumnMiddleX + 2PackExpansionLeft
             } else if (openPack == "Lugia") {
                 packy := SelectExpansionFirstRowY
-                packx := SelectExpansionRightCollumnMiddleX + 2PackExpansionRight
+                packx := SelectExpansionLeftCollumnMiddleX + 2PackExpansionRight
             } else if (openPack == "Eevee") {
-                packy := SelectExpansionSecondRowY
-                packx := SelectExpansionLeftCollumnMiddleX
-            } else if (openPack = "Buzzwole") {
                 packy := SelectExpansionSecondRowY
                 packx := SelectExpansionRightCollumnMiddleX
             } 
-        } else {
-            ; Two swipes
-            adbSwipe("266 770 266 50 500")
-            ;Sleep, 250
-            adbSwipe("266 785 266 -50 500")
-            adbSwipe("266 785 266 -50 500")
-            adbSwipe("266 785 266 -50 500")
-            Sleep, 250
 
-            if (openPack = "Solgaleo") {
-                packy := SelectExpansionTopRowY
+        } else if(openPack == "Dialga" || openPack == "Palkia" || openPack == "Mew" || openPack == "Eevee" || openPack = "Charizard" || openPack == "Mewtwo" || openPack == "Pikachu" ){
+            adbSwipe("135 500 135 30 500")
+            Delay(5)
+            adbSwipe("135 500 135 30 500")
+            Delay(5)
+            if (openPack = "Dialga") {
+                packy := SelectExpansionFirstRowY
                 packx := SelectExpansionLeftCollumnMiddleX + 2PackExpansionLeft
-            } else if (openPack = "Lunala") {
-                packy := SelectExpansionTopRowY
-                packx := SelectExpansionLeftCollumnMiddleX + 2PackExpansionRight
-            } else if (openPack = "Shining") {
-                packy := SelectExpansionTopRowY
-                packx := SelectExpansionRightCollumnMiddleX
-            } else if (openPack = "Arceus") {
-                packy := SelectExpansionFirstRowY
-                packx := SelectExpansionLeftCollumnMiddleX
-            } else if (openPack = "Dialga") {
-                packy := SelectExpansionFirstRowY
-                packx := SelectExpansionRightCollumnMiddleX + 2PackExpansionLeft
             } else if (openPack = "Palkia") {
                 packy := SelectExpansionFirstRowY
-                packx := SelectExpansionRightCollumnMiddleX + 2PackExpansionRight
+                packx := SelectExpansionLeftCollumnMiddleX + 2PackExpansionRight
             } else if (openPack = "Mew") {
-                packy := SelectExpansionSecondRowY
-                packx := SelectExpansionLeftCollumnMiddleX
+                packy := SelectExpansionFirstRowY
+                packx := SelectExpansionRightCollumnMiddleX
             } else if (openPack = "Charizard") {
                 packy := SelectExpansionSecondRowY
-                packx := SelectExpansionRightCollumnMiddleX + 3PackExpansionLeft
+                packx := SelectExpansionLeftCollumnMiddleX + 3PackExpansionLeft
             } else if (openPack = "Mewtwo") {
                 packy := SelectExpansionSecondRowY
-                packx := SelectExpansionRightCollumnMiddleX
+                packx := SelectExpansionLeftCollumnMiddleX
             } else if (openPack = "Pikachu") {
-                packy := 378
-                packx := SelectExpansionRightCollumnMiddleX + 3PackExpansionRight
+                packy := SelectExpansionSecondRowY
+                packx := SelectExpansionLeftCollumnMiddleX + 3PackExpansionRight
             }
+
+        } else {
+            adbSwipe("135 400 135 175 2000")
+            Delay(5)
+            adbSwipe("135 400 135 175 2000")
+            Delay(10)
+            if (openPack = "Buzzwole") {
+                packy := SelectExpansionFirstRowY
+                packx := SelectExpansionLeftCollumnMiddleX
+            }  else if (openPack = "Solgaleo") {
+                packy := SelectExpansionFirstRowY
+                packx := SelectExpansionRightCollumnMiddleX + 2PackExpansionLeft
+            }  else if (openPack = "Lunala") {
+                packy := SelectExpansionFirstRowY
+                packx := SelectExpansionRightCollumnMiddleX + 2PackExpansionRight
+            } else if (openPack = "Shining") {
+                packy := SelectExpansionSecondRowY
+                packx := SelectExpansionLeftCollumnMiddleX
+            } else if (openPack = "Arceus") {
+                packy := SelectExpansionSecondRowY
+                packx := SelectExpansionRightCollumnMiddleX
+            } 
         }
 
         FindImageAndClick(233, 400, 264, 428, , "Points", packx, packy, , 10)
@@ -4916,7 +5046,6 @@ SpendAllHourglass() {
 
 ; For Bonus Week
 GetEventRewards(frommain := true){
-    swipeSpeed := 300
     adbSwipeX3 := Round(211 / 277 * 535)
     adbSwipeX4 := Round(11 / 277 * 535)
     adbSwipeY2 := Round((453 - 44) / 489 * 960)
@@ -5453,3 +5582,47 @@ isMuMuv5(){
         return true
     return false
 }
+
+FirstAnnivCountdown() {
+    adbSwipeX3 := Round(211 / 277 * 535)
+    adbSwipeX4 := Round(11 / 277 * 535)
+    adbSwipeY2 := Round((453 - 44) / 489 * 960)
+    adbSwipeParams2 := adbSwipeX3 . " " . adbSwipeY2 . " " . adbSwipeX4 . " " . adbSwipeY2 . " " . swipeSpeed
+
+    failSafe := A_TickCount
+    failSafeTime := 0
+    Loop{
+        adbSwipe(adbSwipeParams2)
+        Sleep, 10
+        if (FindOrLoseImage(225, 444, 272, 470, , "Premium", 0, failSafeTime)){
+            break
+        }
+        failSafeTime := (A_TickCount - failSafe) // 1000
+        CreateStatusMessage("Waiting for Trace`n(" . failSafeTime . "/45 seconds)")
+        Delay(1)
+    }
+    adbClick_wbb(130, 465)
+	sleep, 1000
+    failSafe := A_TickCount
+    failSafeTime := 0
+    Loop{
+        Delay(2)
+        adbClick_wbb(172, 427) ;clicks complete all and ok
+        Delay(2)
+        adbClick_wbb(153, 482) ;when to many rewards ok button goes lower
+        Delay(2)
+        adbClick_wbb(247, 486) ;click skip
+        if FindOrLoseImage(244, 406, 273, 449, , "GotAllMissions", 0, 0) {
+            break
+        }
+        else if (failSafeTime > 60){
+            GotRewards := false
+            break
+        }
+        failSafeTime := (A_TickCount - failSafe) // 1000
+    }
+    
+    AnnivCountdownDone := 1
+	;setMetaData()
+}
+
