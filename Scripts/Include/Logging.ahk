@@ -109,7 +109,7 @@ LogToFile(message, logFile := "") {
     FileAppend, % "[" readableTime "] " message "`n", %logFile%
 }
 
-LogToDiscord(message, screenshotFile := "", ping := false, xmlFile := "", screenshotFile2 := "", altWebhookURL := "", altUserId := "") {
+LogToDiscord(message, screenshotFile := "", ping := false, xmlFile := "", screenshotFile2 := "", altWebhookURL := "", altUserId := "", screenshotFile3 := "", screenshotFile4 := "") {
     discordPing := ""
 
     if (ping) {
@@ -152,6 +152,8 @@ LogToDiscord(message, screenshotFile := "", ping := false, xmlFile := "", screen
                 ; If an screenshot or xml file is provided, send it
                 sendScreenshot1 := screenshotFile != "" && FileExist(screenshotFile)
                 sendScreenshot2 := screenshotFile2 != "" && FileExist(screenshotFile2)
+                sendScreenshot3 := screenshotFile3 != "" && FileExist(screenshotFile3)
+                sendScreenshot4 := screenshotFile4 != "" && FileExist(screenshotFile4)
                 sendXml := xmlFile != "" && FileExist(xmlFile)
                 if (sendScreenshot1 + sendScreenshot2 + sendXml > 1) {
                     fileIndex := 0
@@ -166,6 +168,14 @@ LogToDiscord(message, screenshotFile := "", ping := false, xmlFile := "", screen
                     if (sendXml) {
                         fileIndex++
                         curlCommand := curlCommand . "-F ""file" . fileIndex . "=@" . xmlFile . """ "
+                    }
+                    if (sendScreenshot3) {
+                        fileIndex++
+                        curlCommand := curlCommand . "-F ""file" . fileIndex . "=@" . screenshotFile3 . """ "
+                    }
+                    if (sendScreenshot4) {
+                        fileIndex++
+                        curlCommand := curlCommand . "-F ""file" . fileIndex . "=@" . screenshotFile4 . """ "
                     }
                 }
                 else if (sendScreenshot1 + sendScreenshot2 + sendXml == 1) {
