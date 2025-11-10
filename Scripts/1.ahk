@@ -5901,7 +5901,7 @@ checkfolderscript(){
     LogToDiscord(discordMessage, ScreenshotFile, True, , , folderWebhookURL, s4tDiscordUserId)
     LogToDiscord("", ScreenshotFile2, False, (s4tSendAccountXml ? accountFullPath : ""), ScreenshotFile3, folderWebhookURL, s4tDiscordUserId, ScreenshotFile4)   
     folderCheckDone := 1 
-        setMetaData()
+    setMetaData()
 }
 FirstAnnivCountdown() {
     adbSwipeX3 := Round(211 / 277 * 535)
