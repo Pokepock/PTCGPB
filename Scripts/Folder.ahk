@@ -325,12 +325,8 @@ resetWindows(){
             SysGet, Monitor, Monitor, %SelectedMonitorIndex%
             Title := winTitle
 
-            instanceIndex := StrReplace(Title, "Main", "")
-            if (instanceIndex = "")
-                instanceIndex := 1
-            ; WinGetPos, winX, winY, winW, winH, %winTitle%
-            ; ControlGetPos, cx, cy, cw, ch, , %winTitle%
-            ; titleHeight := cy - winY
+            instanceIndex := folderPosX
+
             if (MuMuv5) {
                 if (defaultLanguage = "Scale125")
                     titleHeight := 50
@@ -346,8 +342,8 @@ resetWindows(){
             scaleParam := 275 + 4 * 2
             rowHeight :=  titleHeight + 489 + 4  ; Adjust the height of each row
             currentRow := Floor((instanceIndex - 1) / Columns)
-            y := MonitorTop + currentRow * rowHeight
-            x := MonitorLeft + Mod(2 - 1, Columns) * (scaleParam - borderWidth * 2) - borderWidth
+            y := MonitorTop + (currentRow * rowHeight) + (currentRow * rowGap)
+            x := MonitorLeft + (Mod((instanceIndex - 1), Columns) * (scaleParam - borderWidth * 2)) - borderWidth
             WinMove, %Title%, , %x%, %y%, %scaleParam%, %rowHeight%
             break
         }
