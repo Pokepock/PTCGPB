@@ -12,13 +12,13 @@ OnError("ErrorHandler") ; Add this line here
 
 global STATIC_BRUSH := 0
 
-githubUser := "pikachu758"
+githubUser := "Pokepock"
 repoName := "PTCGPB"
-localVersion := "v7.0.5"
+localVersion := "v7.0.5ex"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
-intro := "MEGA RISING"
+intro := "Folder Check & Individual Pack Select"
 
 ; GUI dimensions
 global GUI_WIDTH := 377 
