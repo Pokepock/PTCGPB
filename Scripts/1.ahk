@@ -49,7 +49,7 @@ maxAccountPackNum := 40
 aminutes := 0
 aseconds := 0
 
-global beginnerMissionsDone, soloBattleMissionDone, intermediateMissionsDone, specialMissionsDone, resetSpecialMissionsDone, accountHasPackInTesting, redeemTokensDone, wonderPickEventDone, currentLoadedAccountIndex
+global beginnerMissionsDone, soloBattleMissionDone, intermediateMissionsDone, specialMissionsDone, resetSpecialMissionsDone, accountHasPackInTesting, redeemTokensDone, wonderPickEventDone, currentLoadedAccountIndex, folderCheckDone
 
 beginnerMissionsDone := 0
 soloBattleMissionDone := 0
@@ -59,6 +59,7 @@ resetSpecialMissionsDone := 0
 accountHasPackInTesting := 0
 redeemTokensDone := 0
 wonderPickEventDone := 0
+folderCheckDone := 0
 
 global dbg_bbox, dbg_bboxNpause, dbg_bbox_click
 
@@ -259,8 +260,11 @@ Loop, % pokemonList.MaxIndex()  ; Loop through the array
 
 changeDate := getChangeDateTime() ; get server reset time
 
-if (NineModStatus) 
+if (NineModStatus) {
     ModSets := NineModConfig
+    slowMotion := 0
+    swipeSpeed := 300
+}
 else 
     ModSets := PlatinConfig
 
@@ -916,7 +920,7 @@ Loop {
                 FirstAnnivCountdown()
             }
 
-            if(Checkfolder)
+            if(Checkfolder && !folderCheckDone)
                 checkfolderscript()
 
 
@@ -1013,6 +1017,7 @@ Loop {
                     accountHasPackInTesting := 0
 					redeemTokensDone := 0
                     wonderPickEventDone := 0
+                    folderCheckDone := 0
                 }
                 restartGameInstance("New Run", false)
             }
@@ -2542,6 +2547,7 @@ loadAccount() {
     resetSpecialMissionsDone := 0
 	redeemTokensDone := 0
     wonderPickEventDone := 0
+    folderCheckDone := 0
 
     if (stopToggle) {
         CreateStatusMessage("Stopping...",,,, false)
@@ -2708,6 +2714,8 @@ saveAccount(file := "Valid", ByRef filePath := "", packDetails := "") {
 			metadata .= "R"
         if(wonderPickEventDone)
             metadata .= "W"
+        if(folderCheckDone)
+            metadata .= "F"
 
         saveDir := A_ScriptDir "\..\Accounts\Saved\" . winTitle
         filePath := saveDir . "\" . accountOpenPacks . "P_" . A_Now . "_" . winTitle . "(" . metadata . ").xml"
@@ -4984,6 +4992,7 @@ getMetaData() {
     accountHasPackInTesting := 0
 	redeemTokensDone := 0
     wonderPickEventDone := 0
+    folderCheckDone := 0
 
     ; check if account file has metadata information
     if(InStr(accountFileName, "(")) {
@@ -5004,6 +5013,8 @@ getMetaData() {
                 redeemTokensDone := 1
             if(Instr(metadata, "W"))
                 wonderPickEventDone := 1
+            if(Instr(metadata, "F"))
+                folderCheckDone := 1
             if(InStr(metadata, "T")) {
                 saveDir := A_ScriptDir "\..\Accounts\Saved\" . winTitle
                 accountFile := saveDir . "\" . accountFileName
@@ -5058,6 +5069,8 @@ setMetaData() {
 		metadata .= "R"
     if(wonderPickEventDone)
         metadata .= "W"
+    if(folderCheckDone)
+        metadata .= "F"
 
     ; Remove parentheses if no flags remain, helpful if there is only a T flag or manual removal of X flag
     if(hasMetaData) {
@@ -5669,6 +5682,7 @@ checkfolderscript(){
     FindImageAndClick(249,70,260,82, , "profilecopyidbutton", 259, 79)
     Delay(3)
     adbClick_wbb(259, 79)
+    Delay(3)
     userFriendCode := Clipboard
     Delay(5)
 
@@ -5678,8 +5692,10 @@ checkfolderscript(){
     GoToMain()
     FindImageAndClick(153, 176, 174, 199, , "infolder", 89, 518, sleepTime)
     Delay(10)
-    adbSwipe("35 300 35 500 500")
+    adbSwipe("35 250 35 500 400")
     Delay(1)
+    failSafe := A_TickCount
+    failSafeTime := 0
     loop{
         adbClick_wbb(243, 189)
         Delay(1)
@@ -5695,7 +5711,11 @@ checkfolderscript(){
         Delay(1)
         adbClick_wbb(160, 472)
         Delay(1)
+        failSafeTime := (A_TickCount - failSafe) // 1000
+        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
     }
+    failSafe := A_TickCount
+    failSafeTime := 0
     loop{
         adbClick_wbb(243, 189)
         Delay(1)
@@ -5711,7 +5731,11 @@ checkfolderscript(){
         Delay(1)
         adbClick_wbb(160, 472)
         Delay(1)
+        failSafeTime := (A_TickCount - failSafe) // 1000
+        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
     }
+    failSafe := A_TickCount
+    failSafeTime := 0
     loop{
         adbClick_wbb(243, 189)
         Delay(1)
@@ -5727,7 +5751,11 @@ checkfolderscript(){
         Delay(1)
         adbClick_wbb(160, 472)
         Delay(1)
+        failSafeTime := (A_TickCount - failSafe) // 1000
+        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
     }
+    failSafe := A_TickCount
+    failSafeTime := 0
     loop{
         adbClick_wbb(243, 189)
         Delay(1)
@@ -5743,7 +5771,11 @@ checkfolderscript(){
         Delay(1)
         adbClick_wbb(160, 472)
         Delay(1)
+        failSafeTime := (A_TickCount - failSafe) // 1000
+        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
     }
+    failSafe := A_TickCount
+    failSafeTime := 0
     loop{
         adbClick_wbb(243, 189)
         Delay(1)
@@ -5759,27 +5791,39 @@ checkfolderscript(){
         Delay(1)
         adbClick_wbb(160, 472)
         Delay(1)
+        failSafeTime := (A_TickCount - failSafe) // 1000
+        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
     }
+    failSafe := A_TickCount
+    failSafeTime := 0
     foldercount := 0
     loop{
-        adbSwipe("35 300 35 500 500")
+        adbSwipe("35 200 35 500 400")
         if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
             break
         else
             foldercount += 1
-
-        if(foldercount > 10){
+        if(foldercount > 5){
+            adbClick_wbb(200, 110)
+            Delay(1)
+        }
+        else if(foldercount > 10){
             adbClick_wbb(154, 436)
             foldercount := 0
         }
         Delay(2)
+        failSafeTime := (A_TickCount - failSafe) // 1000
+        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
     }
-    
+    failSafe := A_TickCount
+    failSafeTime := 0
     loop{
         adbClick_wbb(243, 189)
         if(FindOrLoseImage(13, 125, 48, 155, , "folderfind", 0, failSafeTime))
             break
         Delay(1)
+        failSafeTime := (A_TickCount - failSafe) // 1000
+    CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
     }
 
     IniRead, folderNO, %A_ScriptDir%\..\Settings.ini, UserSettings, folderNO
@@ -5815,18 +5859,26 @@ checkfolderscript(){
     Delay(2)
     adbSwipe("35 300 35 500 500")
     Delay(2)
+    failSafe := A_TickCount
+    failSafeTime := 0
     loop{
         adbSwipe("35 300 35 500 500")
         if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
             break
         Delay(1)
+        failSafeTime := (A_TickCount - failSafe) // 1000
+        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
     }
+    failSafe := A_TickCount
+    failSafeTime := 0
     loop{
         adbClick_wbb(243, 189)
         if(FindOrLoseImage(13, 125, 48, 155, , "folderfind", 0, failSafeTime)){
             break
         }
         Delay(1)
+        failSafeTime := (A_TickCount - failSafe) // 1000
+        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
     }
     Delay(3)
     adbClick_wbb(222, 391)
@@ -5848,6 +5900,50 @@ checkfolderscript(){
     
     LogToDiscord(discordMessage, ScreenshotFile, True, , , folderWebhookURL, s4tDiscordUserId)
     LogToDiscord("", ScreenshotFile2, False, (s4tSendAccountXml ? accountFullPath : ""), ScreenshotFile3, folderWebhookURL, s4tDiscordUserId, ScreenshotFile4)   
+    folderCheckDone := 1 
+        setMetaData()
+}
+FirstAnnivCountdown() {
+    adbSwipeX3 := Round(211 / 277 * 535)
+    adbSwipeX4 := Round(11 / 277 * 535)
+    adbSwipeY2 := Round((453 - 44) / 489 * 960)
+    adbSwipeParams2 := adbSwipeX3 . " " . adbSwipeY2 . " " . adbSwipeX4 . " " . adbSwipeY2 . " " . swipeSpeed
+
+    failSafe := A_TickCount
+    failSafeTime := 0
+    Loop{
+        adbSwipe(adbSwipeParams2)
+        Sleep, 10
+        if (FindOrLoseImage(225, 444, 272, 470, , "Premium", 0, failSafeTime)){
+            break
+        }
+        failSafeTime := (A_TickCount - failSafe) // 1000
+        CreateStatusMessage("Waiting for Trace`n(" . failSafeTime . "/45 seconds)")
+        Delay(1)
+    }
+    adbClick_wbb(130, 465)
+    sleep, 1000
+    failSafe := A_TickCount
+    failSafeTime := 0
+    Loop{
+        Delay(2)
+        adbClick_wbb(172, 427) ;clicks complete all and ok
+        Delay(2)
+        adbClick_wbb(153, 482) ;when to many rewards ok button goes lower
+        Delay(2)
+        adbClick_wbb(247, 486) ;click skip
+        if FindOrLoseImage(244, 406, 273, 449, , "GotAllMissions", 0, 0) {
+            break
+        }
+        else if (failSafeTime > 60){
+            GotRewards := false
+            break
+        }
+        failSafeTime := (A_TickCount - failSafe) // 1000
+    }
+    
+    AnnivCountdownDone := 1
+    ;setMetaData()
 }
 
 changeLNscript(){
@@ -5934,45 +6030,3 @@ changeLNscript(){
     adbClick_wbb(137, 485)
 }
 
-FirstAnnivCountdown() {
-    adbSwipeX3 := Round(211 / 277 * 535)
-    adbSwipeX4 := Round(11 / 277 * 535)
-    adbSwipeY2 := Round((453 - 44) / 489 * 960)
-    adbSwipeParams2 := adbSwipeX3 . " " . adbSwipeY2 . " " . adbSwipeX4 . " " . adbSwipeY2 . " " . swipeSpeed
-
-    failSafe := A_TickCount
-    failSafeTime := 0
-    Loop{
-        adbSwipe(adbSwipeParams2)
-        Sleep, 10
-        if (FindOrLoseImage(225, 444, 272, 470, , "Premium", 0, failSafeTime)){
-            break
-        }
-        failSafeTime := (A_TickCount - failSafe) // 1000
-        CreateStatusMessage("Waiting for Trace`n(" . failSafeTime . "/45 seconds)")
-        Delay(1)
-    }
-    adbClick_wbb(130, 465)
-    sleep, 1000
-    failSafe := A_TickCount
-    failSafeTime := 0
-    Loop{
-        Delay(2)
-        adbClick_wbb(172, 427) ;clicks complete all and ok
-        Delay(2)
-        adbClick_wbb(153, 482) ;when to many rewards ok button goes lower
-        Delay(2)
-        adbClick_wbb(247, 486) ;click skip
-        if FindOrLoseImage(244, 406, 273, 449, , "GotAllMissions", 0, 0) {
-            break
-        }
-        else if (failSafeTime > 60){
-            GotRewards := false
-            break
-        }
-        failSafeTime := (A_TickCount - failSafe) // 1000
-    }
-    
-    AnnivCountdownDone := 1
-    ;setMetaData()
-}
