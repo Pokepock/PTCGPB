@@ -3037,12 +3037,12 @@ Screenshot(fileType := "Valid", subDir := "", ByRef fileName := "") {
         fileName := "packstats_temp.png"
     yBias := titleHeight - 45
     pBitmapW := from_window(WinExist(winTitle))
-    if (fileType = "stardusts")
+    if (fileType = "stardusts"){
         pBitmap := Gdip_CloneBitmapArea(pBitmapW, 180, 55 , 85, 30)
         fileName := folderNO . "_" . userFriendCode . "_" . A_Now . "_stardusts.png"
-    else if (fileType = "userProfile")
+    } else if (fileType = "userProfile"){
         pBitmap := Gdip_CloneBitmapArea(pBitmapW, 26, 54 , 246, 246)
-    else if (fileType = "Folder_1"){
+    }else if (fileType = "Folder_1"){
         pBitmap := Gdip_CloneBitmapArea(pBitmapW, 3, 50 , 270, 449)
         fileName := folderNO . "_" . userFriendCode . "_" . A_Now . "_1.png"
     } else if (fileType = "Folder_2"){
