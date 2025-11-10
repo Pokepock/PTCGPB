@@ -6,8 +6,12 @@ Logs/*
 Screenshots/*
 Screenshots/Restart/*
 Screenshots/Trades/**
+Screenshots/Folder/*
+Screenshots/temp/*
 !Screenshots/Restart/
 !Screenshots/Trades/
+!Screenshots/Folder/
+!Screenshots/temp/
 !Screenshots/Trades/.gitignore
 Scripts/*.ahk
 Scripts/*.ini
