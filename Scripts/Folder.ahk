@@ -746,7 +746,7 @@ ToggleFolderInjectScript:
         ; gHandleAction 處理兩個操作按鈕
         Gui, FolderInject:Add, Button, % "x10 y+15 w" . buttonWidth . " gHandleAction", Inject
         Gui, FolderInject:Add, Button, % "x+10 yp w" . buttonWidth . " gHandleAction", Addfriend
-        Gui, FolderInject:Add, Button, % "x+10 yp w" . buttonWidth . " gHandleAction", Wishlist
+        ;Gui, FolderInject:Add, Button, % "x+10 yp w" . buttonWidth . " gHandleAction", Wishlist
         
         ; 註冊 GUI 關閉動作：讓使用者點擊 X 時隱藏視窗
         Gui, FolderInject:Show, , Inject Folder Account
