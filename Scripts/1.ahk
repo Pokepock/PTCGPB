@@ -67,7 +67,8 @@ dbg_bboxNpause :=0
 dbg_bbox_click :=0
 
 global newPlayerName, renameMode, renameAndSaveAndReload, targetUsername, renameXML, renameOcrText, renameXMLwithFC, userFriendCode
-global ChangeLNMode, targetLN 
+global ChangeLNMode, targetLN, Checkfolder, sendAccountXml, folderWebhookURL, folderNO
+global ModSets, NineModStatus, indivPackMode
 
 scriptName := StrReplace(A_ScriptName, ".ahk")
 winTitle := scriptName
@@ -152,6 +153,7 @@ IniRead, s4tShiny, %A_ScriptDir%\..\Settings.ini, UserSettings, s4tShiny, 0
 IniRead, s4tDiscordWebhookURL, %A_ScriptDir%\..\Settings.ini, UserSettings, s4tDiscordWebhookURL
 IniRead, s4tDiscordUserId, %A_ScriptDir%\..\Settings.ini, UserSettings, s4tDiscordUserId
 IniRead, s4tSendAccountXml, %A_ScriptDir%\..\Settings.ini, UserSettings, s4tSendAccountXml, 1
+IniRead, sendAccountXml, %A_ScriptDir%\..\Settings.ini, UserSettings, sendAccountXml, 0
 
 IniRead, rerolls, %A_ScriptDir%\%scriptName%.ini, Metrics, rerolls, 0
 IniRead, rerollStartTime, %A_ScriptDir%\%scriptName%.ini, Metrics, rerollStartTime, A_TickCount
@@ -166,11 +168,85 @@ IniRead, DelayOfExtraPack, %A_ScriptDir%\..\Settings.ini, UserSettings, DelayOfE
 IniRead, tesseractPath, %A_ScriptDir%\..\Settings.ini, UserSettings, tesseractPath, C:\Program Files\Tesseract-OCR\tesseract.exe
 IniRead, ChangeLNMode, %A_ScriptDir%\..\Settings.ini, UserSettings, ChangeLNMode, 0
 IniRead, targetLN, %A_ScriptDir%\..\Settings.ini, UserSettings, targetLN, "None"
-
+IniRead, Checkfolder, %A_ScriptDir%\..\Settings.ini, UserSettings, Checkfolder, 0
+IniRead, folderWebhookURL, %A_ScriptDir%\..\Settings.ini, UserSettings, folderWebhookURL
+IniRead, NineModStatus, %A_ScriptDir%\..\Settings.ini, UserSettings, NineMod, 0
+IniRead, indivPackMode, %A_ScriptDir%\..\Settings.ini, UserSettings, indivPackMode, 0
 
 MuMuv5 := isMuMuv5()
 pokemonList := ["Mewtwo", "Charizard", "Pikachu", "Mew", "Dialga", "Palkia", "Arceus", "Shining", "Solgaleo", "Lunala", "Buzzwole", "Eevee", "HoOh", "Lugia", "Suicune", "Deluxe", "MegaBlaziken", "MegaGyarados", "MegaAltaria"]
 shinyPacks := {"Shining": 1, "Solgaleo": 1, "Lunala": 1, "Buzzwole": 1, "Eevee": 1, "HoOh": 1, "Lugia": 1, "Suicune": 1, "Deluxe": 1, "MegaBlaziken": 1, "MegaGyarados": 1, "MegaAltaria": 1}
+
+PlatinConfig := {}
+PlatinConfig.menuName := "Platin"
+PlatinConfig.menuX1 := 38
+PlatinConfig.menuY1 := 290
+PlatinConfig.menuX2 := 65
+PlatinConfig.menuY2 := 302
+PlatinConfig.menuCX := 18
+PlatinConfig.menuCY := 109
+
+PlatinConfig.oneName := "One"
+PlatinConfig.oneX1 := 9
+PlatinConfig.oneY1 := 303
+PlatinConfig.oneX2 := 25
+PlatinConfig.oneY2 := 323
+PlatinConfig.oneCX := 26
+PlatinConfig.oneCY := 313
+
+PlatinConfig.twoName := "Two"
+PlatinConfig.twoX1 := 100
+PlatinConfig.twoY1 := 303
+PlatinConfig.twoX2 := 113
+PlatinConfig.twoY2 := 323
+PlatinConfig.twoCX := 107
+PlatinConfig.twoCY := 313
+
+PlatinConfig.threeName := "Three"
+PlatinConfig.threeX1 := 182
+PlatinConfig.threeY1 := 303
+PlatinConfig.threeX2 := 194
+PlatinConfig.threeY2 := 323
+PlatinConfig.threeCX := 187
+PlatinConfig.threeCY := 313
+
+PlatinConfig.adbY := 366
+
+; NineMod Config
+NineModConfig := {}
+NineModConfig.menuName := "NineMod"
+NineModConfig.menuX1 := 25
+NineModConfig.menuY1 := 145
+NineModConfig.menuX2 := 70
+NineModConfig.menuY2 := 170
+NineModConfig.menuCX := 18
+NineModConfig.menuCY := 109
+
+NineModConfig.oneName := "One9"
+NineModConfig.oneX1 := 9
+NineModConfig.oneY1 := 170
+NineModConfig.oneX2 := 25
+NineModConfig.oneY2 := 190
+NineModConfig.oneCX := 26
+NineModConfig.oneCY := 180
+
+NineModConfig.twoName := "Two9"
+NineModConfig.twoX1 := 100
+NineModConfig.twoY1 := 170
+NineModConfig.twoX2 := 113
+NineModConfig.twoY2 := 190
+NineModConfig.twoCX := 107
+NineModConfig.twoCY := 180
+
+NineModConfig.threeName := "Three9"
+NineModConfig.threeX1 := 182
+NineModConfig.threeY1 := 170
+NineModConfig.threeX2 := 194
+NineModConfig.threeY2 := 190
+NineModConfig.threeCX := 187
+NineModConfig.threeCY := 180
+NineModConfig.adbY := 296
+
 
 packArray := []  ; Initialize an empty array
 
@@ -182,6 +258,11 @@ Loop, % pokemonList.MaxIndex()  ; Loop through the array
 }
 
 changeDate := getChangeDateTime() ; get server reset time
+
+if (NineModStatus) 
+    ModSets := NineModConfig
+else 
+    ModSets := PlatinConfig
 
 if(heartBeat)
     IniWrite, 1, %A_ScriptDir%\..\HeartBeat.ini, HeartBeat, Instance%scriptName%
@@ -281,12 +362,12 @@ Loop {
         if(DeadCheck = 1 && deleteMethod != "13 Pack") {
             CreateStatusMessage("Account is stuck! Restarting and unfriending...")
             friended := true
-            FindImageAndClick(38, 290, 65, 302, , "Platin", 18, 109, 2000) ; click mod settings
+            FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
             if(setSpeed = 3)
-                FindImageAndClick(182, 303, 194, 323, , "Three", 187, 313) ; click mod settings
+                FindImageAndClick(ModSets.threeX1, ModSets.threeY1, ModSets.threeX2, ModSets.threeY2, , ModSets.threeName, ModSets.threeCX, ModSets.threeCY) ; click mod settings
             else
-                FindImageAndClick(100, 303, 113, 323, , "Two", 107, 313) ; click mod settings
-            adbClick_wbb(41, 366)
+                FindImageAndClick(ModSets.twoX1, ModSets.twoY1, ModSets.twoX2, ModSets.twoY2, , ModSets.twoName, ModSets.twoCX, ModSets.twoCY) ; click mod settings
+            adbClick_wbb(41, ModSets.adbY)
             Delay(1)
             RemoveFriends()
             DeadCheck := 0
@@ -304,7 +385,17 @@ Loop {
             ; in injection mode, we dont need to reload
             Randmax := packArray.Length()
             Random, rand, 1, Randmax
-            openPack := packArray[rand]
+            if(!indivPackMode)
+                openPack := packArray[rand]
+            else {
+                packsKeyword := "packSelectIns" . winTitle
+                IniRead, indivPackSelection, %A_ScriptDir%\..\Settings.ini, UserSettings, %packsKeyword% , "Random"
+                if(indivPackSelection != "Random")
+                    openPack := indivPackSelection
+                else
+                    openPack := packArray[rand]
+            }
+                
             friended := false
             startOfRun := A_TickCount
 
@@ -385,13 +476,13 @@ Loop {
                 restartGameInstance("New Run", false)
             }
 
-            FindImageAndClick(38, 290, 65, 302, , "Platin", 18, 109, 2000) ; click mod settings
+            FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
             if(setSpeed = 3)
-                FindImageAndClick(182, 303, 194, 323, , "Three", 187, 313) ; click mod settings
+                FindImageAndClick(ModSets.threeX1, ModSets.threeY1, ModSets.threeX2, ModSets.threeY2, , ModSets.threeName, ModSets.threeCX, ModSets.threeCY) ; click mod settings
             else
-                FindImageAndClick(100, 303, 113, 323, , "Two", 107, 313) ; click mod settings
+                FindImageAndClick(ModSets.twoX1, ModSets.twoY1, ModSets.twoX2, ModSets.twoY2, , ModSets.twoName, ModSets.twoCX, ModSets.twoCY) ; click mod settings
             Delay(1)
-            adbClick_wbb(41, 366)
+            adbClick_wbb(41, ModSets.adbY)
             Delay(1)
 
             cantOpenMorePacks := 0
@@ -428,6 +519,10 @@ Loop {
                     else if(!renew && !getFC) {
                         if(FindOrLoseImage(241, 377, 269, 407, , "closeduringpack", 0)) {
                             adbClick_wbb(139, 371)
+                        }
+                        if(FindOrLoseImage(133, 479, 147, 493, , "noticex", 0)){
+                            adbClick_wbb(137, 485)
+                            Delay(3)
                         }
                     }
                     else if(FindOrLoseImage(175, 165, 255, 235, , "Hourglass3", 0)) {
@@ -472,7 +567,9 @@ Loop {
                 }
 
                 FindImageAndClick(203, 272, 237, 300, , "Profile", 210, 140, 200) ; Open profile/stats page and wait
-
+                Delay(5)
+                FindImageAndClick(209,277,224,292, , "playerrenamepencilicon", 205, 365)
+                Delay(3)
                 if(!renameXMLwithFC)
                     FindImageAndClick(249,70,260,82, , "profilecopyidbutton", 137, 78)
 
@@ -484,9 +581,6 @@ Loop {
                     adbClick(137, 78)
                     Delay(3)
                 }
-
-		Delay(10)
-                FindImageAndClick(209,277,224,292, , "playerrenamepencilicon", 205, 365)
 
                 ; Take a screenshot of the profile page with the username
                 tempDir := A_ScriptDir . "\temp"
@@ -620,94 +714,11 @@ Loop {
             if (LanguageMap.HasKey(targetLN)) {
                 Multiplier := LanguageMap[targetLN]
                 changeLNposY := 141 + Multiplier * Displacement ; 
-            } else {
+            } else 
                 ChangeLNMode := 0
-            }
         
-            if (ChangeLNMode) {
-                    
-                failSafe := A_TickCount
-                failSafeTime := 0
-                ; Click for hamburger menu and wait for profile
-                Loop {
-                    adbClick_wbb(140, 203) ;
-                    Delay(1)
-                    if(FindOrLoseImage(233, 400, 264, 428, , "Points", 0, failSafeTime)) {
-                        break
-                    }else if(!renew && !getFC) {
-                        if(FindOrLoseImage(241, 377, 269, 407, , "closeduringpack", 0)) {
-                            adbClick_wbb(139, 371)
-                        }
-                    }else if(FindOrLoseImage(175, 165, 255, 235, , "Hourglass3", 0)) {
-                        ;TODO hourglass tutorial still broken after injection
-                        Delay(3)
-                        adbClick_wbb(146, 441) ; 146 440
-                        Delay(3)
-                        adbClick_wbb(146, 441)
-                        Delay(3)
-                        adbClick_wbb(146, 441)
-                        Delay(3)
-
-                        FindImageAndClick(98, 184, 151, 224, , "Hourglass1", 168, 438, 500, 5) ;stop at hourglasses tutorial 2
-                        Delay(1)
-
-                        adbClick_wbb(203, 436) ; 203 436
-                        FindImageAndClick(236, 198, 266, 226, , "Hourglass2", 180, 436, 500) ;stop at hourglasses tutorial 2 180 to 203?
-                    }else if(FindOrLoseImage(81, 351, 101, 391, , "titleok", 0, failSafeTime)){
-                        adbClick_wbb(141, 370)
-                        Delay(3)
-                    }
-                    failSafeTime := (A_TickCount - failSafe) // 1000
-                    CreateStatusMessage("Waiting for Points`n(" . failSafeTime . "/90 seconds)")
-                }
-                FindImageAndClick(230, 120, 260, 150, , "UserProfile", 240, 499 , 500)
-                Delay(1)
-                FindImageAndClick(26, 162, 47, 185, , "Settings2", 134, 442, sleepTime)
-                Delay(3)
-                adbClick_wbb(145,176)
-                Delay(3)
-                loop {
-                    if(FindOrLoseImage(176, 250, 200, 270, , "volume", 0, failSafeTime))
-                        break
-                }
-                Delay(15)
-                adbSwipe_wbb("135 400 135 200 200")
-                Delay(10)
-                adbSwipe_wbb("135 400 135 200 2000")
-                Delay(10)
-                adbSwipe_wbb("135 400 135 200 1500")
-                Delay(15)
-                
-                LNcount := 0
-                Loop{
-                    if(FindOrLoseImage(115, 130, 161, 146, , "LNEnglish", 0, failSafeTime))
-                        Break
-                    else if(FindOrLoseImage(115, 131, 161, 145, , "LNEnglish2", 0, failSafeTime))
-                        Break
-                    else if(LNcount > 10){
-                        Delay(10)
-                        adbSwipe_wbb("135 400 135 350 1500")
-                        Delay(10)
-                        LNcount := 0
-                    }
-                    adbClick_wbb(35,520)
-                    Delay(3)
-                    adbClick_wbb(35,499)
-                    Delay(3)
-                    adbClick_wbb(35,489)
-                    Delay(3)
-                    LNcount += 1
-                }
-                FindImageAndClick(115, 131, 161, 145, , "LNEnglish2", 220, 141, sleepTime)
-                Delay(5)
-                adbclick_wbb(220, changeLNposY)
-                Delay(3)
-                adbClick_wbb(137, 485)
-            }
-
-
-
-
+            if (ChangeLNMode) 
+                changeLNscript()
 
             if(deleteMethod = "5 Pack" || deleteMethod = "5 Pack (Fast)" || deleteMethod = "13 Pack")
                 wonderPicked := DoWonderPick()
@@ -878,7 +889,7 @@ Loop {
             ; Collect Daily Hourglasses - either separate setting? or will be currently part of openExtraPack
             if(deleteMethod = "Inject for Reroll" && openExtraPack) {
                 GoToMain(true)
-                GetAllRewards(false, true)
+                GetAllRewards(false, true)         
             }
 			
 			; Bonus Week
@@ -893,18 +904,21 @@ Loop {
                 else
                     GetEventRewards(false) ; collects all the Bonus week hourglass
             }
-            
-            ; Anniv. Countdown
-            IniRead, claimAnnivCountdown, %A_ScriptDir%\..\Settings.ini, UserSettings, claimAnnivCountdown, 1
+
+            IniRead, claimAnnivCountdown, %A_ScriptDir%\..\Settings.ini, UserSettings, claimAnnivCountdown, 0
             if (A_NowUTC > 20251108060000 || AnnivCountdownDone)
                 claimAnnivCountdown := 0
             if (claimAnnivCountdown = 1) {
-				if (!openExtraPack) {
-					GoToMain(true)
+                if (!openExtraPack) {
+                    GoToMain(true)
                     FindImageAndClick(175, 490, 198, 515, , "Missions2", 261, 478, 500)
-				}
+                }
                 FirstAnnivCountdown()
             }
+
+            if(Checkfolder)
+                checkfolderscript()
+
 
             if(deleteMethod = "Inject" && !renameAndSaveAndReload) {
                 GoToMain()
@@ -1224,8 +1238,6 @@ RemoveFriends() {
 }
 
 TradeTutorial() {
-    if (deleteMethod = "Inject for Reroll")
-        return
     if(FindOrLoseImage(100, 120, 175, 145, , "Trade", 0)) {
         Loop{
             adbClick_wbb(167,437)
@@ -1426,7 +1438,7 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
     static lastStatusTime := 0
 
     if(slowMotion) {
-        if(imageName = "Platin" || imageName = "One" || imageName = "Two" || imageName = "Three")
+        if(imageName = ModSets.menuName || imageName = ModSets.oneName || imageName = ModSets.twoName || imageName = ModSets.threeName)
             return true
     }
     if(searchVariation = "")
@@ -1524,7 +1536,7 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
     global winTitle, failSafe, confirmed, slowMotion
 
     if(slowMotion) {
-        if(imageName = "Platin" || imageName = "One" || imageName = "Two" || imageName = "Three")
+        if(imageName = ModSets.menuName || imageName = ModSets.oneName || imageName = ModSets.twoName || imageName = ModSets.threeName)
             return true
     }
     if(searchVariation = "")
@@ -1910,13 +1922,13 @@ menuDeleteStart() {
         return keepAccount
     }
     if(friended) {
-        FindImageAndClick(38, 290, 65, 302, , "Platin", 18, 109, 2000) ; click mod settings
+        FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
         if(setSpeed = 3)
-            FindImageAndClick(182, 303, 194, 323, , "Three", 187, 313) ; click mod settings
+            FindImageAndClick(ModSets.threeX1, ModSets.threeY1, ModSets.threeX2, ModSets.threeY2, , ModSets.threeName, ModSets.threeCX, ModSets.threeCY) ; click mod settings
         else
-            FindImageAndClick(100, 303, 113, 323, , "Two", 107, 313) ; click mod settings
+            FindImageAndClick(ModSets.twoX1, ModSets.twoY1, ModSets.twoX2, ModSets.twoY2, , ModSets.twoName, ModSets.twoCX, ModSets.twoCY) ; click mod settings
         Delay(1)
-        adbClick_wbb(41, 366)
+        adbClick_wbb(41, ModSets.adbY)
         Delay(1)
     }
     failSafe := A_TickCount
@@ -2708,6 +2720,10 @@ saveAccount(file := "Valid", ByRef filePath := "", packDetails := "") {
         ;packsInPool doesn't make sense but nothing does, really.
         xmlFile := A_Now . "_" . winTitle . (packDetails ? "_" . packDetails : "") . "_" . packsInPool . "_packs.xml"
         filePath := saveDir . xmlFile
+    } else if (file = "Folder") {
+        saveDir := A_ScriptDir "\..\Accounts\Folders\"
+        xmlFile := folderNO . "_" . userFriendCode . "_" . winTitle . "_" . A_Now . ".xml"
+        filePath := saveDir . xmlFile
     } else {
         saveDir := A_ScriptDir "\..\Accounts\SpecificCards\"
         xmlFile := A_Now . "_" . winTitle . "_" . file . "_" . packsInPool . "_packs.xml"
@@ -3019,10 +3035,26 @@ Screenshot(fileType := "Valid", subDir := "", ByRef fileName := "") {
     fileName := A_Now . "_" . winTitle . "_" . fileType . "_" . packsInPool . "_packs.png"
     if (filename = "PACKSTATS")
         fileName := "packstats_temp.png"
-    filePath := fileDir "\" . fileName
     yBias := titleHeight - 45
     pBitmapW := from_window(WinExist(winTitle))
-    pBitmap := Gdip_CloneBitmapArea(pBitmapW, 18, 175+yBias, 240, 227)
+    if (fileType = "stardusts")
+        pBitmap := Gdip_CloneBitmapArea(pBitmapW, 180, 55 , 85, 30)
+        fileName := folderNO . "_" . userFriendCode . "_" . A_Now . "_stardusts.png"
+    else if (fileType = "userProfile")
+        pBitmap := Gdip_CloneBitmapArea(pBitmapW, 26, 54 , 246, 246)
+    else if (fileType = "Folder_1"){
+        pBitmap := Gdip_CloneBitmapArea(pBitmapW, 3, 50 , 270, 449)
+        fileName := folderNO . "_" . userFriendCode . "_" . A_Now . "_1.png"
+    } else if (fileType = "Folder_2"){
+        pBitmap := Gdip_CloneBitmapArea(pBitmapW, 3, 50 , 270, 449)
+        fileName := folderNO . "_" . userFriendCode . "_" . A_Now . "_2.png"
+    } else if (fileType = "Folder_3"){
+        pBitmap := Gdip_CloneBitmapArea(pBitmapW, 3, 50 , 270, 449)
+        fileName := folderNO . "_" . userFriendCode . "_" . A_Now . "_3.png"
+    } else
+        pBitmap := Gdip_CloneBitmapArea(pBitmapW, 18, 175+yBias, 240, 227)
+    
+    filePath := fileDir "\" . fileName
     Gdip_DisposeImage(pBitmapW)
     Gdip_SaveBitmapToFile(pBitmap, filePath)
 
@@ -3568,21 +3600,21 @@ DoTutorial() {
     }
 
     if(setSpeed = 3) {
-        FindImageAndClick(38, 290, 65, 302, , "Platin", 18, 109, 2000) ; click mod settings
-        FindImageAndClick(9, 303, 25, 323, , "One", 26, 313) ; click mod settings
+        FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
+        FindImageAndClick(ModSets.oneX1, ModSets.oneY1, ModSets.oneX2, ModSets.oneY2, , ModSets.oneName, ModSets.oneCX, ModSets.oneCY) ; click mod settings
         Delay(1)
-        adbClick_wbb(41, 366)
+        adbClick_wbb(41, ModSets.adbY)
         Delay(1)
     }
 
     FindImageAndClick(110, 230, 182, 257, , "Welcome", 253, 506, 110) ;click through cutscene until welcome page
 
     if(setSpeed = 3) {
-        FindImageAndClick(38, 290, 65, 302, , "Platin", 18, 109, 2000) ; click mod settings
-
-        FindImageAndClick(182, 303, 194, 323, , "Three", 187, 313) ; click mod settings
+        FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
+        FindImageAndClick(ModSets.oneX1, ModSets.oneY1, ModSets.oneX2, ModSets.oneY2, , ModSets.oneName, ModSets.oneCX, ModSets.oneCY) ; click mod settings
         Delay(1)
-        adbClick_wbb(41, 366)
+        adbClick_wbb(41, ModSets.adbY)
+
     }
     FindImageAndClick(190, 241, 225, 270, , "Name", 189, 438) ;wait for name input screen
     /* ; Picks Erika at creation - disabled
@@ -3647,9 +3679,9 @@ DoTutorial() {
 
     FindImageAndClick(225, 273, 235, 290, , "Pack", 140, 424) ;wait for pack to be ready  to trace
     if(setSpeed > 1) {
-        FindImageAndClick(38, 290, 65, 302, , "Platin", 18, 109, 2000) ; click mod settings
-        FindImageAndClick(9, 303, 25, 323, , "One", 26, 313) ; click mod settings
-        ;adbClick_wbb(41, 366)
+        FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
+        FindImageAndClick(ModSets.oneX1, ModSets.oneY1, ModSets.oneX2, ModSets.oneY2, , ModSets.oneName, ModSets.oneCX, ModSets.oneCY) ; click mod settings
+        ;adbClick_wbb(41, ModSets.adbY)
         ;Delay(2)
     }
     failSafe := A_TickCount
@@ -3659,13 +3691,13 @@ DoTutorial() {
         Sleep, 10
         if (FindOrLoseImage(225, 273, 235, 290, , "Pack", 1, failSafeTime)){
             if(setSpeed > 1) {
-                ;FindImageAndClick(38, 290, 65, 302, , "Platin", 18, 109, 2000) ; click mod settings
+                ;FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
                 if(setSpeed = 3)
-                    FindImageAndClick(182, 303, 194, 323, , "Three", 187, 313) ; click 3x
+                    FindImageAndClick(ModSets.threeX1, ModSets.threeY1, ModSets.threeX2, ModSets.threeY2, , ModSets.threeName, ModSets.threeCX, ModSets.threeCY) ; click 3x
                 else
-                    FindImageAndClick(100, 303, 113, 323, , "Two", 107, 313) ; click 2x
+                    FindImageAndClick(ModSets.twoX1, ModSets.twoY1, ModSets.twoX2, ModSets.twoY2, , ModSets.twoName, ModSets.twoCX, ModSets.twoCY) ; click 2x
             }
-            adbClick_wbb(41, 366)
+            adbClick_wbb(41, ModSets.adbY)
             break
         }
         failSafeTime := (A_TickCount - failSafe) // 1000
@@ -3674,8 +3706,8 @@ DoTutorial() {
 
     FindImageAndClick(34, 99, 74, 131, , "Swipe", 140, 375) ;click through cards until needing to swipe up
     if(setSpeed > 1) {
-        FindImageAndClick(38, 290, 65, 302, , "Platin", 18, 109, 2000) ; click mod settings
-        FindImageAndClick(9, 303, 25, 323, , "One", 26, 313) ; click mod settings
+        FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
+        FindImageAndClick(ModSets.oneX1, ModSets.oneY1, ModSets.oneX2, ModSets.oneY2, , ModSets.oneName, ModSets.oneCX, ModSets.oneCY) ; click mod settings
         Delay(1)
     }
     failSafe := A_TickCount
@@ -3686,11 +3718,11 @@ DoTutorial() {
         if (FindOrLoseImage(120, 70, 150, 95, , "SwipeUp", 0, failSafeTime)){
             if(setSpeed > 1) {
                 if(setSpeed = 3)
-                    FindImageAndClick(182, 303, 194, 323, , "Three", 187, 313) ; click mod settings
+                    FindImageAndClick(ModSets.threeX1, ModSets.threeY1, ModSets.threeX2, ModSets.threeY2, , ModSets.threeName, ModSets.threeCX, ModSets.threeCY) ; click mod settings
                 else
-                    FindImageAndClick(100, 303, 113, 323, , "Two", 107, 313) ; click mod settings
+                    FindImageAndClick(ModSets.twoX1, ModSets.twoY1, ModSets.twoX2, ModSets.twoY2, , ModSets.twoName, ModSets.twoCX, ModSets.twoCY) ; click mod settings
             }
-            adbClick_wbb(41, 366)
+            adbClick_wbb(41, ModSets.adbY)
             break
         }
         failSafeTime := (A_TickCount - failSafe) // 1000
@@ -3744,9 +3776,9 @@ DoTutorial() {
 
     FindImageAndClick(225, 273, 235, 290, , "Pack", 239, 497) ;wait for pack to be ready  to Trace
     if(setSpeed > 1) {
-        FindImageAndClick(38, 290, 65, 302, , "Platin", 18, 109, 2000) ; click mod settings
-        FindImageAndClick(9, 303, 25, 323, , "One", 26, 313) ; click mod settings
-        ;adbClick_wbb(41, 366)
+        FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
+        FindImageAndClick(ModSets.oneX1, ModSets.oneY1, ModSets.oneX2, ModSets.oneY2, , ModSets.oneName, ModSets.oneCX, ModSets.oneCY) ; click mod settings
+        ;adbClick_wbb(41, ModSets.adbY)
         ;Delay(2)
     }
     failSafe := A_TickCount
@@ -3756,13 +3788,13 @@ DoTutorial() {
         Sleep, 10
         if (FindOrLoseImage(225, 273, 235, 290, , "Pack", 1, failSafeTime)){
             if(setSpeed > 1) {
-                ;FindImageAndClick(38, 290, 65, 302, , "Platin", 18, 109, 2000) ; click mod settings
+                ;FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
                 if(setSpeed = 3)
-                    FindImageAndClick(182, 303, 194, 323, , "Three", 187, 313) ; click mod settings
+                    FindImageAndClick(ModSets.threeX1, ModSets.threeY1, ModSets.threeX2, ModSets.threeY2, , ModSets.threeName, ModSets.threeCX, ModSets.threeCY) ; click mod settings
                 else
-                    FindImageAndClick(100, 303, 113, 323, , "Two", 107, 313) ; click mod settings
+                    FindImageAndClick(ModSets.twoX1, ModSets.twoY1, ModSets.twoX2, ModSets.twoY2, , ModSets.twoName, ModSets.twoCX, ModSets.twoCY) ; click mod settings
             }
-            adbClick_wbb(41, 366)
+            adbClick_wbb(41, ModSets.adbY)
             break
         }
         failSafeTime := (A_TickCount - failSafe) // 1000
@@ -3873,7 +3905,7 @@ SelectPack(HG := false) {
     2PackExpansionRight := 20
 
     inselectexpansionscreen := 0
-
+    
     packy := HomeScreenAllPackY
     if (openPack == "MegaGyarados") {
         packx := LeftPackX
@@ -3914,6 +3946,10 @@ SelectPack(HG := false) {
 				}
                 if(FindOrLoseImage(20, 191, 36, 211, , "Update", 0)) {
                     adbClick_wbb(137, 485)
+                }
+                if(FindOrLoseImage(133, 479, 147, 493, , "noticex", 0)){
+                    adbClick_wbb(137, 485)
+                    Delay(3)
                 }
             }
 
@@ -3973,34 +4009,36 @@ SelectPack(HG := false) {
         adbClick(61, 472)
         Delay(1)
         FindImageAndClick(250, 405, 267, 421, , "Apacks", 164, 465, sleepTime)
-        Delay(10)
+        Delay(20)
         adbSwipe("135 400 135 200 200")
         Delay(10)
         if (openPack == "Suicune" || openPack == "HoOh" || openPack == "Lugia" || openPack == "Eevee" || openPack = "Deluxe") {
             ; No swipe, top row
             if (openPack == "Deluxe"){
                 packy := SelectExpansionSecondRowY
-                packx := SelectExpansionRightCollumnMiddleX
-                openPack := "Eevee"
+                packx := SelectExpansionRightCollumnMiddle
+		        openPack == "eevee"
             } else if (openPack == "Suicune") {
                 packy := SelectExpansionFirstRowY
                 packx := SelectExpansionRightCollumnMiddleX
             } else if (openPack == "HoOh") {
-                packy := SelectExpansionFirstRowY
+                packy := SelectExpansionSecondRowY
                 packx := SelectExpansionLeftCollumnMiddleX + 2PackExpansionLeft
             } else if (openPack == "Lugia") {
-                packy := SelectExpansionFirstRowY
+                packy := SelectExpansionSecondRowY
                 packx := SelectExpansionLeftCollumnMiddleX + 2PackExpansionRight
             } else if (openPack == "Eevee") {
                 packy := SelectExpansionSecondRowY
                 packx := SelectExpansionRightCollumnMiddleX
             } 
 
-        } else if(openPack == "Dialga" || openPack == "Palkia" || openPack == "Mew" || openPack == "Eevee" || openPack = "Charizard" || openPack == "Mewtwo" || openPack == "Pikachu" ){
-            adbSwipe("135 500 135 30 500")
-            Delay(5)
-            adbSwipe("135 500 135 30 500")
-            Delay(5)
+        } else if(openPack == "Dialga" || openPack == "Palkia" || openPack == "Mew" || openPack = "Charizard" || openPack == "Mewtwo" || openPack == "Pikachu" ){
+            loop {
+                adbSwipe("135 500 135 30 500")
+                if(FindOrLoseImage(196, 381, 208, 396, , "selectpackempty", 0))
+                    break
+                Delay(5)
+            }
             if (openPack = "Dialga") {
                 packy := SelectExpansionFirstRowY
                 packx := SelectExpansionLeftCollumnMiddleX + 2PackExpansionLeft
@@ -4021,30 +4059,48 @@ SelectPack(HG := false) {
                 packx := SelectExpansionLeftCollumnMiddleX + 3PackExpansionRight
             }
 
+        } else if (openPack = "Shining" || openPack = "Arceus" ){
+            loop {
+                adbSwipe("135 500 135 30 500")
+                Delay(5)
+                if(FindOrLoseImage(196, 381, 208, 396, , "selectpackempty", 0))
+                    break
+            }
+            Delay(8)
+            adbSwipe("135 300 135 450 2000")
+            Delay(5)
+            ninemodPackPosY := 0
+            if(NineModStatus){
+                adbSwipe("135 360 135 450 2000")
+            }
+            if (openPack = "Shining") {
+                packy := SelectExpansionFirstRowY - 20
+                packx := SelectExpansionLeftCollumnMiddleX
+            } else if (openPack = "Arceus") {
+                packy := SelectExpansionFirstRowY - 20 
+                packx := SelectExpansionRightCollumnMiddleX
+            }
         } else {
             adbSwipe("135 400 135 175 2000")
             Delay(5)
-            adbSwipe("135 400 135 175 2000")
-            Delay(10)
+            if(NineModStatus){
+                adbSwipe("135 400 135 350 2000")
+                Delay(5)
+            }
             if (openPack = "Buzzwole") {
-                packy := SelectExpansionFirstRowY
+                packy := SelectExpansionSecondRowY - 30
                 packx := SelectExpansionLeftCollumnMiddleX
             }  else if (openPack = "Solgaleo") {
-                packy := SelectExpansionFirstRowY
+                packy := SelectExpansionSecondRowY - 30 
                 packx := SelectExpansionRightCollumnMiddleX + 2PackExpansionLeft
             }  else if (openPack = "Lunala") {
-                packy := SelectExpansionFirstRowY
+                packy := SelectExpansionSecondRowY - 30 
                 packx := SelectExpansionRightCollumnMiddleX + 2PackExpansionRight
-            } else if (openPack = "Shining") {
-                packy := SelectExpansionSecondRowY
-                packx := SelectExpansionLeftCollumnMiddleX
-            } else if (openPack = "Arceus") {
-                packy := SelectExpansionSecondRowY
-                packx := SelectExpansionRightCollumnMiddleX
-            } 
+            }
         }
 
-        FindImageAndClick(233, 400, 264, 428, , "Points", packx, packy, , 10)
+        FindImageAndClick(233, 400, 264, 428, , "Points", packx, packy, , 200)
+        IniWrite, %openPack%, %A_ScriptDir%\%scriptName%.ini, UserSettings, Pack
     }
 
     if(HG = "First" && injectMethod && loadedAccount && !accountHasPackInfo) {
@@ -4130,8 +4186,8 @@ PackOpening() {
     }
 
     if(setSpeed > 1) {
-        FindImageAndClick(38, 290, 65, 302, , "Platin", 18, 109, 2000) ; click mod settings
-        FindImageAndClick(9, 303, 25, 323, , "One", 26, 313) ; click mod settings
+        FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
+        FindImageAndClick(ModSets.oneX1, ModSets.oneY1, ModSets.oneX2, ModSets.oneY2, , ModSets.oneName, ModSets.oneCX, ModSets.oneCY) ; click mod settings
         ;adbClick_wbb(41, 366)
         ;Delay(2)
     }
@@ -4144,11 +4200,11 @@ PackOpening() {
             ;FindImageAndClick(38, 290, 65, 302, , "Platin", 18, 109, 2000) ; click mod settings
             if(setSpeed > 1) {
                 if(setSpeed = 3)
-                    FindImageAndClick(182, 303, 194, 323, , "Three", 187, 313) ; click mod settings
+                    FindImageAndClick(ModSets.threeX1, ModSets.threeY1, ModSets.threeX2, ModSets.threeY2, , ModSets.threeName, ModSets.threeCX, ModSets.threeCY)  ; click mod settings
                 else
-                    FindImageAndClick(100, 303, 113, 323, , "Two", 107, 313) ; click mod settings
+                    FindImageAndClick(ModSets.twoX1, ModSets.twoY1, ModSets.twoX2, ModSets.twoY2, , ModSets.twoName, ModSets.twoCX, ModSets.twoCY)  ; click mod settings
             }
-            adbClick_wbb(41, 366)
+            adbClick_wbb(41, ModSets.adbY)
             break
         }
         failSafeTime := (A_TickCount - failSafe) // 1000
@@ -4285,9 +4341,9 @@ HourglassOpening(HG := false, NEIRestart := true) {
     }
 
     if(setSpeed > 1) {
-        FindImageAndClick(38, 290, 65, 302, , "Platin", 18, 109, 2000) ; click mod settings
-        FindImageAndClick(9, 303, 25, 323, , "One", 26, 313) ; click mod settings
-        ;adbClick_wbb(41, 366)
+        FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
+        FindImageAndClick(ModSets.oneX1, ModSets.oneY1, ModSets.oneX2, ModSets.oneY2, , ModSets.oneName, ModSets.oneCX, ModSets.oneCY) ; click mod settings
+        ;adbClick_wbb(41, ModSets.adbY)
         ;Delay(2)
     }
     failSafe := A_TickCount
@@ -4297,13 +4353,14 @@ HourglassOpening(HG := false, NEIRestart := true) {
         Sleep, 10
         if (FindOrLoseImage(225, 273, 235, 290, , "Pack", 1, failSafeTime)){
             if(setSpeed > 1) {
-                ;FindImageAndClick(38, 290, 65, 302, , "Platin", 18, 109, 2000) ; click mod settings
+                ;FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
                 if(setSpeed = 3)
-                    FindImageAndClick(182, 303, 194, 323, , "Three", 187, 313) ; click mod settings
+                    FindImageAndClick(ModSets.threeX1, ModSets.threeY1, ModSets.threeX2, ModSets.threeY2, , ModSets.threeName, ModSets.threeCX, ModSets.threeCY) ; click mod settings
                 else
-                    FindImageAndClick(100, 303, 113, 323, , "Two", 107, 313) ; click mod settings
+                    FindImageAndClick(ModSets.twoX1, ModSets.twoY1, ModSets.twoX2, ModSets.twoY2, , ModSets.twoName, ModSets.twoCX, ModSets.twoCY) ; click mod settings
             }
-            adbClick_wbb(41, 366)
+            Delay(1)
+            adbClick_wbb(41, ModSets.adbY)
             break
         }
         failSafeTime := (A_TickCount - failSafe) // 1000
@@ -4815,6 +4872,10 @@ DoWonderPickOnly() {
             }
             if(FindOrLoseImage(160, 330, 200, 370, , "Card", 0, failSafeTime))
                 break
+            else if(FindOrLoseImage(133, 479, 147, 493, , "noticex", 0)){
+                Delay(3)
+                adbClick_wbb(137, 485)
+            }
         }
         Delay(1)
         failSafeTime := (A_TickCount - failSafe) // 1000
@@ -5046,6 +5107,7 @@ SpendAllHourglass() {
 
 ; For Bonus Week
 GetEventRewards(frommain := true){
+ 
     adbSwipeX3 := Round(211 / 277 * 535)
     adbSwipeX4 := Round(11 / 277 * 535)
     adbSwipeY2 := Round((453 - 44) / 489 * 960)
@@ -5093,7 +5155,15 @@ GetEventRewards(frommain := true){
 
 GetAllRewards(tomain := true, dailies := false) {
     ;FindImageAndClick(2, 85, 34, 120, , "Missions", 261, 478, 500)
-    FindImageAndClick(175, 490, 198, 515, , "Missions2", 261, 478, 500)
+    loop{
+        if(FindOrLoseImage(175, 490, 198, 515, , "Missions2", 0))
+            break
+        else if(FindOrLoseImage(133, 479, 147, 493, , "noticex", 0)){
+            Delay(3)
+            adbClick_wbb(137, 485)
+        }
+        adbClick_wbb(261, 478)
+    }
     FindImageAndClick(244, 406, 273, 449, , "GotAllMissions", 172, 427, 500)
     failSafe := A_TickCount
     failSafeTime := 0
@@ -5583,6 +5653,287 @@ isMuMuv5(){
     return false
 }
 
+checkfolderscript(){
+    GoToMain()
+    loop {
+        adbClick_wbb(139, 82)
+        if(FindOrLoseImage(209,277,224,292, , "playerrenamepencilicon", 0))
+            break
+        else if(FindOrLoseImage(133, 479, 147, 493, , "noticex", 0)){
+            Delay(10)
+            adbClick_wbb(137, 485)
+        }
+        Delay(3)
+    }
+    Delay(3)
+    FindImageAndClick(249,70,260,82, , "profilecopyidbutton", 259, 79)
+    Delay(3)
+    adbClick_wbb(259, 79)
+    userFriendCode := Clipboard
+    Delay(5)
+
+
+    ;fcScreenshotFile := Screenshot("userProfile","temp")  
+
+    GoToMain()
+    FindImageAndClick(153, 176, 174, 199, , "infolder", 89, 518, sleepTime)
+    Delay(10)
+    adbSwipe("35 300 35 500 500")
+    Delay(1)
+    loop{
+        adbClick_wbb(243, 189)
+        Delay(1)
+        if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
+            break
+        else if (FindOrLoseImage(103, 65, 118, 80, , "CardLN", 0, failSafeTime)){
+            adbClick_wbb(138, 510)
+            Delay(1)
+        }
+        else if (FindOrLoseImage(13, 125, 48, 155, , "folderfind",0, failSafeTime))
+            break
+        adbClick_wbb(154, 436)
+        Delay(1)
+        adbClick_wbb(160, 472)
+        Delay(1)
+    }
+    loop{
+        adbClick_wbb(243, 189)
+        Delay(1)
+        if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
+            break
+        else if (FindOrLoseImage(103, 65, 118, 80, , "CardLN", 0, failSafeTime)){
+            adbClick_wbb(138, 510)
+            Delay(1)
+        }
+        else if (FindOrLoseImage(13, 125, 48, 155, , "folderfind",0, failSafeTime))
+            break
+        adbClick_wbb(154, 436)
+        Delay(1)
+        adbClick_wbb(160, 472)
+        Delay(1)
+    }
+    loop{
+        adbClick_wbb(243, 189)
+        Delay(1)
+        if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
+            break
+        else if (FindOrLoseImage(103, 65, 118, 80, , "CardLN", 0, failSafeTime)){
+            adbClick_wbb(138, 510)
+            Delay(1)
+        }
+        else if (FindOrLoseImage(13, 125, 48, 155, , "folderfind",0, failSafeTime))
+            break
+        adbClick_wbb(154, 436)
+        Delay(1)
+        adbClick_wbb(160, 472)
+        Delay(1)
+    }
+    loop{
+        adbClick_wbb(243, 189)
+        Delay(1)
+        if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
+            break
+        else if (FindOrLoseImage(103, 65, 118, 80, , "CardLN", 0, failSafeTime)){
+            adbClick_wbb(138, 510)
+            Delay(1)
+        }
+        else if (FindOrLoseImage(13, 125, 48, 155, , "folderfind",0, failSafeTime))
+            break
+        adbClick_wbb(154, 436)
+        Delay(1)
+        adbClick_wbb(160, 472)
+        Delay(1)
+    }
+    loop{
+        adbClick_wbb(243, 189)
+        Delay(1)
+        if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
+            break
+        else if (FindOrLoseImage(103, 65, 118, 80, , "CardLN", 0, failSafeTime)){
+            adbClick_wbb(138, 510)
+            Delay(1)
+        }
+        else if (FindOrLoseImage(13, 125, 48, 155, , "folderfind",0, failSafeTime))
+            break
+        adbClick_wbb(154, 436)
+        Delay(1)
+        adbClick_wbb(160, 472)
+        Delay(1)
+    }
+    foldercount := 0
+    loop{
+        adbSwipe("35 300 35 500 500")
+        if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
+            break
+        else
+            foldercount += 1
+
+        if(foldercount > 10){
+            adbClick_wbb(154, 436)
+            foldercount := 0
+        }
+        Delay(2)
+    }
+    
+    loop{
+        adbClick_wbb(243, 189)
+        if(FindOrLoseImage(13, 125, 48, 155, , "folderfind", 0, failSafeTime))
+            break
+        Delay(1)
+    }
+
+    IniRead, folderNO, %A_ScriptDir%\..\Settings.ini, UserSettings, folderNO
+    folderNO += 1
+    IniWrite, %folderNO%, %A_ScriptDir%\..\Settings.ini, UserSettings, folderNO
+    ScreenshotFile := Screenshot("stardusts","temp")
+    Delay(5)
+    adbClick_wbb(222, 391)
+    Delay(3)
+    adbClick_wbb(222, 391)
+    Delay(3)
+    adbSwipe("35 400 35 335 2000")
+    Delay(2)
+    adbClick_wbb(111, 424)
+    Delay(2)
+    adbClick_wbb(111, 464)
+    Delay(8)
+
+    adbSwipe("35 400 35 200 500")
+    Delay(1)
+
+    ScreenshotFile2 := Screenshot("Folder_1","Folder")
+    Delay(1)
+    adbSwipe("35 500 35 35 500")
+    Delay(3)
+    adbSwipe("35 400 35 35 500")
+    Delay(3)
+    ScreenshotFile3 := Screenshot("Folder_2","Folder")
+    Delay(5)
+    adbSwipe("35 35 35 500 1000")
+    Delay(2)
+    adbSwipe("35 300 35 500 500")
+    Delay(2)
+    adbSwipe("35 300 35 500 500")
+    Delay(2)
+    loop{
+        adbSwipe("35 300 35 500 500")
+        if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
+            break
+        Delay(1)
+    }
+    loop{
+        adbClick_wbb(243, 189)
+        if(FindOrLoseImage(13, 125, 48, 155, , "folderfind", 0, failSafeTime)){
+            break
+        }
+        Delay(1)
+    }
+    Delay(3)
+    adbClick_wbb(222, 391)
+    Delay(3)
+    adbClick_wbb(222, 391)
+    Delay(3)
+    adbClick_wbb(51, 494)
+    Delay(3)
+    adbClick_wbb(111, 464)
+    Delay(2)
+    adbSwipe("35 400 35 200 500")
+    Delay(2)
+    adbSwipe("35 400 35 200 500")
+    Delay(2)
+    ScreenshotFile4 := Screenshot("Folder_3","Folder")
+    accountFullPath := ""
+    accountFile := saveAccount("Folder", accountFullPath, packDetailsFile)
+    discordMessage := FolderNO . "\nFile Name : " . accountFile . " FC : " . userFriendCode 
+    
+    LogToDiscord(discordMessage, ScreenshotFile, True, , , folderWebhookURL, s4tDiscordUserId)
+    LogToDiscord("", ScreenshotFile2, False, (s4tSendAccountXml ? accountFullPath : ""), ScreenshotFile3, folderWebhookURL, s4tDiscordUserId, ScreenshotFile4)   
+}
+
+changeLNscript(){
+    failSafe := A_TickCount
+    failSafeTime := 0
+    ; Click for hamburger menu and wait for profile
+    Loop {
+        adbClick_wbb(140, 203) ;
+        Delay(1)
+        if(FindOrLoseImage(233, 400, 264, 428, , "Points", 0, failSafeTime)) {
+            break
+        }else if(!renew && !getFC) {
+            if(FindOrLoseImage(241, 377, 269, 407, , "closeduringpack", 0)) {
+                adbClick_wbb(139, 371)
+            }
+            if(FindOrLoseImage(133, 479, 147, 493, , "noticex", 0)){
+                adbClick_wbb(137, 485)
+                Delay(3)
+            }
+        }else if(FindOrLoseImage(175, 165, 255, 235, , "Hourglass3", 0)) {
+            ;TODO hourglass tutorial still broken after injection
+            Delay(3)
+            adbClick_wbb(146, 441) ; 146 440
+            Delay(3)
+            adbClick_wbb(146, 441)
+            Delay(3)
+            adbClick_wbb(146, 441)
+            Delay(3)
+
+            FindImageAndClick(98, 184, 151, 224, , "Hourglass1", 168, 438, 500, 5) ;stop at hourglasses tutorial 2
+            Delay(1)
+
+            adbClick_wbb(203, 436) ; 203 436
+            FindImageAndClick(236, 198, 266, 226, , "Hourglass2", 180, 436, 500) ;stop at hourglasses tutorial 2 180 to 203?
+        }else if(FindOrLoseImage(81, 351, 101, 391, , "titleok", 0, failSafeTime)){
+            adbClick_wbb(141, 370)
+            Delay(3)
+        }
+        failSafeTime := (A_TickCount - failSafe) // 1000
+        CreateStatusMessage("Waiting for Points`n(" . failSafeTime . "/90 seconds)")
+    }
+    FindImageAndClick(230, 120, 260, 150, , "UserProfile", 240, 499 , 500)
+    Delay(1)
+    FindImageAndClick(26, 162, 47, 185, , "Settings2", 134, 442, sleepTime)
+    Delay(3)
+    adbClick_wbb(145,176)
+    Delay(3)
+    loop {
+        if(FindOrLoseImage(176, 250, 200, 270, , "volume", 0, failSafeTime))
+            break
+    }
+    Delay(15)
+    adbSwipe_wbb("135 400 135 200 200")
+    Delay(10)
+    adbSwipe_wbb("135 400 135 200 2000")
+    Delay(10)
+    adbSwipe_wbb("135 400 135 200 1500")
+    Delay(15)
+    
+    LNcount := 0
+    Loop{
+        if(FindOrLoseImage(115, 130, 161, 146, , "LNEnglish", 0, failSafeTime))
+            Break
+        else if(FindOrLoseImage(115, 131, 161, 145, , "LNEnglish2", 0, failSafeTime))
+            Break
+        else if(LNcount > 10){
+            Delay(10)
+            adbSwipe_wbb("135 400 135 350 1500")
+            Delay(10)
+            LNcount := 0
+        }
+        adbClick_wbb(35,520)
+        Delay(3)
+        adbClick_wbb(35,499)
+        Delay(3)
+        adbClick_wbb(35,489)
+        Delay(3)
+        LNcount += 1
+    }
+    FindImageAndClick(115, 131, 161, 145, , "LNEnglish2", 220, 141, sleepTime)
+    Delay(5)
+    adbclick_wbb(220, changeLNposY)
+    Delay(3)
+    adbClick_wbb(137, 485)
+}
+
 FirstAnnivCountdown() {
     adbSwipeX3 := Round(211 / 277 * 535)
     adbSwipeX4 := Round(11 / 277 * 535)
@@ -5602,7 +5953,7 @@ FirstAnnivCountdown() {
         Delay(1)
     }
     adbClick_wbb(130, 465)
-	sleep, 1000
+    sleep, 1000
     failSafe := A_TickCount
     failSafeTime := 0
     Loop{
@@ -5623,6 +5974,5 @@ FirstAnnivCountdown() {
     }
     
     AnnivCountdownDone := 1
-	;setMetaData()
+    ;setMetaData()
 }
-
