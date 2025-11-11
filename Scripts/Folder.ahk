@@ -57,7 +57,7 @@ IniRead, tesseractPath, %A_ScriptDir%\..\Settings.ini, UserSettings, tesseractPa
 IniRead, autoUseGPTest, %A_ScriptDir%\..\Settings.ini, UserSettings, autoUseGPTest, 0
 IniRead, TestTime, %A_ScriptDir%\..\Settings.ini, UserSettings, TestTime, 3600
 IniRead, captureWebhookURL, %A_ScriptDir%\..\Settings.ini, UserSettings, captureWebhookURL, ""
-IniRead, folderPosX, %A_ScriptDir%\..\Settings.ini, UserSettings, folderPosX, 2
+IniRead, folderPosX, %A_ScriptDir%\..\Settings.ini, UserSettings, folderPosX, 0
 global fileDir, selectedFilePath, fileName, FDaddfriend, FDwishlist
 global MuMuv5
 MuMuv5 := isMuMuv5()
@@ -342,7 +342,7 @@ resetWindows(){
             scaleParam := 275 + 4 * 2
             rowHeight :=  titleHeight + 489 + 4  ; Adjust the height of each row
             currentRow := Floor((instanceIndex - 1) / Columns)
-            y := MonitorTop + (currentRow * rowHeight) + (currentRow * rowGap)
+            y := MonitorTop + (currentRow * rowHeight) + (currentRow * 100)
             x := MonitorLeft + (Mod((instanceIndex - 1), Columns) * (scaleParam - borderWidth * 2)) - borderWidth
             WinMove, %Title%, , %x%, %y%, %scaleParam%, %rowHeight%
             break
