@@ -231,7 +231,6 @@ NineModConfig.oneY2 := 190
 NineModConfig.oneCX := 26
 NineModConfig.oneCY := 180
 
-NineModConfig.twoName := "Two9"
 NineModConfig.twoX1 := 100
 NineModConfig.twoY1 := 170
 NineModConfig.twoX2 := 113
@@ -4018,9 +4017,9 @@ SelectPack(HG := false) {
         adbClick(61, 472)
         Delay(1)
         FindImageAndClick(250, 405, 267, 421, , "Apacks", 164, 465, sleepTime)
-        Delay(20)
+        Delay(8)
         adbSwipe("135 400 135 200 200")
-        Delay(10)
+        Delay(8)
         if (openPack == "Suicune" || openPack == "HoOh" || openPack == "Lugia" || openPack == "Eevee" || openPack = "Deluxe") {
             ; No swipe, top row
             if (openPack == "Deluxe"){
@@ -4044,10 +4043,13 @@ SelectPack(HG := false) {
         } else if(openPack == "Dialga" || openPack == "Palkia" || openPack == "Mew" || openPack = "Charizard" || openPack == "Mewtwo" || openPack == "Pikachu" ){
             loop {
                 adbSwipe("135 500 135 30 500")
+                Delay(3)
+                adbSwipe("135 500 135 30 500")
                 if(FindOrLoseImage(196, 381, 208, 396, , "selectpackempty", 0))
                     break
                 Delay(5)
             }
+            Delay(5)
             if (openPack = "Dialga") {
                 packy := SelectExpansionFirstRowY
                 packx := SelectExpansionLeftCollumnMiddleX + 2PackExpansionLeft
@@ -4071,9 +4073,11 @@ SelectPack(HG := false) {
         } else if (openPack = "Shining" || openPack = "Arceus" ){
             loop {
                 adbSwipe("135 500 135 30 500")
-                Delay(5)
+                Delay(3)
+                adbSwipe("135 500 135 30 500")
                 if(FindOrLoseImage(196, 381, 208, 396, , "selectpackempty", 0))
                     break
+                Delay(5)
             }
             Delay(8)
             adbSwipe("135 300 135 450 2000")
@@ -4097,13 +4101,13 @@ SelectPack(HG := false) {
                 Delay(5)
             }
             if (openPack = "Buzzwole") {
-                packy := SelectExpansionSecondRowY - 30
+                packy := SelectExpansionSecondRowY - 12
                 packx := SelectExpansionLeftCollumnMiddleX
             }  else if (openPack = "Solgaleo") {
-                packy := SelectExpansionSecondRowY - 30 
+                packy := SelectExpansionSecondRowY - 12 
                 packx := SelectExpansionRightCollumnMiddleX + 2PackExpansionLeft
             }  else if (openPack = "Lunala") {
-                packy := SelectExpansionSecondRowY - 30 
+                packy := SelectExpansionSecondRowY - 12 
                 packx := SelectExpansionRightCollumnMiddleX + 2PackExpansionRight
             }
         }
