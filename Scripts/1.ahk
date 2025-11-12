@@ -267,6 +267,7 @@ if (NineModStatus) {
 }
 else 
     ModSets := PlatinConfig
+    swipeSpeed := slowMotion ? 600 : 300
 
 if(heartBeat)
     IniWrite, 1, %A_ScriptDir%\..\HeartBeat.ini, HeartBeat, Instance%scriptName%
@@ -4078,7 +4079,7 @@ SelectPack(HG := false) {
             adbSwipe("135 300 135 450 2000")
             Delay(5)
             ninemodPackPosY := 0
-            if(NineModStatus){
+            if(!slowMotion){
                 adbSwipe("135 360 135 450 2000")
             }
             if (openPack = "Shining") {
@@ -4091,7 +4092,7 @@ SelectPack(HG := false) {
         } else {
             adbSwipe("135 400 135 175 2000")
             Delay(5)
-            if(NineModStatus){
+            if(!slowMotion){
                 adbSwipe("135 400 135 350 2000")
                 Delay(5)
             }
