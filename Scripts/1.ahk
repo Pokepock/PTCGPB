@@ -181,37 +181,37 @@ shinyPacks := {"Shining": 1, "Solgaleo": 1, "Lunala": 1, "Buzzwole": 1, "Eevee":
 PlatinConfig := {}
 PlatinConfig.menuName := "Platin"
 PlatinConfig.menuX1 := 38
-PlatinConfig.menuY1 := 290
+PlatinConfig.menuY1 := 145
 PlatinConfig.menuX2 := 65
-PlatinConfig.menuY2 := 302
+PlatinConfig.menuY2 := 170
 PlatinConfig.menuCX := 18
 PlatinConfig.menuCY := 109
 
 PlatinConfig.oneName := "One"
 PlatinConfig.oneX1 := 9
-PlatinConfig.oneY1 := 303
+PlatinConfig.oneY1 := 170
 PlatinConfig.oneX2 := 25
-PlatinConfig.oneY2 := 323
+PlatinConfig.oneY2 := 190
 PlatinConfig.oneCX := 26
-PlatinConfig.oneCY := 313
+PlatinConfig.oneCY := 180
 
 PlatinConfig.twoName := "Two"
 PlatinConfig.twoX1 := 100
-PlatinConfig.twoY1 := 303
+PlatinConfig.twoY1 := 170
 PlatinConfig.twoX2 := 113
-PlatinConfig.twoY2 := 323
+PlatinConfig.twoY2 := 190
 PlatinConfig.twoCX := 107
-PlatinConfig.twoCY := 313
+PlatinConfig.twoCY := 180
 
 PlatinConfig.threeName := "Three"
 PlatinConfig.threeX1 := 182
-PlatinConfig.threeY1 := 303
+PlatinConfig.threeY1 := 170
 PlatinConfig.threeX2 := 194
-PlatinConfig.threeY2 := 323
+PlatinConfig.threeY2 := 190
 PlatinConfig.threeCX := 187
-PlatinConfig.threeCY := 313
+PlatinConfig.threeCY := 180
 
-PlatinConfig.adbY := 366
+PlatinConfig.adbY := 296
 
 ; NineMod Config
 NineModConfig := {}
