@@ -69,7 +69,7 @@ dbg_bbox_click :=0
 
 global newPlayerName, renameMode, renameAndSaveAndReload, targetUsername, renameXML, renameOcrText, renameXMLwithFC, userFriendCode
 global ChangeLNMode, targetLN, Checkfolder, sendAccountXml, folderWebhookURL, folderNO
-global ModSets, NineModStatus, indivPackMode
+global ModSets, NineModStatus, indivPackMode, changeLNposY
 
 scriptName := StrReplace(A_ScriptName, ".ahk")
 winTitle := scriptName
@@ -5697,140 +5697,31 @@ checkfolderscript(){
     GoToMain()
     FindImageAndClick(153, 176, 174, 199, , "infolder", 89, 518, sleepTime)
     Delay(10)
-    adbSwipe("35 250 35 500 400")
-    Delay(1)
-    failSafe := A_TickCount
-    failSafeTime := 0
-    loop{
-        adbClick_wbb(243, 189)
-        Delay(1)
-        if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
-            break
-        else if (FindOrLoseImage(103, 65, 118, 80, , "CardLN", 0, failSafeTime)){
-            adbClick_wbb(138, 510)
-            Delay(1)
-        }
-        else if (FindOrLoseImage(13, 125, 48, 155, , "folderfind",0, failSafeTime))
-            break
-        adbClick_wbb(154, 436)
-        Delay(1)
-        adbClick_wbb(160, 472)
-        Delay(1)
-        failSafeTime := (A_TickCount - failSafe) // 1000
-        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
-    }
-    failSafe := A_TickCount
-    failSafeTime := 0
-    loop{
-        adbClick_wbb(243, 189)
-        Delay(1)
-        if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
-            break
-        else if (FindOrLoseImage(103, 65, 118, 80, , "CardLN", 0, failSafeTime)){
-            adbClick_wbb(138, 510)
-            Delay(1)
-        }
-        else if (FindOrLoseImage(13, 125, 48, 155, , "folderfind",0, failSafeTime))
-            break
-        adbClick_wbb(154, 436)
-        Delay(1)
-        adbClick_wbb(160, 472)
-        Delay(1)
-        failSafeTime := (A_TickCount - failSafe) // 1000
-        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
-    }
-    failSafe := A_TickCount
-    failSafeTime := 0
-    loop{
-        adbClick_wbb(243, 189)
-        Delay(1)
-        if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
-            break
-        else if (FindOrLoseImage(103, 65, 118, 80, , "CardLN", 0, failSafeTime)){
-            adbClick_wbb(138, 510)
-            Delay(1)
-        }
-        else if (FindOrLoseImage(13, 125, 48, 155, , "folderfind",0, failSafeTime))
-            break
-        adbClick_wbb(154, 436)
-        Delay(1)
-        adbClick_wbb(160, 472)
-        Delay(1)
-        failSafeTime := (A_TickCount - failSafe) // 1000
-        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
-    }
-    failSafe := A_TickCount
-    failSafeTime := 0
-    loop{
-        adbClick_wbb(243, 189)
-        Delay(1)
-        if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
-            break
-        else if (FindOrLoseImage(103, 65, 118, 80, , "CardLN", 0, failSafeTime)){
-            adbClick_wbb(138, 510)
-            Delay(1)
-        }
-        else if (FindOrLoseImage(13, 125, 48, 155, , "folderfind",0, failSafeTime))
-            break
-        adbClick_wbb(154, 436)
-        Delay(1)
-        adbClick_wbb(160, 472)
-        Delay(1)
-        failSafeTime := (A_TickCount - failSafe) // 1000
-        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
-    }
-    failSafe := A_TickCount
-    failSafeTime := 0
-    loop{
-        adbClick_wbb(243, 189)
-        Delay(1)
-        if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
-            break
-        else if (FindOrLoseImage(103, 65, 118, 80, , "CardLN", 0, failSafeTime)){
-            adbClick_wbb(138, 510)
-            Delay(1)
-        }
-        else if (FindOrLoseImage(13, 125, 48, 155, , "folderfind",0, failSafeTime))
-            break
-        adbClick_wbb(154, 436)
-        Delay(1)
-        adbClick_wbb(160, 472)
-        Delay(1)
-        failSafeTime := (A_TickCount - failSafe) // 1000
-        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
-    }
-    failSafe := A_TickCount
-    failSafeTime := 0
-    foldercount := 0
-    loop{
-        adbSwipe("35 200 35 500 400")
-        if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
-            break
-        else
-            foldercount += 1
-        if(foldercount > 5){
-            adbClick_wbb(200, 110)
-            Delay(1)
-        }
-        else if(foldercount > 10){
-            adbClick_wbb(154, 436)
-            foldercount := 0
-        }
-        Delay(2)
-        failSafeTime := (A_TickCount - failSafe) // 1000
-        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
-    }
-    failSafe := A_TickCount
-    failSafeTime := 0
-    loop{
-        adbClick_wbb(243, 189)
-        if(FindOrLoseImage(13, 125, 48, 155, , "folderfind", 0, failSafeTime))
-            break
-        Delay(1)
-        failSafeTime := (A_TickCount - failSafe) // 1000
-    CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
-    }
 
+    failSafe := A_TickCount
+    failSafeTime := 0
+    loop{
+        if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
+            adbClick_wbb(243, 189)
+        else if (FindOrLoseImage(13, 125, 48, 155, , "folderfind",0, failSafeTime))
+            break
+        else if (FindOrLoseImage(103, 65, 118, 80, , "CardLN", 0, failSafeTime)){
+            adbClick_wbb(138, 510)
+            Delay(1)
+        } else if (FindOrLoseImage(7, 386, 20, 399, , "cardtutorial", 0, failSafeTime)){
+            adbClick_wbb(171, 439)
+            adbClick_wbb(194, 483)
+            Delay(1)
+        } else if (FindOrLoseImage(8, 285, 24, 305, , "cardtutorial2", 0, failSafeTime)){
+            adbClick_wbb(194, 483)
+            Delay(1)
+        } else
+            adbSwipe("35 250 35 500 400")
+        Delay(1)
+        failSafeTime := (A_TickCount - failSafe) // 1000
+        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
+    }
+    
     IniRead, folderNO, %A_ScriptDir%\..\Settings.ini, UserSettings, folderNO
     folderNO += 1
     IniWrite, %folderNO%, %A_ScriptDir%\..\Settings.ini, UserSettings, folderNO
@@ -6002,11 +5893,15 @@ changeLNscript(){
     }
     Delay(15)
     adbSwipe_wbb("135 400 135 200 200")
-    Delay(10)
+    Delay(8)
     adbSwipe_wbb("135 400 135 200 2000")
-    Delay(10)
+    Delay(8)
+    if(!slowMotion){
+        adbSwipe_wbb("135 400 135 200 2000")
+        Delay(8)
+    }
     adbSwipe_wbb("135 400 135 200 1500")
-    Delay(15)
+    Delay(8)
     
     LNcount := 0
     Loop{
@@ -6014,7 +5909,7 @@ changeLNscript(){
             Break
         else if(FindOrLoseImage(115, 131, 161, 145, , "LNEnglish2", 0, failSafeTime))
             Break
-        else if(LNcount > 10){
+        else if(LNcount > 5){
             Delay(10)
             adbSwipe_wbb("135 400 135 350 1500")
             Delay(10)
