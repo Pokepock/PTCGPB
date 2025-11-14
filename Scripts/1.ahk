@@ -173,7 +173,7 @@ IniRead, Checkfolder, %A_ScriptDir%\..\Settings.ini, UserSettings, Checkfolder, 
 IniRead, folderWebhookURL, %A_ScriptDir%\..\Settings.ini, UserSettings, folderWebhookURL
 IniRead, NineModStatus, %A_ScriptDir%\..\Settings.ini, UserSettings, NineMod, 0
 IniRead, indivPackMode, %A_ScriptDir%\..\Settings.ini, UserSettings, indivPackMode, 0
-IniRead, Dashboard, %A_ScriptDir%\..\Settings.ini, UserSettings, Dashboard, 0
+g
 
 
 MuMuv5 := isMuMuv5()
@@ -5820,7 +5820,7 @@ checkfolderscript(){
     accountFullPath := ""
     accountFile := saveAccount("Folder", accountFullPath, packDetailsFile)
     discordMessage := FolderNO . " Stardusts : " . stardustValue . "\nFile Name :" . accountFile . " FC : " . userFriendCode
-    LogToDCwithEmbed(discordMessage, ScreenshotFile2, True, (s4tSendAccountXml ? accountFullPath : ""), ScreenshotFile3, folderWebhookURL, s4tDiscordUserId, ScreenshotFile4, ScreenshotFile, true, FolderNO, stardustValue, userFriendCode)   
+    LogToDCwithEmbed(discordMessage, ScreenshotFile2, false, (s4tSendAccountXml ? accountFullPath : ""), ScreenshotFile3, folderWebhookURL, s4tDiscordUserId, ScreenshotFile4, ScreenshotFile, true, FolderNO, stardustValue, userFriendCode)   
     folderCheckDone := 1 
     setMetaData()
 
