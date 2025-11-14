@@ -68,7 +68,7 @@ dbg_bboxNpause :=0
 dbg_bbox_click :=0
 
 global newPlayerName, renameMode, renameAndSaveAndReload, targetUsername, renameXML, renameOcrText, renameXMLwithFC, userFriendCode
-global ChangeLNMode, targetLN, Checkfolder, sendAccountXml, folderWebhookURL, folderNO
+global ChangeLNMode, targetLN, Checkfolder, sendAccountXml, folderWebhookURL, folderNO, stardustValue
 global ModSets, NineModStatus, indivPackMode, changeLNposY
 
 scriptName := StrReplace(A_ScriptName, ".ahk")
@@ -173,6 +173,7 @@ IniRead, Checkfolder, %A_ScriptDir%\..\Settings.ini, UserSettings, Checkfolder, 
 IniRead, folderWebhookURL, %A_ScriptDir%\..\Settings.ini, UserSettings, folderWebhookURL
 IniRead, NineModStatus, %A_ScriptDir%\..\Settings.ini, UserSettings, NineMod, 0
 IniRead, indivPackMode, %A_ScriptDir%\..\Settings.ini, UserSettings, indivPackMode, 0
+
 
 MuMuv5 := isMuMuv5()
 pokemonList := ["Mewtwo", "Charizard", "Pikachu", "Mew", "Dialga", "Palkia", "Arceus", "Shining", "Solgaleo", "Lunala", "Buzzwole", "Eevee", "HoOh", "Lugia", "Suicune", "Deluxe", "MegaBlaziken", "MegaGyarados", "MegaAltaria"]
@@ -723,6 +724,7 @@ Loop {
         
             if (ChangeLNMode) 
                 changeLNscript()
+            
 
             if(deleteMethod = "5 Pack" || deleteMethod = "5 Pack (Fast)" || deleteMethod = "13 Pack")
                 wonderPicked := DoWonderPick()
@@ -893,12 +895,13 @@ Loop {
             ; Collect Daily Hourglasses - either separate setting? or will be currently part of openExtraPack
             if(deleteMethod = "Inject for Reroll" && openExtraPack) {
                 GoToMain(true)
-                GetAllRewards(false, true)         
+                GetAllRewards(false, true)
+                
             }
 			
 			; Bonus Week
             IniRead, claimBonusWeek, %A_ScriptDir%\..\Settings.ini, UserSettings, claimBonusWeek, 0
-            if (A_NowUTC > 20251019060000)
+            if (A_NowUTC > 20251116060000)
                 claimBonusWeek := 0
             if (claimBonusWeek = 1) {
 				if (!openExtraPack) {
@@ -2729,8 +2732,10 @@ saveAccount(file := "Valid", ByRef filePath := "", packDetails := "") {
         xmlFile := A_Now . "_" . winTitle . (packDetails ? "_" . packDetails : "") . "_" . packsInPool . "_packs.xml"
         filePath := saveDir . xmlFile
     } else if (file = "Folder") {
+        Date_MMDD := "" 
+        FormatTime, Date_MMDD, %A_Now%, MMdd
         saveDir := A_ScriptDir "\..\Accounts\Folders\"
-        xmlFile := folderNO . "_" . userFriendCode . "_" . winTitle . "_" . A_Now . ".xml"
+        xmlFile := folderNO . "_" . userFriendCode . "_" . stardustValue . "_" . Date_MMDD . ".xml"
         filePath := saveDir . xmlFile
     } else {
         saveDir := A_ScriptDir "\..\Accounts\SpecificCards\"
@@ -3041,24 +3046,26 @@ Screenshot(fileType := "Valid", subDir := "", ByRef fileName := "") {
 
     ; File path for saving the screenshot locally
     fileName := A_Now . "_" . winTitle . "_" . fileType . "_" . packsInPool . "_packs.png"
+    Date_MMDD := "" 
+    FormatTime, Date_MMDD, %A_Now%, MMdd
     if (filename = "PACKSTATS")
         fileName := "packstats_temp.png"
     yBias := titleHeight - 45
     pBitmapW := from_window(WinExist(winTitle))
     if (fileType = "stardusts"){
-        pBitmap := Gdip_CloneBitmapArea(pBitmapW, 180, 55 , 85, 30)
-        fileName := folderNO . "_" . userFriendCode . "_" . A_Now . "_stardusts.png"
+        pBitmap := Gdip_CloneBitmapArea(pBitmapW, 200, 55 , 45, 30)
+        fileName := folderNO . "_" . userFriendCode . "_" . stardustValue . "_" . Date_MMDD . "_stardusts.png"
     } else if (fileType = "userProfile"){
         pBitmap := Gdip_CloneBitmapArea(pBitmapW, 26, 54 , 246, 246)
     }else if (fileType = "Folder_1"){
         pBitmap := Gdip_CloneBitmapArea(pBitmapW, 3, 50 , 270, 449)
-        fileName := folderNO . "_" . userFriendCode . "_" . A_Now . "_1.png"
+        fileName := folderNO . "_" . userFriendCode . "_" . stardustValue . "_" . Date_MMDD . "_1.png"
     } else if (fileType = "Folder_2"){
         pBitmap := Gdip_CloneBitmapArea(pBitmapW, 3, 50 , 270, 449)
-        fileName := folderNO . "_" . userFriendCode . "_" . A_Now . "_2.png"
+        fileName := folderNO . "_" . userFriendCode . "_" . stardustValue . "_" . Date_MMDD . "_2.png"
     } else if (fileType = "Folder_3"){
         pBitmap := Gdip_CloneBitmapArea(pBitmapW, 3, 50 , 270, 449)
-        fileName := folderNO . "_" . userFriendCode . "_" . A_Now . "_3.png"
+        fileName := folderNO . "_" . userFriendCode . "_" . stardustValue . "_" . Date_MMDD . "_3.png"
     } else
         pBitmap := Gdip_CloneBitmapArea(pBitmapW, 18, 175+yBias, 240, 227)
     
@@ -5125,7 +5132,6 @@ SpendAllHourglass() {
 
 ; For Bonus Week
 GetEventRewards(frommain := true){
- 
     adbSwipeX3 := Round(211 / 277 * 535)
     adbSwipeX4 := Round(11 / 277 * 535)
     adbSwipeY2 := Round((453 - 44) / 489 * 960)
@@ -5150,7 +5156,9 @@ GetEventRewards(frommain := true){
         CreateStatusMessage("Waiting for Trace`n(" . failSafeTime . "/45 seconds)")
         Delay(1)
     }
-    adbClick_wbb(130, 465)
+    adbClick_wbb(10, 465)
+	sleep, 1000
+    adbClick_wbb(10, 465)
 	sleep, 1000
     failSafe := A_TickCount
     failSafeTime := 0
@@ -5703,7 +5711,10 @@ checkfolderscript(){
     loop{
         if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
             adbClick_wbb(243, 189)
-        else if (FindOrLoseImage(13, 125, 48, 155, , "folderfind",0, failSafeTime))
+        else if (FindOrLoseImage(133, 479, 147, 493, , "noticex", 0)){
+            adbClick_wbb(222, 485)
+            Delay(3)
+        } else if (FindOrLoseImage(13, 125, 48, 155, , "folderfind",0, failSafeTime))
             break
         else if (FindOrLoseImage(103, 65, 118, 80, , "CardLN", 0, failSafeTime)){
             adbClick_wbb(138, 510)
@@ -5726,6 +5737,21 @@ checkfolderscript(){
     folderNO += 1
     IniWrite, %folderNO%, %A_ScriptDir%\..\Settings.ini, UserSettings, folderNO
     ScreenshotFile := Screenshot("stardusts","temp")
+
+    stardustValue := "0(Fail)" 
+    allowedChars := "0123456789,"
+    validPattern := "^\d{1,3}(,\d{3})?$"
+
+    pTempBitmap := Gdip_CreateBitmapFromFile(ScreenshotFile)
+    Gdip_GetImageDimensions(pTempBitmap, imgW, imgH) 
+
+    if (RefinedOCRText(ScreenshotFile, 0, 0, imgW, imgH, allowedChars, validPattern, stardustValue)) {
+        stardustValue := StrReplace(stardustValue, ",", "")
+        LogToFile("OCR Success: " . stardustValue, "FolderCheck.txt")
+    } else 
+        LogToFile("OCR Failed, could not read stardusts.", "FolderCheck.txt")
+    
+
     Delay(5)
     adbClick_wbb(222, 391)
     Delay(3)
@@ -5792,13 +5818,20 @@ checkfolderscript(){
     ScreenshotFile4 := Screenshot("Folder_3","Folder")
     accountFullPath := ""
     accountFile := saveAccount("Folder", accountFullPath, packDetailsFile)
-    discordMessage := FolderNO . "\nFile Name : " . accountFile . " FC : " . userFriendCode 
-    
-    LogToDiscord(discordMessage, ScreenshotFile, True, , , folderWebhookURL, s4tDiscordUserId)
-    LogToDiscord("", ScreenshotFile2, False, (s4tSendAccountXml ? accountFullPath : ""), ScreenshotFile3, folderWebhookURL, s4tDiscordUserId, ScreenshotFile4)   
+    discordMessage := FolderNO . " Stardusts : " . stardustValue . "\nFile Name :" . accountFile . " FC : " . userFriendCode
+    LogToDCwithEmbed(discordMessage, ScreenshotFile2, True, (s4tSendAccountXml ? accountFullPath : ""), ScreenshotFile3, folderWebhookURL, s4tDiscordUserId, ScreenshotFile4, ScreenshotFile, true, FolderNO, stardustValue, userFriendCode)   
     folderCheckDone := 1 
     setMetaData()
+
+    basePath := RegExReplace(ScreenshotFile4, "_\d+\.png$", "")
+    twostarDir := A_ScriptDir . "\..\Card\2star"
+    twoshinyDir := A_ScriptDir . "\..\Card\2shiny"
+    pythonScript := A_ScriptDir . "\..\Card\carddect.py"
+    SplitPath, pythonScript, , scriptDir
+    Run, python "%pythonScript%" "%basePath%" "%twostarDir%" "%twoshinyDir%", %scriptDir%
+    
 }
+
 FirstAnnivCountdown() {
     adbSwipeX3 := Round(211 / 277 * 535)
     adbSwipeX4 := Round(11 / 277 * 535)
@@ -5929,4 +5962,3 @@ changeLNscript(){
     Delay(3)
     adbClick_wbb(137, 485)
 }
-
