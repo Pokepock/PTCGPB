@@ -69,7 +69,7 @@ dbg_bbox_click :=0
 
 global newPlayerName, renameMode, renameAndSaveAndReload, targetUsername, renameXML, renameOcrText, renameXMLwithFC, userFriendCode
 global ChangeLNMode, targetLN, Checkfolder, sendAccountXml, folderWebhookURL, folderNO, stardustValue
-global ModSets, NineModStatus, indivPackMode, changeLNposY
+global ModSets, NineModStatus, indivPackMode, changeLNposY, Dashboard
 
 scriptName := StrReplace(A_ScriptName, ".ahk")
 winTitle := scriptName
@@ -173,6 +173,7 @@ IniRead, Checkfolder, %A_ScriptDir%\..\Settings.ini, UserSettings, Checkfolder, 
 IniRead, folderWebhookURL, %A_ScriptDir%\..\Settings.ini, UserSettings, folderWebhookURL
 IniRead, NineModStatus, %A_ScriptDir%\..\Settings.ini, UserSettings, NineMod, 0
 IniRead, indivPackMode, %A_ScriptDir%\..\Settings.ini, UserSettings, indivPackMode, 0
+IniRead, Dashboard, %A_ScriptDir%\..\Settings.ini, UserSettings, Dashboard, 0
 
 
 MuMuv5 := isMuMuv5()
@@ -5823,12 +5824,14 @@ checkfolderscript(){
     folderCheckDone := 1 
     setMetaData()
 
-    basePath := RegExReplace(ScreenshotFile4, "_\d+\.png$", "")
-    twostarDir := A_ScriptDir . "\..\Card\2star"
-    twoshinyDir := A_ScriptDir . "\..\Card\2shiny"
-    pythonScript := A_ScriptDir . "\..\Card\carddect.py"
-    SplitPath, pythonScript, , scriptDir
-    Run, python "%pythonScript%" "%basePath%" "%twostarDir%" "%twoshinyDir%", %scriptDir%
+    if(Dashboard){
+        basePath := RegExReplace(ScreenshotFile4, "_\d+\.png$", "")
+        twostarDir := A_ScriptDir . "\..\Card\2star"
+        twoshinyDir := A_ScriptDir . "\..\Card\2shiny"
+        pythonScript := A_ScriptDir . "\..\Card\carddect.py"
+        SplitPath, pythonScript, , scriptDir
+        Run, python "%pythonScript%" "%basePath%" "%twostarDir%" "%twoshinyDir%", %scriptDir%
+    }
     
 }
 
