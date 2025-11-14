@@ -109,7 +109,7 @@ LogToFile(message, logFile := "") {
     FileAppend, % "[" readableTime "] " message "`n", %logFile%
 }
 
-LogToDiscord(message, screenshotFile := "", ping := false, xmlFile := "", screenshotFile2 := "", altWebhookURL := "", altUserId := "", screenshotFile3 := "", screenshotFile4 := "") {
+LogToDiscord(message, screenshotFile := "", ping := false, xmlFile := "", screenshotFile2 := "", altWebhookURL := "", altUserId := "") {
     discordPing := ""
 
     if (ping) {
@@ -152,8 +152,6 @@ LogToDiscord(message, screenshotFile := "", ping := false, xmlFile := "", screen
                 ; If an screenshot or xml file is provided, send it
                 sendScreenshot1 := screenshotFile != "" && FileExist(screenshotFile)
                 sendScreenshot2 := screenshotFile2 != "" && FileExist(screenshotFile2)
-                sendScreenshot3 := screenshotFile3 != "" && FileExist(screenshotFile3)
-                sendScreenshot4 := screenshotFile4 != "" && FileExist(screenshotFile4)
                 sendXml := xmlFile != "" && FileExist(xmlFile)
                 if (sendScreenshot1 + sendScreenshot2 + sendXml > 1) {
                     fileIndex := 0
@@ -168,14 +166,6 @@ LogToDiscord(message, screenshotFile := "", ping := false, xmlFile := "", screen
                     if (sendXml) {
                         fileIndex++
                         curlCommand := curlCommand . "-F ""file" . fileIndex . "=@" . xmlFile . """ "
-                    }
-                    if (sendScreenshot3) {
-                        fileIndex++
-                        curlCommand := curlCommand . "-F ""file" . fileIndex . "=@" . screenshotFile3 . """ "
-                    }
-                    if (sendScreenshot4) {
-                        fileIndex++
-                        curlCommand := curlCommand . "-F ""file" . fileIndex . "=@" . screenshotFile4 . """ "
                     }
                 }
                 else if (sendScreenshot1 + sendScreenshot2 + sendXml == 1) {
@@ -206,4 +196,126 @@ LogToDiscord(message, screenshotFile := "", ping := false, xmlFile := "", screen
             Sleep, 250
         }
     }
+}
+
+LogToDCwithEmbed(message, screenshotFile := "", ping := false, xmlFile := "", screenshotFile2 := "", altWebhookURL := "", altUserId := "", screenshotFile3 := "", screenshotFile4 := "", useEmbed := false, title := "", SD := "", FC := "") {
+    discordPing := ""
+
+    if (ping) {
+        userId := (altUserId ? altUserId : discordUserId)
+
+        discordPing := "<@" . userId . "> "
+        discordFriends := ReadFile("discord")
+        if (discordFriends) {
+            for index, value in discordFriends {
+                if (value = userId)
+                    continue
+                discordPing .= "<@" . value . "> "
+            }
+        }
+    }
+
+    webhookURL := (altWebhookURL ? altWebhookURL : discordWebhookURL)
+    if (webhookURL = "")
+        return
+
+    ; proxy
+    try {
+        RegRead, proxyEnabled, HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings, ProxyEnable
+        RegRead, proxyServer, HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings, ProxyServer
+    } Catch {
+        proxyEnabled := false
+    }
+
+    if (proxyEnabled)
+        curlCmd := "curl -k -x " . proxyServer . " "
+    else
+        curlCmd := "curl -k "
+
+    ;=========================
+    ;   AHK escape helpers
+    ;=========================
+    bsq := "\" . """"   ; -> \"
+    bq := """"          ; -> "
+
+    ;=========================
+    ;   payload_json 建立
+    ;=========================
+    if (useEmbed) {
+
+        screenshotFilename1 := ""
+        if (screenshotFile4 != "")
+            screenshotFilename1 := SubStr(screenshotFile4, InStr(screenshotFile4, "\", 0, 0) + 1)
+
+        embedMessage := "Stardusts : " . SD . "\nFC : " . FC
+        embedMessage := StrReplace(embedMessage, """", bsq)
+
+        titleText := "No. " . title
+        titleText := StrReplace(titleText, """", bsq)
+
+        ; 組合 embed JSON
+        titlePart := bsq "title" bsq ":" bsq titleText bsq
+        descPart := bsq "description" bsq ":" bsq embedMessage bsq
+        colorPart := bsq "color" bsq ":3447003"
+
+        embedsJson := "[{" . titlePart . "," . descPart . "," . colorPart
+
+        if (screenshotFilename1 != "") {
+            thumb := "," . bsq . "thumbnail" . bsq . ":{" . bsq . "url" . bsq . ":" . bsq . "attachment://" . screenshotFilename1 . bsq . "}"
+            embedsJson .= thumb
+        }
+        embedsJson .= "}]"
+
+        payloadJson := "{" . bsq . "content" . bsq . ":" . bsq . discordPing . bsq . "," . bsq . "embeds" . bsq . ":" . embedsJson . "}"
+
+        ; ❗最關鍵修正：不能用 ;type=application/json
+        curlCmd .= "-F ""payload_json=" . payloadJson . """ "
+    }
+    else {
+        msg := discordPing . message
+        msg := StrReplace(msg, "`n", "\n")
+        msg := StrReplace(msg, """", bsq)
+
+        payloadJson := "{" . bsq . "content" . bsq . ":" . bsq . msg . bsq . "}"
+        curlCmd .= "-F ""payload_json=" . payloadJson . """ "
+    }
+
+
+    ;=========================
+    ;   Attach files（無子函式版）
+    ;=========================
+    fileIndex := 1
+
+    if (screenshotFile != "" && FileExist(screenshotFile)) {
+        curlCmd .= "-F ""file" . fileIndex . "=@" . screenshotFile . """ "
+        fileIndex++
+    }
+
+    if (screenshotFile2 != "" && FileExist(screenshotFile2)) {
+        curlCmd .= "-F ""file" . fileIndex . "=@" . screenshotFile2 . """ "
+        fileIndex++
+    }
+
+    if (screenshotFile3 != "" && FileExist(screenshotFile3)) {
+        curlCmd .= "-F ""file" . fileIndex . "=@" . screenshotFile3 . """ "
+        fileIndex++
+    }
+
+    if (screenshotFile4 != "" && FileExist(screenshotFile4)) {
+        curlCmd .= "-F ""file" . fileIndex . "=@" . screenshotFile4 . """ "
+        fileIndex++
+    }
+
+    if (xmlFile != "" && FileExist(xmlFile)) {
+        curlCmd .= "-F ""file" . fileIndex . "=@" . xmlFile . """ "
+        fileIndex++
+    }
+
+    ;=========================
+    ;   Send
+    ;=========================
+    curlCmd .= webhookURL
+
+    LogToFile(curlCmd, "Discord.txt")
+    RunWait, %curlCmd%,, Hide
 }
