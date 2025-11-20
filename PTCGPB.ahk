@@ -14,12 +14,11 @@ global STATIC_BRUSH := 0
 
 githubUser := "Pokepock"
 repoName := "PTCGPB"
-localVersion := "v7.0.7.1"
+localVersion := "v7.0.7.2"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
 intro := "Folder Check & Individual Pack Select"
-
 ; GUI dimensions
 global GUI_WIDTH := 377 
 global GUI_HEIGHT := 677
