@@ -174,8 +174,9 @@ IniRead, Checkfolder, %A_ScriptDir%\..\Settings.ini, UserSettings, Checkfolder, 
 IniRead, folderWebhookURL, %A_ScriptDir%\..\Settings.ini, UserSettings, folderWebhookURL
 IniRead, NineModStatus, %A_ScriptDir%\..\Settings.ini, UserSettings, NineMod, 0
 IniRead, indivPackMode, %A_ScriptDir%\..\Settings.ini, UserSettings, indivPackMode, 0
-IniRead, Dashboard, %A_ScriptDir%\..\Settings.ini, UserSettings, Dashboard, 0
 IniRead, claimMail, %A_ScriptDir%\..\Settings.ini, UserSettings, claimMail, 0 
+IniRead, Dashboard, %A_ScriptDir%\..\Settings.ini, UserSettings, Dashboard, 0
+
 
 MuMuv5 := isMuMuv5()
 pokemonList := ["Mewtwo", "Charizard", "Pikachu", "Mew", "Dialga", "Palkia", "Arceus", "Shining", "Solgaleo", "Lunala", "Buzzwole", "Eevee", "HoOh", "Lugia", "Suicune", "Deluxe", "MegaBlaziken", "MegaGyarados", "MegaAltaria"]
@@ -6109,7 +6110,7 @@ OpenPack:
                 FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
                 FindImageAndClick(ModSets.oneX1, ModSets.oneY1, ModSets.oneX2, ModSets.oneY2, , ModSets.oneName, ModSets.oneCX, ModSets.oneCY) ; click mod settings
                 
-                ;adbClick_wbb(41, 366)
+                ;adbClick_wbb(41, ModSets.adbY)
                 ;Delay(2)
             }
             failSafe := A_TickCount
@@ -6125,7 +6126,7 @@ OpenPack:
                         else
                             FindImageAndClick(ModSets.twoX1, ModSets.twoY1, ModSets.twoX2, ModSets.twoY2, , ModSets.twoName, ModSets.twoCX, ModSets.twoCY) ; click mod settings
                     }
-                    adbClick_wbb(41, 366)
+                    adbClick_wbb(41, ModSets.adbY)
                     break
                 }
                 failSafeTime := (A_TickCount - failSafe) // 1000
