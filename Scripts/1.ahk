@@ -49,7 +49,7 @@ maxAccountPackNum := 40
 aminutes := 0
 aseconds := 0
 
-global beginnerMissionsDone, soloBattleMissionDone, intermediateMissionsDone, specialMissionsDone, resetSpecialMissionsDone, accountHasPackInTesting, redeemTokensDone, wonderPickEventDone, currentLoadedAccountIndex, folderCheckDone
+global beginnerMissionsDone, soloBattleMissionDone, intermediateMissionsDone, specialMissionsDone, resetSpecialMissionsDone, accountHasPackInTesting, redeemTokensDone, wonderPickEventDone, currentLoadedAccountIndex, folderCheckDone, AnnivCountdownDone
 
 beginnerMissionsDone := 0
 soloBattleMissionDone := 0
@@ -60,6 +60,7 @@ accountHasPackInTesting := 0
 redeemTokensDone := 0
 wonderPickEventDone := 0
 folderCheckDone := 0
+AnnivCountdownDone := 0
 
 global dbg_bbox, dbg_bboxNpause, dbg_bbox_click
 
@@ -69,7 +70,7 @@ dbg_bbox_click :=0
 
 global newPlayerName, renameMode, renameAndSaveAndReload, targetUsername, renameXML, renameOcrText, renameXMLwithFC, userFriendCode
 global ChangeLNMode, targetLN, Checkfolder, sendAccountXml, folderWebhookURL, folderNO, stardustValue
-global ModSets, NineModStatus, indivPackMode, changeLNposY, Dashboard
+global ModSets, NineModStatus, indivPackMode, changeLNposY, Dashboard, claimMail
 
 scriptName := StrReplace(A_ScriptName, ".ahk")
 winTitle := scriptName
@@ -173,8 +174,8 @@ IniRead, Checkfolder, %A_ScriptDir%\..\Settings.ini, UserSettings, Checkfolder, 
 IniRead, folderWebhookURL, %A_ScriptDir%\..\Settings.ini, UserSettings, folderWebhookURL
 IniRead, NineModStatus, %A_ScriptDir%\..\Settings.ini, UserSettings, NineMod, 0
 IniRead, indivPackMode, %A_ScriptDir%\..\Settings.ini, UserSettings, indivPackMode, 0
-g
-
+IniRead, Dashboard, %A_ScriptDir%\..\Settings.ini, UserSettings, Dashboard, 0
+IniRead, claimMail, %A_ScriptDir%\..\Settings.ini, UserSettings, claimMail, 0 
 
 MuMuv5 := isMuMuv5()
 pokemonList := ["Mewtwo", "Charizard", "Pikachu", "Mew", "Dialga", "Palkia", "Arceus", "Shining", "Solgaleo", "Lunala", "Buzzwole", "Eevee", "HoOh", "Lugia", "Suicune", "Deluxe", "MegaBlaziken", "MegaGyarados", "MegaAltaria"]
@@ -247,8 +248,8 @@ NineModConfig.threeX2 := 194
 NineModConfig.threeY2 := 190
 NineModConfig.threeCX := 187
 NineModConfig.threeCY := 180
-NineModConfig.adbY := 296
 
+NineModConfig.adbY := 296
 
 packArray := []  ; Initialize an empty array
 
@@ -266,9 +267,10 @@ if (NineModStatus) {
     slowMotion := 0
     swipeSpeed := 300
 }
-else 
+else {
     ModSets := PlatinConfig
     swipeSpeed := slowMotion ? 600 : 300
+}
 
 if(heartBeat)
     IniWrite, 1, %A_ScriptDir%\..\HeartBeat.ini, HeartBeat, Instance%scriptName%
@@ -726,7 +728,6 @@ Loop {
             if (ChangeLNMode) 
                 changeLNscript()
             
-
             if(deleteMethod = "5 Pack" || deleteMethod = "5 Pack (Fast)" || deleteMethod = "13 Pack")
                 wonderPicked := DoWonderPick()
 
@@ -914,7 +915,7 @@ Loop {
             }
 
             IniRead, claimAnnivCountdown, %A_ScriptDir%\..\Settings.ini, UserSettings, claimAnnivCountdown, 0
-            if (A_NowUTC > 20251108060000 || AnnivCountdownDone)
+            if (A_NowUTC > 20251217060000 || AnnivCountdownDone)
                 claimAnnivCountdown := 0
             if (claimAnnivCountdown = 1) {
                 if (!openExtraPack) {
@@ -923,6 +924,9 @@ Loop {
                 }
                 FirstAnnivCountdown()
             }
+
+            if (claimMail)
+                ClaimMailScript()
 
             if(Checkfolder && !folderCheckDone)
                 checkfolderscript()
@@ -1022,6 +1026,7 @@ Loop {
 					redeemTokensDone := 0
                     wonderPickEventDone := 0
                     folderCheckDone := 0
+                    AnnivCountdownDone := 0
                 }
                 restartGameInstance("New Run", false)
             }
@@ -1988,15 +1993,17 @@ menuDeleteStart() {
     }
 }
 
-CheckPack() {
-    currentPackIs6Card := false ; reset before each pack check
+CheckPack(bonusPack := false) {
     ; Update pack count.
-    accountOpenPacks += 1
-    if (injectMethod && loadedAccount)
-        UpdateAccount()
+    currentPackIs6Card := false ; reset before each pack check
+    if(!bonusPack) {
+        accountOpenPacks += 1
+        if (injectMethod && loadedAccount)
+            UpdateAccount()
 
-    packsInPool += 1
-    packsThisRun += 1
+        packsInPool += 1
+        packsThisRun += 1
+    }
 
     if(!friendIDs && friendID = "" && !s4tEnabled && !ImmersiveCheck && !CrownCheck && !ShinyCheck)
         return false
@@ -2076,6 +2083,9 @@ CheckPack() {
             FoundTradeable(foundCards)
     }
 
+    if (bonusPack)
+        return
+        
     foundLabel := false
 
     ; Before doing anything else, check if the current pack is valid.
@@ -2552,6 +2562,7 @@ loadAccount() {
 	redeemTokensDone := 0
     wonderPickEventDone := 0
     folderCheckDone := 0
+    AnnivCountdownDone := 0
 
     if (stopToggle) {
         CreateStatusMessage("Stopping...",,,, false)
@@ -2720,6 +2731,8 @@ saveAccount(file := "Valid", ByRef filePath := "", packDetails := "") {
             metadata .= "W"
         if(folderCheckDone)
             metadata .= "F"
+        if(AnnivCountdownDone)
+            metadata .= "A"
 
         saveDir := A_ScriptDir "\..\Accounts\Saved\" . winTitle
         filePath := saveDir . "\" . accountOpenPacks . "P_" . A_Now . "_" . winTitle . "(" . metadata . ").xml"
@@ -5006,6 +5019,7 @@ getMetaData() {
 	redeemTokensDone := 0
     wonderPickEventDone := 0
     folderCheckDone := 0
+    AnnivCountdownDone := 0
 
     ; check if account file has metadata information
     if(InStr(accountFileName, "(")) {
@@ -5028,6 +5042,8 @@ getMetaData() {
                 wonderPickEventDone := 1
             if(Instr(metadata, "F"))
                 folderCheckDone := 1
+            if(Instr(metadata, "A"))
+                AnnivCountdownDone := 1 
             if(InStr(metadata, "T")) {
                 saveDir := A_ScriptDir "\..\Accounts\Saved\" . winTitle
                 accountFile := saveDir . "\" . accountFileName
@@ -5084,6 +5100,8 @@ setMetaData() {
         metadata .= "W"
     if(folderCheckDone)
         metadata .= "F"
+    if(AnnivCountdownDone)
+        metadata .= "A"
 
     ; Remove parentheses if no flags remain, helpful if there is only a T flag or manual removal of X flag
     if(hasMetaData) {
@@ -5160,7 +5178,7 @@ GetEventRewards(frommain := true){
     adbClick_wbb(10, 465)
 	sleep, 1000
     adbClick_wbb(10, 465)
-	sleep, 1000
+    sleep, 1000
     failSafe := A_TickCount
     failSafeTime := 0
     Loop{
@@ -5715,9 +5733,16 @@ checkfolderscript(){
         else if (FindOrLoseImage(133, 479, 147, 493, , "noticex", 0)){
             adbClick_wbb(222, 485)
             Delay(3)
-        } else if (FindOrLoseImage(13, 125, 48, 155, , "folderfind",0, failSafeTime))
+        } else if (FindOrLoseImage(43, 425, 55, 439, , "folderfind", 0, failSafeTime))
             break
-        else if (FindOrLoseImage(103, 65, 118, 80, , "CardLN", 0, failSafeTime)){
+        else if (FindOrLoseImage(23, 208, 45, 224, , "folderfliterfind", 0, failSafeTime)){
+            adbClick_wbb(207, 120)
+            Delay(1)
+            adbSwipe("35 250 35 500 400")
+            Delay(1)
+            adbClick_wbb(243, 189)
+            Delay(2)
+        } else if (FindOrLoseImage(103, 65, 118, 80, , "CardLN", 0, failSafeTime)){
             adbClick_wbb(138, 510)
             Delay(1)
         } else if (FindOrLoseImage(7, 386, 20, 399, , "cardtutorial", 0, failSafeTime)){
@@ -5729,7 +5754,7 @@ checkfolderscript(){
             Delay(1)
         } else
             adbSwipe("35 250 35 500 400")
-        Delay(1)
+        Delay(2)
         failSafeTime := (A_TickCount - failSafe) // 1000
         CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
     }
@@ -5761,76 +5786,118 @@ checkfolderscript(){
     adbSwipe("35 400 35 335 2000")
     Delay(2)
     adbClick_wbb(111, 424)
-    Delay(2)
+    Delay(4)
     adbClick_wbb(111, 464)
-    Delay(8)
 
-    adbSwipe("35 400 35 200 500")
-    Delay(1)
+    noTwoStarCard := false
+    loop {
+        if(FindOrLoseImage(230, 271, 245, 279, , "folderempty", 0, failSafeTime)){
+            noTwoStarCard := true
+            ScreenshotFile2 := Screenshot("Folder_1","Folder")
+            Delay(2)
 
-    ScreenshotFile2 := Screenshot("Folder_1","Folder")
-    Delay(1)
-    adbSwipe("35 500 35 35 500")
-    Delay(3)
-    adbSwipe("35 400 35 35 500")
-    Delay(3)
-    ScreenshotFile3 := Screenshot("Folder_2","Folder")
-    Delay(5)
-    adbSwipe("35 35 35 500 1000")
-    Delay(2)
-    adbSwipe("35 300 35 500 500")
-    Delay(2)
-    adbSwipe("35 300 35 500 500")
-    Delay(2)
-    failSafe := A_TickCount
-    failSafeTime := 0
-    loop{
-        adbSwipe("35 300 35 500 500")
-        if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
-            break
-        Delay(1)
-        failSafeTime := (A_TickCount - failSafe) // 1000
-        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
-    }
-    failSafe := A_TickCount
-    failSafeTime := 0
-    loop{
-        adbClick_wbb(243, 189)
-        if(FindOrLoseImage(13, 125, 48, 155, , "folderfind", 0, failSafeTime)){
             break
         }
-        Delay(1)
-        failSafeTime := (A_TickCount - failSafe) // 1000
-        CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
+        else if (FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
+            break
     }
-    Delay(3)
-    adbClick_wbb(222, 391)
-    Delay(3)
-    adbClick_wbb(222, 391)
-    Delay(3)
-    adbClick_wbb(51, 494)
-    Delay(3)
-    adbClick_wbb(111, 464)
+    Delay(8)
+
+    if(!noTwoStarCard){
+        adbSwipe("35 400 35 200 500")
+        Delay(1)
+        ScreenshotFile2 := Screenshot("Folder_1","Folder")
+        Delay(1)
+        adbSwipe("35 500 35 35 500")
+        Delay(3)
+        adbSwipe("35 400 35 35 500")
+        Delay(3)
+        ScreenshotFile3 := Screenshot("Folder_2","Folder")
+        Delay(5)
+    
+
+        adbSwipe("35 35 35 500 1000")
+        Delay(2)
+        adbSwipe("35 300 35 500 500")
+        Delay(2)
+        adbSwipe("35 300 35 500 500")
+        Delay(2)
+        failSafe := A_TickCount
+        failSafeTime := 0
+        loop{
+            adbSwipe("35 300 35 500 500")
+            if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
+                break
+            Delay(1)
+            failSafeTime := (A_TickCount - failSafe) // 1000
+            CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
+        }
+        failSafe := A_TickCount
+        failSafeTime := 0
+        loop{
+            adbClick_wbb(243, 189)
+            if(FindOrLoseImage(43, 425, 55, 439, , "folderfind", 0, failSafeTime)){
+                break
+            }
+            Delay(1)
+            failSafeTime := (A_TickCount - failSafe) // 1000
+            CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
+        }
+
+    
+        Delay(3)
+        adbClick_wbb(222, 391)
+        Delay(3)
+        adbClick_wbb(222, 391)
+        Delay(3)
+        adbClick_wbb(51, 494)
+        Delay(3)
+        adbClick_wbb(111, 464)
+    }
+    
+    else{
+        adbClick_wbb(51, 464)
+        Delay(5)
+        adbClick_wbb(111, 464)
+    }
+    noTwoShinyCard := false
+    loop {
+        if(FindOrLoseImage(230, 271, 245, 279, , "folderempty", 0, failSafeTime)){
+            noTwoShinyCard := true
+            ScreenshotFile4 := Screenshot("Folder_3","Folder")
+            break
+        }
+        else if (FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
+            break
+    }
     Delay(2)
-    adbSwipe("35 400 35 200 500")
-    Delay(2)
-    adbSwipe("35 400 35 200 500")
-    Delay(2)
-    ScreenshotFile4 := Screenshot("Folder_3","Folder")
+
+    if(!noTwoShinyCard){
+        adbSwipe("35 400 35 200 500")
+        Delay(2)
+        adbSwipe("35 400 35 200 500")
+        Delay(2)
+        ScreenshotFile4 := Screenshot("Folder_3","Folder")
+    }
     accountFullPath := ""
     accountFile := saveAccount("Folder", accountFullPath, packDetailsFile)
     discordMessage := FolderNO . " Stardusts : " . stardustValue . "\nFile Name :" . accountFile . " FC : " . userFriendCode
-    LogToDCwithEmbed(discordMessage, ScreenshotFile2, false, (s4tSendAccountXml ? accountFullPath : ""), ScreenshotFile3, folderWebhookURL, s4tDiscordUserId, ScreenshotFile4, ScreenshotFile, true, FolderNO, stardustValue, userFriendCode)   
+    LogToDCwithEmbed(discordMessage, ScreenshotFile2, false, (s4tSendAccountXml ? accountFullPath : ""), (noTwoStarCard ? "" : ScreenshotFile3 ), folderWebhookURL, s4tDiscordUserId, ScreenshotFile4, ScreenshotFile, true, FolderNO, stardustValue, userFriendCode)   
     folderCheckDone := 1 
     setMetaData()
 
-    if(Dashboard){
+    if (Dashboard) {
         basePath := RegExReplace(ScreenshotFile4, "_\d+\.png$", "")
-        twostarDir := A_ScriptDir . "\..\Card\2star"
-        twoshinyDir := A_ScriptDir . "\..\Card\2shiny"
-        pythonScript := A_ScriptDir . "\..\Card\carddect.py"
-        SplitPath, pythonScript, , scriptDir
-        Run, python "%pythonScript%" "%basePath%" "%twostarDir%" "%twoshinyDir%", %scriptDir%
+        detectDir := A_ScriptDir . "\..\Card\DetectFile"
+
+        if !FileExist(detectDir) {
+            FileCreateDir, %detectDir%
+        }
+
+        SplitPath, basePath, fileNameOnly
+        targetTxtFile := detectDir . "\" . fileNameOnly . ".txt"
+
+        FileAppend, %basePath%, %targetTxtFile%
     }
     
 }
@@ -5853,7 +5920,7 @@ FirstAnnivCountdown() {
         CreateStatusMessage("Waiting for Trace`n(" . failSafeTime . "/45 seconds)")
         Delay(1)
     }
-    adbClick_wbb(130, 465)
+    adbClick_wbb(35, 465)
     sleep, 1000
     failSafe := A_TickCount
     failSafeTime := 0
@@ -5875,7 +5942,7 @@ FirstAnnivCountdown() {
     }
     
     AnnivCountdownDone := 1
-    ;setMetaData()
+    setMetaData()
 }
 
 changeLNscript(){
@@ -5932,12 +5999,18 @@ changeLNscript(){
     Delay(8)
     adbSwipe_wbb("135 400 135 200 2000")
     Delay(8)
-    if(!slowMotion){
-        adbSwipe_wbb("135 400 135 200 2000")
-        Delay(8)
-    }
     adbSwipe_wbb("135 400 135 200 1500")
     Delay(8)
+    if(!slowMotion){
+        if(!NineModStatus){
+            adbSwipe_wbb("135 400 135 200 2000")
+            Delay(8)
+        } else {
+            adbSwipe_wbb("135 400 135 320 1500")
+            Delay(8)
+        }
+    }
+    
     
     LNcount := 0
     Loop{
@@ -5952,11 +6025,11 @@ changeLNscript(){
             LNcount := 0
         }
         adbClick_wbb(35,520)
-        Delay(3)
+        Delay(1)
         adbClick_wbb(35,499)
-        Delay(3)
+        Delay(1)
         adbClick_wbb(35,489)
-        Delay(3)
+        Delay(1)
         LNcount += 1
     }
     FindImageAndClick(115, 131, 161, 145, , "LNEnglish2", 220, 141, sleepTime)
@@ -5964,4 +6037,145 @@ changeLNscript(){
     adbclick_wbb(220, changeLNposY)
     Delay(3)
     adbClick_wbb(137, 485)
+}
+
+ClaimMailScript() {
+    FindImageAndClick(191, 393, 211, 411, , "Shop", 140, 495)
+    Delay(1)
+    FindImageAndClick(128, 496, 148, 516, , "X", 249, 92)
+    failSafe := A_TickCount
+    failSafeTime := 0
+    found := 0
+    Loop{
+        Delay(2)
+        adbClick_wbb(172, 427) ;clicks complete all and ok
+        Delay(2)
+        adbClick_wbb(153, 482) ;when to many rewards ok button goes lower
+        Delay(2)
+        adbClick_wbb(247, 486) ;click skip
+        if (FindOrLoseImage(242, 404, 275, 451, 40, "GotAllMissions", 0, 0)){
+            if (found)
+                break
+            else {
+                found += 1
+                delay(2)
+            }
+        }
+        else if (failSafeTime > 60){
+            break
+        }
+        failSafeTime := (A_TickCount - failSafe) // 1000
+    }
+
+    failSafe := A_TickCount
+    failSafeTime := 0
+    found := 0
+    Loop{
+        if(FindOrLoseImage(26, 130, 50, 152, 10, "empty", 0)) {
+            if (found)
+                break
+            else {
+                found += 1
+                delay(2)
+            }
+        }
+        else if (failSafeTime > 180){
+            break
+        }
+        else if (FindOrLoseImage(178, 155, 192, 185, 10, "Claim", 0)) {
+            failSafe := A_TickCount
+            failSafeTime := 0
+            Loop {
+                adbClick_wbb(217, 170)
+                ;stuck here if not enough items for the second pack
+                Delay(1)
+                if(FindOrLoseImage(225, 273, 235, 290, , "Pack", 0, failSafeTime)) {
+                    break ;wait for pack to be ready to Trace and click skip
+                } else if(FindOrLoseImage(92, 299, 115, 317, , "notenoughitems", 0)) {
+                    cantOpenMorePacks := 1
+                } else {
+                    adbClick_wbb(239, 497)
+                }
+                if(cantOpenMorePacks)
+                    return
+                failSafeTime := (A_TickCount - failSafe) // 1000
+                CreateStatusMessage("Waiting for Pack`n(" . failSafeTime . "/45 seconds)")
+                if(failSafeTime > 5 && FindOrLoseImage(242, 404, 275, 451, 40, "GotAllMissions", 0, 0)){
+                    return
+                }
+            }
+OpenPack:
+            if(setSpeed > 1) {
+                FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
+                FindImageAndClick(ModSets.oneX1, ModSets.oneY1, ModSets.oneX2, ModSets.oneY2, , ModSets.oneName, ModSets.oneCX, ModSets.oneCY) ; click mod settings
+                
+                ;adbClick_wbb(41, 366)
+                ;Delay(2)
+            }
+            failSafe := A_TickCount
+            failSafeTime := 0
+            Loop {
+                adbSwipe_wbb(adbSwipeParams)
+                Sleep, 10
+                if (FindOrLoseImage(225, 273, 235, 290, , "Pack", 1, failSafeTime)){
+                    ;FindImageAndClick(38, 290, 65, 302, , "Platin", 18, 109, 2000) ; click mod settings
+                    if(setSpeed > 1) {
+                        if(setSpeed = 3)
+                            FindImageAndClick(ModSets.threeX1, ModSets.threeY1, ModSets.threeX2, ModSets.threeY2, , ModSets.threeName, ModSets.threeCX, ModSets.threeCY) ; click mod settings
+                        else
+                            FindImageAndClick(ModSets.twoX1, ModSets.twoY1, ModSets.twoX2, ModSets.twoY2, , ModSets.twoName, ModSets.twoCX, ModSets.twoCY) ; click mod settings
+                    }
+                    adbClick_wbb(41, 366)
+                    break
+                }
+                failSafeTime := (A_TickCount - failSafe) // 1000
+                CreateStatusMessage("Waiting for Trace`n(" . failSafeTime . "/45 seconds)")
+                Delay(1)
+            }
+
+            FindImageAndClick(0, 98, 116, 125, 5, "Opening", 239, 497) ;skip through cards until results opening screen
+
+            Delay(5)
+            BonusDeluxeCheck := 0
+            loop 5 {
+                if(FindOrLoseImage(232, 228, 242, 244, , "BonusPackDeluxe", 0, failSafeTime))
+                    BonusDeluxeCheck += 1
+                Delay(2)
+            }
+            if(BonusDeluxeCheck = 5)
+                openPack := "Deluxe"
+            else
+                openPack := "BonusPack"
+
+            CheckPack(true)
+
+            ;FindImageAndClick(233, 486, 272, 519, , "Skip", 146, 494) ;click on next until skip button appears
+
+            failSafe := A_TickCount
+            failSafeTime := 0
+            Loop {
+                Delay(1)
+                if(FindOrLoseImage(233, 486, 272, 519, , "Skip", 0, failSafeTime)) {
+                    adbClick_wbb(268, 502)
+                } else if(FindOrLoseImage(120, 70, 150, 100, , "Next", 0, failSafeTime)) {
+                    adbClick_wbb(146, 494) ;146, 494
+                } else if(FindOrLoseImage(120, 70, 150, 100, , "Next2", 0, failSafeTime)) {
+                    adbClick_wbb(146, 494) ;146, 494
+                } else if(FindOrLoseImage(178, 155, 192, 185, 10, "Claim", 0, failSafeTime)) {
+                    break
+                } else if(FindOrLoseImage(242, 404, 275, 451, 40, "GotAllMissions", 0, failSafeTime)) {
+                    break
+                } else if(FindOrLoseImage(225, 273, 235, 290, , "Pack", 0, failSafeTime)) {
+                    goto, openPack
+                } else {
+                    adbClick_wbb(163, 495) ;146, 494
+                }
+                failSafeTime := (A_TickCount - failSafe) // 1000
+                CreateStatusMessage("Waiting for Home`n(" . failSafeTime . "/45 seconds)")
+                if(failSafeTime > 45)
+                    restartGameInstance("Stuck at Home")
+            }
+        }
+        failSafeTime := (A_TickCount - failSafe) // 1000
+    }
 }
