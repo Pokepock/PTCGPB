@@ -1,51 +1,51 @@
-﻿#NoEnv  ; 推薦在新腳本中使用
+﻿#NoEnv ; Recommended for new scripts
 #SingleInstance Force
 SetBatchLines, -1
 
 ; =================================================================
-; 1. 設定與變數定義
+; 1. Settings and Variable Definitions
 ; =================================================================
 
-; 卡包清單 (格式: Option1|Option2|...)
+; Card Pack List (Format: Option1|Option2|...)
 PackList := "Random|Mewtwo|Charizard|Pikachu|Mew|Dialga|Palkia|Arceus|Shining|Solgaleo|Lunala|Buzzwole|Eevee|HoOh|Lugia|Suicune|Deluxe|MegaBlaziken|MegaGyarados|MegaAltaria"
 
-; INI 檔案路徑：假設 settings.ini 在腳本目錄往上兩層
+; INI File Path: Assumes settings.ini is two directories up from the script directory
 IniPath := A_ScriptDir . "\..\Settings.ini"
 
-global Instances := 1 ; 實例數量的預設值
-global indivPackMode := 0 ; 新增：獨立卡包模式開關 (0=關閉, 1=開啟)
+global Instances := 1 ; Default value for the number of instances
+global indivPackMode := 0 ; NEW: Individual Pack Mode switch (0=Off, 1=On)
 
 ; =================================================================
-; 2. 載入設定
+; 2. Load Settings
 ; =================================================================
 
 LoadSettings()
 
 ; =================================================================
-; 3. GUI 介面生成
+; 3. GUI Interface Generation
 ; =================================================================
 
-Gui, New, , 卡包選擇介面 (Pack Selector)
+Gui, New, , Pack Selector Interface
 Gui, Font, S10, Segoe UI
 
-; 頂部實例數量顯示
-Gui, Add, Text, x10 y10, 當前讀取的實例數量: %Instances%
+; Top: Display the current number of instances read from INI
+Gui, Add, Text, x10 y10, Currently loaded instances: %Instances%
 
-; 新增核取方塊 (vIndivPackMode) 作為總開關
-; gTogglePackControls: 按下後執行控制禁用/啟用邏輯
-; Checked%indivPackMode%: 根據讀取到的狀態設定初始值
-Gui, Add, Checkbox, vIndivPackMode x10 y40 gTogglePackControls Checked%indivPackMode%, 啟用個別實例卡包選擇
+; Add Checkbox (vIndivPackMode) as the main toggle switch
+; gTogglePackControls: Label to execute control enable/disable logic
+; Checked%indivPackMode%: Sets the initial state based on the loaded status
+Gui, Add, Checkbox, vIndivPackMode x10 y40 gTogglePackControls Checked%indivPackMode%, Enable Individual Pack Selection
 
-yPos := 70 ; 第一個下拉式選單的起始 Y 座標 (往下移動以容納 Checkbox)
+yPos := 70 ; Starting Y coordinate for the first dropdown (moved down to accommodate the Checkbox)
 
-; 檢查初始狀態是否應禁用控制項
+; Check if controls should be initially disabled based on the loaded state
 initialDisable := indivPackMode ? "" : " Disabled"
 
 Loop, %Instances%
 {
     ControlVariable := "packSelectIns" . A_Index
     
-    ; 透過雙層引用取得 LoadSettings 函式中設定的全域變數值
+    ; Retrieve the value of the global dynamic variable set in LoadSettings
     currentSelection := %ControlVariable% 
     
     if (currentSelection = "" || currentSelection = "ERROR")
@@ -53,46 +53,48 @@ Loop, %Instances%
 
     defaultChoice := 1 
     
+    ; Instance Label
     Gui, Add, Text, x10 y%yPos% w100, Instance %A_Index%:
     
-    ; 新增下拉式選單 (加入 Disabled 條件)
+    ; Add Dropdown List (vpackSelectInsX, includes Disabled condition)
     Gui, Add, DropDownList, % "vpackSelectIns" . A_Index . " x120 y" . (yPos) . " w180 Choose" . defaultChoice . initialDisable, %PackList%
     
+    ; Set the dropdown's current value based on the loaded selection
     GuiControl, , % "packSelectIns" . A_Index, %currentSelection%
 
-    yPos += 30
+    yPos += 30 ; Move down for the next control
 }
 
-; 按鈕
+; Add padding before buttons
 yPos += 15
 
-; 新增 Save 和 Clear 按鈕 (加入 Disabled 條件)
-Gui, Add, Button, x10 y%yPos% w100 h30 gClearPackSelections%initialDisable% vClearButton, Clear (清除)
-Gui, Add, Button, x200 y%yPos% w100 h30 gSavePackSelections%initialDisable% vSaveButton, Save (儲存)
+; Add Save and Clear Buttons (includes Disabled condition)
+Gui, Add, Button, x10 y%yPos% w100 h30 gClearPackSelections%initialDisable% vClearButton, Clear
+Gui, Add, Button, x200 y%yPos% w100 h30 gSavePackSelections%initialDisable% vSaveButton, Save
 
 
-; 修正 GUI 高度計算錯誤
-NewHeight := yPos + 50 ; 先計算出最終高度
-Gui, Show, w320 h%NewHeight%, Pack Selector ; 使用計算好的變數
+; Calculate and show the final GUI window
+NewHeight := yPos + 50 ; Calculate the final height
+Gui, Show, w320 h%NewHeight%, Pack Selector
 return
 
 ; =================================================================
-; 4. 函式與標籤定義
+; 4. Functions and Labels
 ; =================================================================
 
 LoadSettings() {
-    global Instances, IniPath, indivPackMode ; 確保所有全域變數都已宣告
+    global Instances, IniPath, indivPackMode ; Ensure all global variables are declared
     
-    ; 1. 載入 Instances 數量
+    ; 1. Load Instances count
     IniRead, Instances, %IniPath%, UserSettings, Instances, 1
     
     if not (Instances is integer) || (Instances < 1)
         Instances := 1
         
-    ; NEW: 載入 indivPackMode 狀態，預設為 0 (關閉)
+    ; NEW: Load indivPackMode state, default to 0 (Off)
     IniRead, indivPackMode, %IniPath%, UserSettings, indivPackMode, 0
 
-    ; 2. 載入每個實例現有的卡包選擇
+    ; 2. Load the existing pack selection for each instance
     Loop, %Instances%
     {
         ControlVariable := "packSelectIns" . A_Index
@@ -100,26 +102,26 @@ LoadSettings() {
 
         IniRead, PackValue, %IniPath%, UserSettings, %ControlVariable%, "Random" 
         
-        ; 寫入全域動態變數
+        ; Write the value to the global dynamic variable (e.g., packSelectIns1)
         %ControlVariable% := PackValue 
     }
 }
 
 TogglePackControls:
-    ; 讀取核取方塊的當前狀態到 IndivPackMode 變數
+    ; Read the current state of the checkbox into the IndivPackMode variable
     GuiControlGet, IndivPackMode, , IndivPackMode
     
-    ; 根據狀態啟用或禁用所有相關控制項
+    ; Determine action: Enable if checked (1), Disable if unchecked (0)
     Action := IndivPackMode ? "Enable" : "Disable"
     
-    ; 啟用/禁用下拉選單
+    ; Enable/Disable Dropdown Lists
     Loop, %Instances%
     {
         ControlVariable := "packSelectIns" . A_Index
         GuiControl, %Action%, %ControlVariable%
     }
     
-    ; 啟用/禁用按鈕
+    ; Enable/Disable Buttons
     GuiControl, %Action%, SaveButton
     GuiControl, %Action%, ClearButton
     return
@@ -127,32 +129,33 @@ TogglePackControls:
 SavePackSelections:
     global Instances, IniPath, indivPackMode
     
-    ; 將 GUI 上所有控制項的當前值寫入其對應的變數 (包括 IndivPackMode)
+    ; Store the current values of all controls (including IndivPackMode) into their corresponding variables
     Gui, Submit, NoHide 
 
-    ; NEW: 儲存獨立卡包模式的狀態
+    ; NEW: Save the state of the individual pack mode
     IniWrite, %indivPackMode%, %IniPath%, UserSettings, indivPackMode
 
-    ; 只有當模式開啟時，才儲存每個實例的選擇
+    ; Only save individual selections if the mode is enabled
     if (indivPackMode)
     {
         Loop, %Instances%
         {
             ControlVariable := "packSelectIns" . A_Index
+            ; Write the variable's content (e.g., Random, Charizard) to the INI file
             IniWrite, % %ControlVariable%, %IniPath%, UserSettings, %ControlVariable%
         }
     }
     
-    MsgBox, 64, 儲存成功, 卡包選擇已成功儲存到 Settings.ini!
+    MsgBox, 64, Save Successful, Pack selections have been successfully saved to Settings.ini!
     return
 
 ClearPackSelections:
     global Instances, IniPath
     
-    ; 只有當模式開啟時，才允許清除 (但 INI 寫入是為了確保一致性，所以可以保留)
+    ; Check if the mode is enabled before clearing
     GuiControlGet, IndivPackMode, , IndivPackMode
     if (!IndivPackMode) {
-        MsgBox, 48, 警告, 請先勾選「啟用個別實例卡包選擇」才能清除。
+        MsgBox, 48, Warning, Please check 'Enable Individual Pack Selection' before clearing.
         return
     }
 
@@ -160,14 +163,14 @@ ClearPackSelections:
     {
         ControlVariable := "packSelectIns" . A_Index
         
-        ; 1. 重設 GUI 控制項的選項為 "Random"
+        ; 1. Reset the GUI control selection to "Random"
         GuiControl, , %ControlVariable%, Random
         
-        ; 2. 將 "Random" 寫入 INI 檔案
+        ; 2. Write "Random" to the INI file
         IniWrite, Random, %IniPath%, UserSettings, %ControlVariable%
     }
     
-    MsgBox, 64, 清除成功, 卡包選擇已清除並儲存為 'Random'!
+    MsgBox, 64, Clear Successful, Pack selections have been cleared and saved as 'Random'!
     return
 
 GuiClose:
