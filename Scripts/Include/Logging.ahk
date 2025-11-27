@@ -11,6 +11,7 @@ IniRead, sendAccountXml, %settingsPath%, UserSettings, sendAccountXml, 0
 IniRead, showStatus, %settingsPath%, UserSettings, statusMessage, 1
 IniRead, Debug, %settingsPath%, UserSettings, debugMode, 0
 
+
 ; Enable debugging to get more status messages and logging.
 
 ResetStatusMessage() {
