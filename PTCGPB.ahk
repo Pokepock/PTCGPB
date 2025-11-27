@@ -18,7 +18,7 @@ localVersion := "v7.0.8"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
-intro := "Classic Mode and Extras "
+intro := "Classic and Extras "
 ; GUI dimensions
 global GUI_WIDTH := 377 
 global GUI_HEIGHT := 677
@@ -4450,6 +4450,7 @@ StartBot:
             discMessage .= "\n" . packStatus . "\nVersion: " . RegExReplace(githubUser, "-.*$") . "-" . localVersion
             discMessage .= typeMsg
             discMessage .= selectMsg
+            discMessage .= othersMsg
             
             ; Add special note about Main's test mode status
             if (mainTestMode == "1")
@@ -4559,6 +4560,7 @@ StartBot:
                 discMessage .= selectMsg
                 discMessage .= pphfsMsg
                 discMessage .= detectionMsg
+                discMessage .= othersMsg
                 
                 LogToDiscord(discMessage,, false,,, heartBeatWebhookURL)
                 
