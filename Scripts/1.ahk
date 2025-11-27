@@ -70,7 +70,7 @@ dbg_bbox_click :=0
 
 global newPlayerName, renameMode, renameAndSaveAndReload, targetUsername, renameXML, renameOcrText, renameXMLwithFC, userFriendCode
 global ChangeLNMode, targetLN, Checkfolder, sendAccountXml, folderWebhookURL, folderNO, stardustValue
-global ModSets, NineModStatus, indivPackMode, changeLNposY, Dashboard, claimMail
+global ModSets, NineModStatus, indivPackMode, changeLNposY, Dashboard, claimMail, altWebhookSettings, altdiscordWebhookURL, AltdiscordUserId
 
 scriptName := StrReplace(A_ScriptName, ".ahk")
 winTitle := scriptName
@@ -176,6 +176,11 @@ IniRead, NineModStatus, %A_ScriptDir%\..\Settings.ini, UserSettings, NineMod, 0
 IniRead, indivPackMode, %A_ScriptDir%\..\Settings.ini, UserSettings, indivPackMode, 0
 IniRead, claimMail, %A_ScriptDir%\..\Settings.ini, UserSettings, claimMail, 0 
 IniRead, Dashboard, %A_ScriptDir%\..\Settings.ini, UserSettings, Dashboard, 0
+
+IniRead, altWebhookSettings, %A_ScriptDir%\..\Settings.ini, UserSettings, altWebhookSettings, 0
+IniRead, altdiscordWebhookURL, %A_ScriptDir%\..\Settings.ini, UserSettings, altdiscordWebhookURL
+IniRead, altdiscordUserId, %A_ScriptDir%\..\Settings.ini, UserSettings, altdiscordUserId
+
 
 
 MuMuv5 := isMuMuv5()
@@ -926,6 +931,16 @@ Loop {
                 FirstAnnivCountdown()
             }
 
+            IniRead, claimFutureBonusPrep, %A_ScriptDir%\..\Settings.ini, UserSettings, claimFutureBonusPrep, 0
+            if (claimFutureBonusPrep = 1) {
+                if (!openExtraPack) {
+                    GoToMain(true)
+                    FindImageAndClick(175, 490, 198, 515, , "Missions2", 261, 478, 500)
+                }
+                FutureBonusPrep()
+            }
+
+
             if (claimMail)
                 ClaimMailScript()
 
@@ -1522,7 +1537,7 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
             throw RESTART_LOOP_EXCEPTION
         }
     }
-    if(imageName = "Points" || imageName = "Home") { ;look for level up ok "button"
+    if(imageName = "Points" || imageName = "Home" || imageName = "Shop" || imageName = "ShopInfo") { ;look for level up ok "button"
         LevelUp()
     }
     if (imageName = "Social") {
@@ -1733,7 +1748,7 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
         }
 
         Gdip_DisposeImage(pBitmap)
-        if(imageName = "Points" || imageName = "Home") { ;look for level up ok "button"
+        if(imageName = "Points" || imageName = "Home" || imageName = "Shop" || imageName = "ShopInfo") { ;look for level up ok "button"
             LevelUp()
         }
         if(imageName = "Social" || imageName = "Add" || imageName = "Add2") {
@@ -1768,6 +1783,11 @@ LevelUp() {
         adbClick_wbb(pos1, pos2+45-titleHeight)
     }
     Delay(1)
+    if(FindOrLoseImage(133, 479, 147, 493, , "noticex", 0)){
+        Delay(3)
+        adbClick_wbb(137, 485)
+        Delay(1)
+    }
 }
 
 resetWindows() {
@@ -2356,7 +2376,7 @@ FoundStars(star) {
         statusMessage .= " (" . friendCode . ")"
 
     logMessage := statusMessage . " in instance: " . scriptName . " (" . packsInPool . " packs, " . openPack . ")\nFile name: " . accountFile . "\nBacking up to the Accounts\\SpecificCards folder and continuing..."
-    LogToDiscord(logMessage, screenShot, true, (sendAccountXml ? accountFullPath : ""), fcScreenshot)
+    LogToDiscord(logMessage, screenShot, true, (sendAccountXml ? accountFullPath : ""), fcScreenshot, (altWebhookSettings ? altdiscordWebhookURL : ""), (altWebhookSettings ? altdiscordUserId : ""))
     LogToFile(StrReplace(logMessage, "\n", " "), "GPlog.txt")
     ;if(star != "Crown" && star != "Immersive" && star != "Shiny")
     ;ChooseTag()
@@ -2545,10 +2565,10 @@ GodPackFound(validity) {
 
     ; Adjust the below to only send a 'ping' to Discord friends on Valid packs
     if (validity = "Valid") {
-        LogToDiscord(logMessage, screenShot, true, (sendAccountXml ? accountFullPath : ""), fcScreenshot)
+        LogToDiscord(logMessage, screenShot, true, (sendAccountXml ? accountFullPath : ""), fcScreenshot, (altWebhookSettings ? altdiscordWebhookURL : ""),(altWebhookSettings ? altdiscordUserId : ""))
         ;ChooseTag()
     } else if (!InvalidCheck) {
-        LogToDiscord(logMessage, screenShot, true, (sendAccountXml ? accountFullPath : ""))
+        LogToDiscord(logMessage, screenShot, true, (sendAccountXml ? accountFullPath : ""),,(altWebhookSettings ? altdiscordWebhookURL : ""),(altWebhookSettings ? altdiscordUserId : ""))
     }
 }
 
@@ -4185,7 +4205,8 @@ SelectPack(HG := false) {
             break
         } else if(FindOrLoseImage(92, 299, 115, 317, , "notenoughitems", 0)) {
             cantOpenMorePacks := 1
-        }
+        } else if(FindOrLoseImage(225, 273, 235, 290, , "Pack", 0))
+            break
         if(cantOpenMorePacks)
             return
         adbClick_wbb(200, 451) ;for hourglass???
@@ -5176,10 +5197,19 @@ GetEventRewards(frommain := true){
         CreateStatusMessage("Waiting for Trace`n(" . failSafeTime . "/45 seconds)")
         Delay(1)
     }
-    adbClick_wbb(10, 465)
-	sleep, 1000
-    adbClick_wbb(10, 465)
-    sleep, 1000
+
+    IniRead, BonusWeekPos, %A_ScriptDir%\..\Settings.ini, UserSettings, BonusWeekPos, -1
+    BonusWeeklooptime := BonusWeekPos * (-1) -1 
+    if(BonusWeeklooptime){
+        loop %BonusWeeklooptime% {
+            adbClick_wbb(10, 465)
+            sleep, 1000
+        }
+    } else {
+        adbClick_wbb(150, 465)
+        sleep, 1000
+    }
+
     failSafe := A_TickCount
     failSafeTime := 0
     Loop{
@@ -5903,6 +5933,7 @@ checkfolderscript(){
     
 }
 
+
 FirstAnnivCountdown() {
     adbSwipeX3 := Round(211 / 277 * 535)
     adbSwipeX4 := Round(11 / 277 * 535)
@@ -5921,8 +5952,74 @@ FirstAnnivCountdown() {
         CreateStatusMessage("Waiting for Trace`n(" . failSafeTime . "/45 seconds)")
         Delay(1)
     }
-    adbClick_wbb(35, 465)
-    sleep, 1000
+    
+    IniRead, AnnivPos, %A_ScriptDir%\..\Settings.ini, UserSettings, AnnivPos, -1
+    Annivlooptime := AnnivPos * (-1) -1 
+
+    if(Annivlooptime){
+        loop %Annivlooptime% {
+            adbClick_wbb(10, 465)
+            sleep, 1000
+        }
+    } else {
+        adbClick_wbb(150, 465)
+        sleep, 1000
+    }
+
+    failSafe := A_TickCount
+    failSafeTime := 0
+    Loop{
+        Delay(2)
+        adbClick_wbb(172, 427) ;clicks complete all and ok
+        Delay(2)
+        adbClick_wbb(153, 482) ;when to many rewards ok button goes lower
+        Delay(2)
+        adbClick_wbb(247, 486) ;click skip
+        if FindOrLoseImage(244, 406, 273, 449, , "GotAllMissions", 0, 0) {
+            break
+        }
+        else if (failSafeTime > 60){
+            GotRewards := false
+            break
+        }
+        failSafeTime := (A_TickCount - failSafe) // 1000
+    }
+    
+    AnnivCountdownDone := 1
+    setMetaData()
+}
+
+FutureBonusPrep() {
+    adbSwipeX3 := Round(211 / 277 * 535)
+    adbSwipeX4 := Round(11 / 277 * 535)
+    adbSwipeY2 := Round((453 - 44) / 489 * 960)
+    adbSwipeParams2 := adbSwipeX3 . " " . adbSwipeY2 . " " . adbSwipeX4 . " " . adbSwipeY2 . " " . swipeSpeed
+
+    failSafe := A_TickCount
+    failSafeTime := 0
+    Loop{
+        adbSwipe(adbSwipeParams2)
+        Sleep, 10
+        if (FindOrLoseImage(225, 444, 272, 470, , "Premium", 0, failSafeTime)){
+            break
+        }
+        failSafeTime := (A_TickCount - failSafe) // 1000
+        CreateStatusMessage("Waiting for Trace`n(" . failSafeTime . "/45 seconds)")
+        Delay(1)
+    }
+    
+    IniRead, FutureBonusPos, %A_ScriptDir%\..\Settings.ini, UserSettings, FutureBonusPos, 0
+    FutureBonuslooptime := FutureBonusPos * (-1) -1 
+    if(FutureBonuslooptime){
+        loop %FutureBonuslooptime% {
+            adbClick_wbb(10, 465)
+            sleep, 1000
+        }
+    } else {
+        adbClick_wbb(150, 465)
+        sleep, 1000
+    }
+
     failSafe := A_TickCount
     failSafeTime := 0
     Loop{
