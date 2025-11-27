@@ -197,6 +197,11 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
         adbShell.StdIn.WriteLine("am start -n jp.pokemon.pokemontcgp/com.unity3d.player.UnityPlayerActivity")
         waitadb()
     }
+
+    if(imageName = "Social" || imageName = "Shop"){
+        Notice()
+    }
+
     if(imageName = "Country" || imageName = "Social")
         FSTime := 90
     else if(imageName = "Button")
@@ -211,6 +216,14 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
         failSafe := A_TickCount
     }
     return confirmed
+}
+
+Notice() {
+    if(FindOrLoseImage(133, 479, 147, 493, , "noticex", 0)){
+        Delay(3)
+        adbClick_wbb(137, 485)
+        Delay(1)
+    }
 }
 
 FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", clickx := 0, clicky := 0, sleepTime := "", skip := false, safeTime := 0) {
@@ -261,7 +274,7 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
         } else {
             if(skip < 45) {
                 ElapsedTime := (A_TickCount - StartSkipTime) // 1000
-                FSTime := 45
+                FSTime := 180
                 if (ElapsedTime >= FSTime || safeTime >= FSTime) {
                     LogToFile("Instance " . scriptName . " has been stuck at " . imageName . " for 90s. (EL: " . ElapsedTime . ", sT: " . safeTime . ") Killing it...")
                     restartGameInstance("Stuck at " . imageName . "...") ; change to reset the instance and delete data then reload script
@@ -293,6 +306,10 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
             LogToFile("Error message in " . scriptName . ". Clicking retry...")
             adbClick(139, 386)
             Sleep, 1000
+        }
+        
+        if(imageName = "Social" || imageName = "Shop"){
+            Notice()
         }
 
         if(skip) {
