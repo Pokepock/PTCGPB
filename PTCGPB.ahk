@@ -14,11 +14,11 @@ global STATIC_BRUSH := 0
 
 githubUser := "Pokepock"
 repoName := "PTCGPB"
-localVersion := "v7.0.7.2"
+localVersion := "v7.0.8"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
-intro := "Folder Check & Individual Pack Select"
+intro := "Classic Mode and Extras "
 ; GUI dimensions
 global GUI_WIDTH := 377 
 global GUI_HEIGHT := 677
@@ -1140,7 +1140,7 @@ NextStep:
         chooseSettingsPage .= "Txt_title_set,Txt_Btn_RerollSettings,Txt_Btn_SystemSettings,Txt_Btn_PackSettings,Txt_Btn_SaveForTrade,Txt_Btn_DiscordSettings,Txt_Btn_DownloadSettings,Txt_Btn_main,"
         chooseSettingsPage .= "Hover_RerollSettings,Hover_SystemSettings,Hover_PackSettings,Hover_SaveForTrade,Hover_DiscordSettings,Hover_DownloadSettings"
         mainPage := "Bg_main,title_main,Btn_Arrange,Btn_Coffee,Btn_Join,Btn_Mumu,Btn_BalanceXMLs,Btn_Start,Btn_Update,Btn_Setting,Btn_ClassicMode,"
-        mainPage .= "Txt_title_main,Txt_Btn_Arrange,Txt_Btn_Coffee,Txt_Btn_Join,Txt_Btn_Mumu,Txt_Btn_BalanceXMLs,Txt_Btn_Start,Txt_Btn_Update,Txt_Btn_Setting,Txt_Btn_ClassicMode,"
+        mainPage .= "Txt_title_main,Txt_Btn_Arrange,Txt_Btn_Coffee,Txt_Btn_Join,Txt_Btn_Mumu,Txt_Btn_BalanceXMLs,Txt_Btn_Start,Txt_Btn_Update,Txt_Btn_Setting,Txt_Btn_ClassicMode,Btn_Extra,Txt_Btn_Extra,"
         mainPage .= "Hover_Arrange,Hover_Coffee,Hover_Join,Hover_Mumu,Hover_BalanceXMLs,Hover_Start,Hover_Update"
         inSettingPage := "Bg_inset,Btn_previous,Btn_next,Btn_inset,Txt_Btn_inset,title_box,title_download,title_discord,title_trade,title_pack,title_system,title_reroll,"
         inSettingPage .= "Hover_previous,Hover_next"
@@ -1229,7 +1229,7 @@ NextStep:
         }
         FileDelete, %finishSignalFile% ; delete signal
         
-        BarControls := "Ot_license,Txt_license,Btn_ToolTip,Btn_Language,Btn_reload,BackgroundToggle,ThemeToggle,Btn_ClassicMode,Txt_Btn_ClassicMode"
+        BarControls := "Ot_license,Txt_license,Btn_ToolTip,Btn_Language,Btn_reload,BackgroundToggle,ThemeToggle,Btn_ClassicMode,Txt_Btn_ClassicMode,Btn_Extra,Txt_Btn_Extra"
         mainPageControl := "Bg_main,Btn_Arrange,Btn_Coffee,Btn_Join,Btn_Mumu,"
         mainPageControl .= "Btn_BalanceXMLs,Btn_Start,Btn_Update,Btn_Setting,"
         mainPageControl .= "Txt_title_main,Txt_Btn_Arrange,Txt_Btn_Coffee,Txt_Btn_Join,Txt_Btn_Mumu,"
@@ -1320,7 +1320,7 @@ NextStep:
         mainPageControl := "Bg_main,Btn_Arrange,Btn_Coffee,Btn_Join,Btn_Mumu,"
         mainPageControl .= "Btn_BalanceXMLs,Btn_Start,Btn_Update,Btn_Setting,Btn_ClassicMode,"
         mainPageControl .= "Txt_title_main,Txt_Btn_Arrange,Txt_Btn_Coffee,Txt_Btn_Join,Txt_Btn_Mumu,"
-        mainPageControl .= "Txt_Btn_BalanceXMLs,Txt_Btn_Start,Txt_Btn_Update,Txt_Btn_Setting,Txt_Btn_ClassicMode"
+        mainPageControl .= "Txt_Btn_BalanceXMLs,Txt_Btn_Start,Txt_Btn_Update,Txt_Btn_Setting,Txt_Btn_ClassicMode,Btn_Extra,Txt_Btn_Extra"
         
         ShowControls(mainPageControl)
         
@@ -2388,6 +2388,7 @@ NextStep:
         ; other
         GuiControl,, Ot_license, %license%
         GuiControl,, Btn_ClassicMode, %btn_settingPage%
+        GuiControl,, Btn_Extra, %btn_settingPage%
     }
     ; First, try to load existing settings
     settingsLoaded := LoadSettingsFromIni()
@@ -2427,6 +2428,12 @@ NextStep:
     }
     InitializeJsonFile() ; Create or open the JSON file
     BuildfirstImagePath()
+    IniRead, classicModeOnly, Settings.ini, UserSettings, classicModeOnly, 0
+    
+    if(classicModeOnly){
+        Run, %A_ScriptDir%\Scripts\Include\ClassicMode.ahk
+        ExitApp
+    }
     
     ; Initialize with dark theme
     if (isDarkTheme)
@@ -2449,7 +2456,7 @@ NextStep:
     global Hover_previous, Hover_next
     
     global Ot_license, Txt_license
-    global Btn_ToolTip, Btn_Language, Btn_reload, BackgroundToggle, ThemeToggle, Btn_ClassicMode, Txt_Btn_ClassicMode
+    global Btn_ToolTip, Btn_Language, Btn_reload, BackgroundToggle, ThemeToggle, Btn_ClassicMode, Txt_Btn_ClassicMode, Btn_Extra, Txt_Btn_Extra
     
     ;; Choose Settings page
     Gui, Add, Picture, x0 y0 w%GUI_WIDTH% h%GUI_HEIGHT% vBg_set Hidden, %bg_set%
@@ -2551,6 +2558,8 @@ NextStep:
     SetNormalFont()
     ; Add Fast setting switch
     TestHover := AddBtn("Picture", 260, 115, 88, 16, "Btn_ClassicMode", "OpenClassicMode", "Classic mode", btn_settingPage, "Txt_Btn_ClassicMode", 268, 113)
+
+    TestHover := AddBtn("Picture", 205, 115, 55, 16, "Btn_Extra", "OpenExtraFunction", "Extra", btn_settingPage, "Txt_Btn_Extra", 218, 113)
     
     global Txt_runMain, Txt_autoUseGPTest, Txt_slowMotion,
     global Txt_autoLaunchMonitor, Txt_applyRoleFilters, Txt_debugMode, Txt_tesseractOption, Txt_statusMessage
@@ -3755,6 +3764,13 @@ OpenClassicMode:
     ExitApp
 return
 
+OpenExtraFunction:
+    Gui, Submit, NoHide
+    SaveAllSettings()
+    Run, %A_ScriptDir%\Scripts\Include\Extra.ahk
+    ExitApp
+return
+
 ; ToolTip
 OpenToolTip:
     Tool := A_ScriptDir . "\GUI\Help Guide.html"
@@ -4115,6 +4131,24 @@ StartBot:
     
     ; Save all settings
     SaveAllSettings()
+
+    IniRead, altWebhookSettings, Settings.ini, UserSettings, altWebhookSettings, 0
+    if(altWebhookSettings){
+        IniRead, altDiscordWebhookURL, Settings.ini, UserSettings, altDiscordWebhookURL, ""
+        IniRead, altDiscordUserId, Settings.ini, UserSettings, altDiscordUserId, DiscordUserId
+        IniRead, altheartBeat, Settings.ini, UserSettings, altheartBeat, 0
+        IniRead, altheartBeatName, Settings.ini, UserSettings, altheartBeatName, heartBeatName
+        IniRead, altheartBeatWebhookURL, Settings.ini, UserSettings, altheartBeatWebhookURL, ""
+        IniRead, altmainIdsURL, Settings.ini, UserSettings, altmainIdsURL, ""
+        IniRead, altvipIdsURL, Settings.ini, UserSettings, altvipIdsURL, ""
+        DiscordWebhookURL := altDiscordWebhookURL
+        DiscordUserId := altDiscordUserId 
+        heartBeat := altheartBeat
+        heartBeatName := altheartBeatName
+        heartBeatWebhookURL := altheartBeatWebhookURL
+        mainIdsURL := altmainIdsURL
+        vipIdsURL := altvipIdsURL
+    }
     
     ; Re-validate scaleParam based on current language
     
@@ -4306,6 +4340,39 @@ StartBot:
         detectionMsg .= ", CrownCheck"
     if (InvalidCheck) 
         detectionMsg .= ", InvalidCheck"
+
+
+    settingsToRead := ["CheckFolder", "claimAnnivCountdown", "claimMail", "renameMode", "claimBonusWeek", "ChangeLNMode"]
+    settingsValue := {}
+
+    Loop, % settingsToRead.Length()
+    {
+        settingName := settingsToRead[A_Index]
+        IniRead, value, Settings.ini, UserSettings, %settingName%, 0
+        settingsValue[settingName] := value
+        
+    }
+
+
+    othersMsg := "\nOthers: "
+    firstItem := true
+
+    for settingName, value in settingsValue
+    {
+        if (value != 0 && value != "")
+        {
+            if (!firstItem)
+                othersMsg .= ", "
+            othersMsg .= settingName
+            firstItem := false
+        }
+    }
+
+    if (firstItem) 
+        othersMsg .= "None"
+    
+    
+
     
     ; === MAIN HEARTBEAT LOOP ===
     Loop {
@@ -4358,12 +4425,17 @@ StartBot:
             
             if(offlineAHK = "")
                 offlineAHK := "Offline: none"
-            else
+            else {
                 offlineAHK := "Offline: " . RTrim(offlineAHK, ", ") . " <@" . discordUserId . ">"
+                IniRead, offlineReminder, Settings.ini, UserSettings, offlineReminder, 1
+                if(offlineReminder)
+                    offlineAHK .= " <@" . discordUserId . ">"
+            }
             if(onlineAHK = "")
                 onlineAHK := "Online: none"
             else
                 onlineAHK := "Online: " . RTrim(onlineAHK, ", ")
+            
             
             ; Create status message with all regular heartbeat info
             discMessage := heartBeatName ? "\n" . heartBeatName : ""
@@ -4468,12 +4540,17 @@ StartBot:
                 
                 if(offlineAHK = "")
                     offlineAHK := "Offline: none"
-                else
-                    offlineAHK := "Offline: " . RTrim(offlineAHK, ", ") . " <@" . discordUserId . ">"
+                else {
+                    offlineAHK := "Offline: " . RTrim(offlineAHK, ", ")
+                    IniRead, offlineReminder, Settings.ini, UserSettings, offlineReminder, 1
+                    if(offlineReminder)
+                        offlineAHK .= " <@" . discordUserId . ">"
+                }
                 if(onlineAHK = "")
                     onlineAHK := "Online: none"
                 else
                     onlineAHK := "Online: " . RTrim(onlineAHK, ", ")
+                
                 
                 discMessage := heartBeatName ? "\n" . heartBeatName : ""
                 
