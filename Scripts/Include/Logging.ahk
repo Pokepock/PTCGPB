@@ -11,7 +11,6 @@ IniRead, sendAccountXml, %settingsPath%, UserSettings, sendAccountXml, 0
 IniRead, showStatus, %settingsPath%, UserSettings, statusMessage, 1
 IniRead, Debug, %settingsPath%, UserSettings, debugMode, 0
 
-
 ; Enable debugging to get more status messages and logging.
 
 ResetStatusMessage() {
@@ -233,15 +232,11 @@ LogToDCwithEmbed(message, screenshotFile := "", ping := false, xmlFile := "", sc
     else
         curlCmd := "curl -k "
 
-    ;=========================
-    ;   AHK escape helpers
-    ;=========================
+
     bsq := "\" . """"   ; -> \"
     bq := """"          ; -> "
 
-    ;=========================
-    ;   payload_json 建立
-    ;=========================
+
     if (useEmbed) {
 
         screenshotFilename1 := ""
@@ -254,7 +249,7 @@ LogToDCwithEmbed(message, screenshotFile := "", ping := false, xmlFile := "", sc
         titleText := "No. " . title
         titleText := StrReplace(titleText, """", bsq)
 
-        ; 組合 embed JSON
+    
         titlePart := bsq "title" bsq ":" bsq titleText bsq
         descPart := bsq "description" bsq ":" bsq embedMessage bsq
         colorPart := bsq "color" bsq ":3447003"
@@ -269,7 +264,7 @@ LogToDCwithEmbed(message, screenshotFile := "", ping := false, xmlFile := "", sc
 
         payloadJson := "{" . bsq . "content" . bsq . ":" . bsq . discordPing . bsq . "," . bsq . "embeds" . bsq . ":" . embedsJson . "}"
 
-        ; ❗最關鍵修正：不能用 ;type=application/json
+     
         curlCmd .= "-F ""payload_json=" . payloadJson . """ "
     }
     else {
@@ -282,9 +277,6 @@ LogToDCwithEmbed(message, screenshotFile := "", ping := false, xmlFile := "", sc
     }
 
 
-    ;=========================
-    ;   Attach files（無子函式版）
-    ;=========================
     fileIndex := 1
 
     if (screenshotFile != "" && FileExist(screenshotFile)) {
@@ -312,9 +304,6 @@ LogToDCwithEmbed(message, screenshotFile := "", ping := false, xmlFile := "", sc
         fileIndex++
     }
 
-    ;=========================
-    ;   Send
-    ;=========================
     curlCmd .= webhookURL
 
     LogToFile(curlCmd, "Discord.txt")
