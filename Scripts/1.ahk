@@ -49,7 +49,7 @@ maxAccountPackNum := 40
 aminutes := 0
 aseconds := 0
 
-global beginnerMissionsDone, soloBattleMissionDone, intermediateMissionsDone, specialMissionsDone, resetSpecialMissionsDone, accountHasPackInTesting, redeemTokensDone, wonderPickEventDone, currentLoadedAccountIndex, folderCheckDone, AnnivCountdownDone
+global beginnerMissionsDone, soloBattleMissionDone, intermediateMissionsDone, specialMissionsDone, resetSpecialMissionsDone, accountHasPackInTesting, redeemTokensDone, wonderPickEventDone, currentLoadedAccountIndex, folderCheckDone, AnnivCountdownDone, futureBonusPrepDone
 
 beginnerMissionsDone := 0
 soloBattleMissionDone := 0
@@ -61,6 +61,7 @@ redeemTokensDone := 0
 wonderPickEventDone := 0
 folderCheckDone := 0
 AnnivCountdownDone := 0
+futureBonusPrepDone := 0
 
 global dbg_bbox, dbg_bboxNpause, dbg_bbox_click
 
@@ -932,6 +933,8 @@ Loop {
             }
 
             IniRead, claimFutureBonusPrep, %A_ScriptDir%\..\Settings.ini, UserSettings, claimFutureBonusPrep, 0
+            if (futureBonusPrepDone)
+                futureBonusPrepDone := 0
             if (claimFutureBonusPrep = 1) {
                 if (!openExtraPack) {
                     GoToMain(true)
@@ -1043,6 +1046,7 @@ Loop {
                     wonderPickEventDone := 0
                     folderCheckDone := 0
                     AnnivCountdownDone := 0
+                    futureBonusPrepDone := 0
                 }
                 restartGameInstance("New Run", false)
             }
@@ -2584,6 +2588,7 @@ loadAccount() {
     wonderPickEventDone := 0
     folderCheckDone := 0
     AnnivCountdownDone := 0
+    futureBonusPrepDone := 0
 
     if (stopToggle) {
         CreateStatusMessage("Stopping...",,,, false)
@@ -2754,6 +2759,8 @@ saveAccount(file := "Valid", ByRef filePath := "", packDetails := "") {
             metadata .= "F"
         if(AnnivCountdownDone)
             metadata .= "A"
+        if(futureBonusPrepDone)
+            metadata .= "N"
 
         saveDir := A_ScriptDir "\..\Accounts\Saved\" . winTitle
         filePath := saveDir . "\" . accountOpenPacks . "P_" . A_Now . "_" . winTitle . "(" . metadata . ").xml"
@@ -5042,6 +5049,7 @@ getMetaData() {
     wonderPickEventDone := 0
     folderCheckDone := 0
     AnnivCountdownDone := 0
+    futureBonusPrepDone := 0
 
     ; check if account file has metadata information
     if(InStr(accountFileName, "(")) {
@@ -5066,6 +5074,8 @@ getMetaData() {
                 folderCheckDone := 1
             if(Instr(metadata, "A"))
                 AnnivCountdownDone := 1 
+            if(Instr(metadata, "N"))
+                futureBonusPrepDone := 1 
             if(InStr(metadata, "T")) {
                 saveDir := A_ScriptDir "\..\Accounts\Saved\" . winTitle
                 accountFile := saveDir . "\" . accountFileName
@@ -5124,6 +5134,8 @@ setMetaData() {
         metadata .= "F"
     if(AnnivCountdownDone)
         metadata .= "A"
+    if(futureBonusPrepDone)
+        metadata .= "N"
 
     ; Remove parentheses if no flags remain, helpful if there is only a T flag or manual removal of X flag
     if(hasMetaData) {
@@ -6039,7 +6051,7 @@ FutureBonusPrep() {
         failSafeTime := (A_TickCount - failSafe) // 1000
     }
     
-    AnnivCountdownDone := 1
+    futureBonusPrepDone := 1
     setMetaData()
 }
 
