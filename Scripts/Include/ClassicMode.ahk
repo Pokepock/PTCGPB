@@ -467,6 +467,8 @@ Loop, %MonitorCount% {
 SelectedMonitorIndex := RegExReplace(SelectedMonitorIndex, ":.*$")
 Gui, Add, DropDownList, x20 y385 w125 vSelectedMonitorIndex Choose%SelectedMonitorIndex% Background2A2A2A cWhite, %MonitorOptions%
 Gui, Add, Text, x155 y365 %sectionColor%, % currentDictionary.Txt_Scale
+
+defaultLanguageList := "Scale125|Scale100"
 if (defaultLanguage = "Scale125") {
   defaultLang := 1
   scaleParam := 277
@@ -474,7 +476,7 @@ if (defaultLanguage = "Scale125") {
   defaultLang := 2
   scaleParam := 287
 }
-Gui, Add, DropDownList, x155 y385 w75 vdefaultLanguage choose%defaultLang% Background2A2A2A cWhite, Scale125
+Gui, Add, DropDownList, x155 y385 w75 vdefaultLanguage choose%defaultLang% Background2A2A2A cWhite, %defaultLanguageList%
 Gui, Add, Text, x20 y415 %sectionColor%, % currentDictionary.Txt_RowGap
 Gui, Add, Edit, vRowGap w50 x125 y415 h20 -E0x200 Background2A2A2A cWhite Center, %RowGap%
 Gui, Add, Text, x20 y440 %sectionColor%, % currentDictionary.Txt_FolderPath
@@ -783,37 +785,31 @@ if(s4tEnabled) {
   Gui, Add, Checkbox, % (s4tSendAccountXml ? "Checked" : "") " vs4tSendAccountXml x770 y375 " . sectionColor, % currentDictionary.Txt_s4tSendAccountXml
 
 } else {
-  Gui, Add, Checkbox, % (s4tSilent ? "Checked" : "") " vs4tSilent x775 y45 Hidden " . sectionColor, % currentDictionary.Txt_s4tSilent
-  Gui, Add, Checkbox, % (s4t3Dmnd ? "Checked" : "") " vs4t3Dmnd x775 y65 Hidden " . sectionColor, 3 ◆◆◆
-  Gui, Add, Checkbox, % (s4t4Dmnd ? "Checked" : "") " vs4t4Dmnd x775 y85 Hidden " . sectionColor, 4 ◆◆◆◆
+  Gui, Add, Checkbox, % (s4tSilent ? "Checked" : "") " vs4tSilent x770 y45 Hidden " . sectionColor, % currentDictionary.Txt_s4tSilent
+  Gui, Add, Checkbox, % (s4t3Dmnd ? "Checked" : "") " vs4t3Dmnd x770 y65 Hidden " . sectionColor, 3 ◆◆◆
+  Gui, Add, Checkbox, % (s4t4Dmnd ? "Checked" : "") " vs4t4Dmnd x770 y85 Hidden " . sectionColor, 4 ◆◆◆◆
   
-  Gui, Add, Checkbox, % (s4tFoil ? "Checked" : "") " vs4tFoil x775 y105 Hidden " . sectionColor, 4 ◆◆◆◆ Foil
+  Gui, Add, Checkbox, % (s4tFoil ? "Checked" : "") " vs4tFoil x7750 y105 Hidden " . sectionColor, 4 ◆◆◆◆ Foil
   
-  Gui, Add, Checkbox, % (s4t1Star ? "Checked" : "") " vs4t1Star x775 y125 Hidden " . sectionColor, 1 ★
-  Gui, Add, Text, Hidden x775 y150 w210 h2 vs4tLine_3 +0x10 ; Creates a horizontal line
-  Gui, Add, Checkbox, % (s4tRainbow ? "Checked" : "") " vs4tRainbow x775 y145 Hidden " . sectionColor, 2 ★★ Rainbow
-  Gui, Add, Checkbox, % (s4tFullart ? "Checked" : "") " vs4tFullart x775 y165 Hidden " . sectionColor, 2 ★★ Full Art
-  Gui, Add, Checkbox, % (s4tTrainer ? "Checked" : "") " vs4tTrainer x775 y185 Hidden " . sectionColor, 2 ★★ Trainer
+  Gui, Add, Checkbox, % (s4t1Star ? "Checked" : "") " vs4t1Star x770 y125 Hidden " . sectionColor, 1 ★
+  Gui, Add, Text, Hidden x770 y150 w210 h2 vs4tLine_3 +0x10 ; Creates a horizontal line
+  Gui, Add, Checkbox, % (s4tRainbow ? "Checked" : "") " vs4tRainbow x770 y160 Hidden " . sectionColor, 2 ★★ Rainbow
+  Gui, Add, Checkbox, % (s4tFullart ? "Checked" : "") " vs4tFullart x770 y180 Hidden " . sectionColor, 2 ★★ Full Art
+  Gui, Add, Checkbox, % (s4tTrainer ? "Checked" : "") " vs4tTrainer x770 y200 Hidden " . sectionColor, 2 ★★ Trainer
   
-  Gui, Add, Checkbox, % (s4tShiny ? "Checked" : "") " vs4tShiny x775 y205 Hidden " . sectionColor, Shiny
-
-  Gui, Add, Text, Hidden x775 y230 w210 h2 vs4tLine_1 +0x10 ; Creates a horizontal line
-  Gui, Add, Checkbox, % (s4tWP ? "Checked" : "") " vs4tWP gs4tWPSettings x775 y250 cWhite Hidden", % currentDictionary.Txt_s4tWP
-  Gui, Add, Text, x775 y275 vTxt_s4tWPMinCards Hidden %sectionColor%, % currentDictionary.Txt_s4tWPMinCards
-  Gui, Add, Edit, cFDFDFD w50 x870 y275 h20 vs4tWPMinCards -E0x200 Background2A2A2A Center cWhite Hidden, %s4tWPMinCards%
-  Gui, Add, Text, Hidden x775 y310 w210 h2 vs4tLine_2 +0x10 ; Creates a horizontal line
-  Gui, Add, Text, x775 y335 vS4TDiscordSettingsSubHeading Hidden %sectionColor%, % currentDictionary.S4TDiscordSettingsSubHeading
+  Gui, Add, Checkbox, % (s4tShiny ? "Checked" : "") " vs4tShiny x770 y220 Hidden " . sectionColor, Shiny
+  Gui, Add, Text, x775 y260 vS4TDiscordSettingsSubHeading Hidden %sectionColor%, % currentDictionary.S4TDiscordSettingsSubHeading
   
   if(StrLen(s4tDiscordUserId) < 3)
     s4tDiscordUserId := ""
   if(StrLen(s4tDiscordWebhookURL) < 3)
     s4tDiscordWebhookURL := ""
     
-  Gui, Add, Text, Hidden x775 y360 vTxt_s4tDiscordUserId %sectionColor%, Discord ID:
-  Gui, Add, Edit, vs4tDiscordUserId w210 x775 y385 h20 -E0x200 Background2A2A2A cWhite Hidden, %s4tDiscordUserId%
-  Gui, Add, Text, Hidden x775 y410 vTxt_s4tDiscordWebhookURL %sectionColor%, Webhook URL:
-  Gui, Add, Edit, vs4tDiscordWebhookURL w210 x775 y435 h20 -E0x200 Background2A2A2A cWhite Hidden, %s4tDiscordWebhookURL%
-  Gui, Add, Checkbox, % (s4tSendAccountXml ? "Checked" : "") " vs4tSendAccountXml x775 y470 Hidden " . sectionColor, % currentDictionary.Txt_s4tSendAccountXml
+  Gui, Add, Text, Hidden x775 y285 vTxt_s4tDiscordUserId %sectionColor%, Discord ID:
+  Gui, Add, Edit, vs4tDiscordUserId w210 x775 y305 h20 -E0x200 Background2A2A2A cWhite Hidden, %s4tDiscordUserId%
+  Gui, Add, Text, Hidden x775 y330 vTxt_s4tDiscordWebhookURL %sectionColor%, Webhook URL:
+  Gui, Add, Edit, vs4tDiscordWebhookURL w210 x775 y350 h20 -E0x200 Background2A2A2A cWhite Hidden, %s4tDiscordWebhookURL%
+  Gui, Add, Checkbox, % (s4tSendAccountXml ? "Checked" : "") " vs4tSendAccountXml x770 y375 Hidden " . sectionColor, % currentDictionary.Txt_s4tSendAccountXml
 }
 
 sectionColor := "cGray"
@@ -1199,7 +1195,6 @@ return
 
 ArrangeWindows:
     Gui, Submit, NoHide
-    ; 確保變數已從介面更新
     GuiControlGet, Mains,, Mains
     GuiControlGet, Instances,, Instances
     GuiControlGet, Columns,, Columns
@@ -1640,7 +1635,7 @@ StartBot:
     }
     
     if(autoLaunchMonitor) {
-        monitorFile := A_ScriptDir . "Monitor.ahk"
+        monitorFile := A_ScriptDir . "\" . "Monitor.ahk"
         if(FileExist(monitorFile)) {
             Run, %monitorFile%
         }
