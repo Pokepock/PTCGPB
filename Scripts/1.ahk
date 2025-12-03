@@ -1286,7 +1286,16 @@ TradeTutorial() {
 
         FindImageAndClick(226, 100, 270, 135, , "Add", 38, 460, 500,,2)
     }
+
+    if(FindOrLoseImage(133, 479, 147, 493, , "noticex", 0)){
+        Delay(3)
+        adbClick_wbb(137, 485)
+        Delay(1)
+    }
+    
     Delay(1)
+
+    
 }
 
 AddFriends(renew := false, getFC := false) {
