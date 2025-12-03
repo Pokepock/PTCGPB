@@ -1292,7 +1292,7 @@ TradeTutorial() {
         adbClick_wbb(137, 485)
         Delay(1)
     }
-    
+
     Delay(1)
 
     
@@ -1519,7 +1519,7 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
         Gdip_DisposeImage(pBitmap)
         restartGameInstance("*Stuck at " . imageName . "...")
     }
-    Path = %imagePath%Error.png ; Search for communication error
+    Path = %imagePath%Error.png ; Search for communication errorㄥ
     pNeedle := GetNeedle(Path)
     ; ImageSearch within the region
     vRet := Gdip_ImageSearch_wbb(pBitmap, pNeedle, vPosXY, 120, 178, 155, 210, searchVariation)
