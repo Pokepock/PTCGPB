@@ -14,7 +14,7 @@ global STATIC_BRUSH := 0
 
 githubUser := "Pokepock"
 repoName := "PTCGPB"
-localVersion := "v7.0.8.3"
+localVersion := "v7.0.9"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
@@ -420,7 +420,7 @@ NextStep:
         global autoLaunchMonitor, autoUseGPTest, TestTime
         global CheckShinyPackOnly, TrainerCheck, FullArtCheck, RainbowCheck, ShinyCheck, CrownCheck
         global InvalidCheck, ImmersiveCheck, PseudoGodPack, minStars, Palkia, Dialga, Arceus, Shining
-        global Mew, Pikachu, Charizard, Mewtwo, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria, slowMotion, ocrLanguage, clientLanguage
+        global Mew, Pikachu, Charizard, Mewtwo, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria, MegaCharizardY, slowMotion, ocrLanguage, clientLanguage
         global CurrentVisibleSection, heartBeatDelay, sendAccountXml, showcaseEnabled, showcaseURL, isDarkTheme
         global useBackgroundImage, tesseractPath, applyRoleFilters, debugMode, tesseractOption, statusMessage
         global s4tEnabled, s4tSilent, s4t3Dmnd, s4t4Dmnd, s4t1Star, s4tGholdengo, s4tWP, s4tWPMinCards
@@ -495,6 +495,7 @@ NextStep:
         IniWrite, %MegaBlaziken%, Settings.ini, UserSettings, MegaBlaziken
         IniWrite, %MegaGyarados%, Settings.ini, UserSettings, MegaGyarados
         IniWrite, %MegaAltaria%, Settings.ini, UserSettings, MegaAltaria
+        IniWrite, %MegaCharizardY%, Settings.ini, UserSettings, MegaCharizardY
         ; Save basic settings
         IniWrite, %AccountName%, Settings.ini, UserSettings, AccountName
         IniWrite, %waitTime%, Settings.ini, UserSettings, waitTime
@@ -592,9 +593,9 @@ NextStep:
         controlList .= "Txt_RowGap,Txt_InstanceLaunchDelay,Txt_autoLaunchMonitor,"
         controlList .= "Txt_MinStars,Txt_ShinyMinStars,Txt_DeleteMethod,Txt_packMethod,Txt_nukeAccount,"
         controlList .= "Txt_VariablePackCount,Txt_spendHourGlass,Txt_openExtraPack,SortByText,"
-		controlList .= "Txt_HoOh,Txt_Lugia,Txt_Suicune,Txt_Deluxe,Txt_MegaBlaziken,Txt_MegaGyarados,Txt_MegaAltaria,"
+		controlList .= "Txt_HoOh,Txt_Lugia,Txt_Suicune,Txt_Deluxe,Txt_MegaBlaziken,Txt_MegaGyarados,Txt_MegaAltaria,Txt_MegaCharizardY,"
         controlList .= "Txt_Eevee,Txt_Buzzwole,Txt_Solgaleo,Txt_Lunala,Txt_Shining,Txt_Arceus,Txt_Palkia,Txt_Dialga,Txt_Pikachu,Txt_Charizard,Txt_Mewtwo,Txt_Mew,"
-        controlList .= "AllPackSelection,Txt_PackHeading,Txt_PageMegaBlaziken,Txt_PageMegaGyarados,Txt_PageMegaAltaria,"
+        controlList .= "AllPackSelection,Txt_PackHeading,Txt_PageMegaBlaziken,Txt_PageMegaGyarados,Txt_PageMegaAltaria,Txt_PageMegaCharizardY,"
         controlList .= "Txt_FullArtCheck,Txt_TrainerCheck,Txt_RainbowCheck,Txt_PseudoGodPack,"
         controlList .= "Txt_CrownCheck,Txt_ShinyCheck,Txt_ImmersiveCheck,Txt_CheckShinyPackOnly,Txt_InvalidCheck,"
         controlList .= "Txt_s4tEnabled,Txt_s4tSilent,Txt_s4t3Dmnd,Txt_s4t4Dmnd,Txt_s4t1Star,Txt_s4tWP,"
@@ -1158,13 +1159,13 @@ NextStep:
         packControls := "PackSettingsHeading,Txt_MinStars,minStars,"
         packControls .= "Txt_ShinyMinStars,minStarsShiny,Txt_DeleteMethod,deleteMethod,packMethod,Txt_packMethod,nukeAccount,Txt_nukeAccount,"
         packControls .= "SortByText,SortByDropdown,"
-        packControls .= "Pack_Divider1,MegaBlaziken,MegaGyarados,MegaAltaria,"
+        packControls .= "Pack_Divider1,MegaBlaziken,MegaGyarados,MegaAltaria,MegaCharizardY,"
         packControls .= "Deluxe,Suicune,HoOh,Lugia,Eevee,Buzzwole,Solgaleo,Lunala,Shining,Arceus,Palkia,Dialga,Pikachu,Charizard,Mewtwo,Mew,"
-        packControls .= "Txt_MegaBlaziken,Txt_MegaGyarados,Txt_MegaAltaria,"
+        packControls .= "Txt_MegaBlaziken,Txt_MegaGyarados,Txt_MegaAltaria,Txt_MegaCharizardY,"
         packControls .= "Txt_Shining,Txt_Arceus,Txt_Palkia,Txt_Dialga,Txt_Pikachu,Txt_Charizard,Txt_Mewtwo,Txt_Mew,Txt_Solgaleo,Txt_Lunala,Txt_Buzzwole,Txt_Eevee,Txt_HoOh,Txt_Lugia,Txt_Suicune,Txt_Deluxe,"
         packControls .= "Pack_Divider2,ShinyCheck,"
-        packControls .= "AllPackSelection,Txt_PackHeading,Page_MegaBlaziken,Page_MegaGyarados,Page_MegaAltaria,"
-        packControls .= "Txt_PageMegaBlaziken,Txt_PageMegaGyarados,Txt_PageMegaAltaria,Btn_returnPack,Txt_Btn_returnPack,"
+        packControls .= "AllPackSelection,Txt_PackHeading,Page_MegaBlaziken,Page_MegaGyarados,Page_MegaAltaria,Page_MegaCharizardY"
+        packControls .= "Txt_PageMegaBlaziken,Txt_PageMegaGyarados,Txt_PageMegaAltaria,Txt_PageMegaCharizardY,Btn_returnPack,Txt_Btn_returnPack,"
         packControls .= "FullArtCheck,TrainerCheck,RainbowCheck,PseudoGodPack,InvalidCheck,"
         packControls .= "Txt_FullArtCheck,Txt_TrainerCheck,Txt_RainbowCheck,Txt_PseudoGodPack,Txt_CrownCheck,Txt_ShinyCheck,Txt_ImmersiveCheck,Txt_CheckShinyPackOnly,Txt_InvalidCheck,"
         packControls .= "CheckShinyPackOnly,CrownCheck,ImmersiveCheck,Pack_Divider3,"
@@ -1527,7 +1528,7 @@ NextStep:
     ShowPackSettingsSection() {
         global isDarkTheme, DARK_TEXT, LIGHT_TEXT, DARK_INPUT_BG, DARK_INPUT_TEXT, LIGHT_INPUT_BG, LIGHT_INPUT_TEXT
         global DARK_SECTION_COLORS, LIGHT_SECTION_COLORS, deleteMethod, nukeAccount
-        global Shining, Arceus, Palkia, Dialga, Pikachu, Charizard, Mewtwo, Mew, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria
+        global Shining, Arceus, Palkia, Dialga, Pikachu, Charizard, Mewtwo, Mew, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria, MegaCharizardY
         global sortByCreated
         ToggleImageOnHover.ResetAllHoverStates()
         ; Ensure the fade-in is finished before calling HideAllSection()
@@ -1556,8 +1557,8 @@ NextStep:
         godPackControls := "title_pack,Txt_MinStars,minStars,Txt_ShinyMinStars,minStarsShiny,"
         godPackControls .= "Txt_DeleteMethod,deleteMethod,Pack_Divider1"
         
-        packSelectionControls := "MegaBlaziken,MegaGyarados,MegaAltaria,"
-        packSelectionControls .= "Txt_MegaBlaziken,Txt_MegaGyarados,Txt_MegaAltaria,"
+        packSelectionControls := "MegaBlaziken,MegaGyarados,MegaAltaria,MegaCharizardY,"
+        packSelectionControls .= "Txt_MegaBlaziken,Txt_MegaGyarados,Txt_MegaAltaria,Txt_MegaCharizardY,"
         packSelectionControls .= "AllPackSelection,Pack_Divider2"
         
         cardDetectionControls := "FullArtCheck,TrainerCheck,RainbowCheck,"
@@ -1632,7 +1633,7 @@ NextStep:
         }
         
         ; Pack Selection text controls
-        packSelectionTextControls := "Txt_MegaBlaziken,Txt_MegaGyarados,Txt_MegaAltaria"
+        packSelectionTextControls := "Txt_MegaBlaziken,Txt_MegaGyarados,Txt_MegaAltaria,Txt_MegaCharizardY,"
         
         ; Card Detection text controls
         cardDetectionTextControls := "Txt_FullArtCheck,Txt_TrainerCheck,Txt_RainbowCheck,Txt_PseudoGodPack,"
@@ -1936,9 +1937,9 @@ NextStep:
         HideAllSections()
         ShowInsettingpage()
         
-        controlList := "title_Pack,Page_MegaBlaziken,Page_MegaGyarados,Page_MegaAltaria,Deluxe,HoOh,Lugia,Suicune,Eevee,Buzzwole,Solgaleo,Lunala,"
+        controlList := "title_Pack,Page_MegaBlaziken,Page_MegaGyarados,Page_MegaAltaria,Page_MegaCharizardY,Deluxe,HoOh,Lugia,Suicune,Eevee,Buzzwole,Solgaleo,Lunala,"
         controlList .= "Shining,Arceus,Palkia,Dialga,Pikachu,Charizard,Mewtwo,Mew,Btn_returnPack"
-        Txt_controlList := "Txt_PackHeading,Txt_PageMegaBlaziken,Txt_PageMegaGyarados,Txt_PageMegaAltaria,Txt_Deluxe,Txt_Suicune,Txt_HoOh,Txt_Lugia,Txt_Eevee,Txt_Buzzwole,Txt_Solgaleo,Txt_Lunala,Txt_Shining,Txt_Arceus,"
+        Txt_controlList := "Txt_PackHeading,Txt_PageMegaBlaziken,Txt_PageMegaGyarados,Txt_PageMegaAltaria,Txt_PageMegaCharizardY,Txt_Deluxe,Txt_Suicune,Txt_HoOh,Txt_Lugia,Txt_Eevee,Txt_Buzzwole,Txt_Solgaleo,Txt_Lunala,Txt_Shining,Txt_Arceus,"
         Txt_controlList .= "Txt_Palkia,Txt_Dialga,Txt_Pikachu,Txt_Charizard,Txt_Mewtwo,Txt_Mew"
         HideControls := "Btn_next,Btn_previous,Btn_inset,Txt_Btn_inset"
         
@@ -2129,9 +2130,10 @@ NextStep:
             IniRead, Lugia, Settings.ini, UserSettings, Lugia, 0
             IniRead, Suicune, Settings.ini, UserSettings, Suicune, 0
             IniRead, Deluxe, Settings.ini, UserSettings, Deluxe, 0
-            IniRead, MegaBlaziken, Settings.ini, UserSettings, MegaBlaziken, 1
-            IniRead, MegaGyarados, Settings.ini, UserSettings, MegaGyarados, 1
-            IniRead, MegaAltaria, Settings.ini, UserSettings, MegaAltaria, 1
+            IniRead, MegaBlaziken, Settings.ini, UserSettings, MegaBlaziken, 0
+            IniRead, MegaGyarados, Settings.ini, UserSettings, MegaGyarados, 0
+            IniRead, MegaAltaria, Settings.ini, UserSettings, MegaAltaria, 0
+            IniRead, MegaCharizardY, Settings.ini, UserSettings, MegaCharizardY, 1
             
             IniRead, CheckShinyPackOnly, Settings.ini, UserSettings, CheckShinyPackOnly, 0
             IniRead, TrainerCheck, Settings.ini, UserSettings, TrainerCheck, 0
@@ -2564,7 +2566,7 @@ NextStep:
     global Txt_runMain, Txt_autoUseGPTest, Txt_slowMotion,
     global Txt_autoLaunchMonitor, Txt_applyRoleFilters, Txt_debugMode, Txt_tesseractOption, Txt_statusMessage
     global Txt_packMethod, Txt_nukeAccount, Txt_spendHourGlass, Txt_openExtraPack
-    global Txt_MegaBlaziken, Txt_MegaGyarados, Txt_MegaAltaria 
+    global Txt_MegaBlaziken, Txt_MegaGyarados, Txt_MegaAltaria , Txt_MegaCharizardY
     global Txt_Deluxe, Txt_Suicune, Txt_HoOh, Txt_Lugia, Txt_Eevee, Txt_Buzzwole, Txt_Solgaleo, Txt_Lunala, Txt_Shining, Txt_Arceus, Txt_Palkia, Txt_Dialga, Txt_Pikachu, Txt_Charizard, Txt_Mewtwo, Txt_Mew
     global Txt_FullArtCheck, Txt_TrainerCheck, Txt_RainbowCheck, Txt_PseudoGodPack, Txt_CrownCheck, Txt_ShinyCheck, Txt_ImmersiveCheck, Txt_CheckShinyPackOnly, Txt_InvalidCheck
     global Txt_s4tEnabled, Txt_s4tSilent
@@ -2770,13 +2772,14 @@ NextStep:
     ; === Pack Selection Subsection ===
     SetNormalFont()
     ; Latest 4 Packs
-    AddCheckBox(45, 301, 28, 13, "MegaBlaziken", "", checkedPath, uncheckedPath, MegaBlaziken, "Txt_MegaBlaziken", currentDictionary.Txt_MegaBlaziken, 80, 300)
-    AddCheckBox(190, 301, 28, 13, "MegaGyarados", "", checkedPath, uncheckedPath, MegaGyarados, "Txt_MegaGyarados", currentDictionary.Txt_MegaGyarados, 225, 300)
-    AddCheckBox(45, 326, 28, 13, "MegaAltaria", "", checkedPath, uncheckedPath, MegaAltaria, "Txt_MegaAltaria", currentDictionary.Txt_MegaAltaria, 80, 325)
+    AddCheckBox(45, 301, 28, 13, "MegaCharizardY", "", checkedPath, uncheckedPath, MegaBlaziken, "Txt_MegaCharizardY", currentDictionary.Txt_MegaCharizardY, 80, 300)
+    AddCheckBox(190, 301, 28, 13, "MegaBlaziken", "", checkedPath, uncheckedPath, MegaBlaziken, "Txt_MegaBlaziken", currentDictionary.Txt_MegaBlaziken, 225, 300)
+    AddCheckBox(45, 326, 28, 13, "MegaGyarados", "", checkedPath, uncheckedPath, MegaGyarados, "Txt_MegaGyarados", currentDictionary.Txt_MegaGyarados, 80, 325)
+    AddCheckBox(190, 326, 28, 13, "MegaAltaria", "", checkedPath, uncheckedPath, MegaAltaria, "Txt_MegaAltaria", currentDictionary.Txt_MegaAltaria, 225, 325)
     ; Page for all pack settings
     global AllPackSelection, Btn_returnPack, Txt_Btn_returnPack
-    global Page_MegaBlaziken, Page_MegaGyarados, Page_MegaAltaria
-    global Txt_PageMegaBlaziken, Txt_PageMegaGyarados, Txt_PageMegaAltaria
+    global Page_MegaBlaziken, Page_MegaGyarados, Page_MegaAltaria , Page_MegaCharizardY
+    global Txt_PageMegaBlaziken, Txt_PageMegaGyarados, Txt_PageMegaAltaria, Txt_PageMegaCharizardY
     SetSmallBtnFont()
     TestHover := AddBtn("Text", 235, 360, "", "", "AllPackSelection", "GoPackSelect", currentDictionary.AllPack, "", "", "", "")
     
@@ -2786,51 +2789,53 @@ NextStep:
     SetNormalFont()
     Yline := 185
     Xline := 55
+    AddCheckBox(Xline, (Yline+1), 28, 13, "Page_MegaCharizardY", "PackCheck", checkedPath, uncheckedPath, MegaBlaziken, "Txt_PageMegaCharizardY", currentDictionary.Txt_MegaCharizardY, (Xline+35), Yline)
+    Xline += 155
     AddCheckBox(Xline, (Yline+1), 28, 13, "Page_MegaBlaziken", "PackCheck", checkedPath, uncheckedPath, MegaBlaziken, "Txt_PageMegaBlaziken", currentDictionary.Txt_MegaBlaziken, (Xline+35), Yline)
-    Xline += 155
+    Xline -= 155
+    Yline += 25
     AddCheckBox(Xline, (Yline+1), 28, 13, "Page_MegaGyarados", "PackCheck", checkedPath, uncheckedPath, MegaGyarados, "Txt_PageMegaGyarados", currentDictionary.Txt_MegaGyarados, (Xline+35), Yline)
-    Xline -= 155
-    Yline += 25
+    Xline += 155
     AddCheckBox(Xline, (Yline+1), 28, 13, "Page_MegaAltaria", "PackCheck", checkedPath, uncheckedPath, MegaAltaria, "Txt_PageMegaAltaria", currentDictionary.Txt_MegaAltaria, (Xline+35), Yline)
-    Xline += 155
+    Xline -= 155
+    Yline += 25
     AddCheckBox(Xline, (Yline+1), 28, 13, "Deluxe", "", checkedPath, uncheckedPath, Deluxe, "Txt_Deluxe", currentDictionary.Txt_Deluxe, (Xline+35), Yline)
-    Xline -= 155
-    Yline += 25
+    Xline += 155
     AddCheckBox(Xline, (Yline+1), 28, 13, "Suicune", "", checkedPath, uncheckedPath, Suicune, "Txt_Suicune", currentDictionary.Txt_Suicune, (Xline+35), Yline)
-    Xline += 155
+    Xline -= 155
+    Yline += 25
     AddCheckBox(Xline, (Yline+1), 28, 13, "HoOh", "", checkedPath, uncheckedPath, HoOh, "Txt_HoOh", currentDictionary.Txt_HoOh, (Xline+35), Yline)
-    Xline -= 155
-    Yline += 25
+    Xline += 155
     AddCheckBox(Xline, (Yline+1), 28, 13, "Lugia", "", checkedPath, uncheckedPath, Lugia, "Txt_Lugia", currentDictionary.Txt_Lugia, (Xline+35), Yline)
-    Xline += 155
+    Xline -= 155
+    Yline += 25
     AddCheckBox(Xline, (Yline+1), 28, 13, "Eevee", "", checkedPath, uncheckedPath, Eevee, "Txt_Eevee", currentDictionary.Txt_Eevee, (Xline+35), Yline)
-    Xline -= 155
-    Yline += 25
+    Xline += 155
     AddCheckBox(Xline, (Yline+1), 28, 13, "Buzzwole", "", checkedPath, uncheckedPath, Buzzwole, "Txt_Buzzwole", currentDictionary.Txt_Buzzwole, (Xline+35), Yline)
-    Xline += 155
+    Xline -= 155
+    Yline += 25
     AddCheckBox(Xline, (Yline+1), 28, 13, "Solgaleo", "", checkedPath, uncheckedPath, Solgaleo, "Txt_Solgaleo", currentDictionary.Txt_Solgaleo, (Xline+35), Yline)
-    Xline -= 155
-    Yline += 25
+    Xline += 155
     AddCheckBox(Xline, (Yline+1), 28, 13, "Lunala", "", checkedPath, uncheckedPath, Lunala, "Txt_Lunala", currentDictionary.Txt_Lunala, (Xline+35), Yline)
-    Xline += 155
+    Xline -= 155
+    Yline += 25
     AddCheckBox(Xline, (Yline+1), 28, 13, "Shining", "", checkedPath, uncheckedPath, Shining, "Txt_Shining", currentDictionary.Txt_Shining, (Xline+35), Yline)
-    Xline -= 155
-    Yline += 25
+    Xline += 155
     AddCheckBox(Xline, (Yline+1), 28, 13, "Arceus", "", checkedPath, uncheckedPath, Arceus, "Txt_Arceus", currentDictionary.Txt_Arceus, (Xline+35), Yline)
-    Xline += 155
+    Xline -= 155
+    Yline += 25
     AddCheckBox(Xline, (Yline+1), 28, 13, "Palkia", "", checkedPath, uncheckedPath, Palkia, "Txt_Palkia", currentDictionary.Txt_Palkia, (Xline+35), Yline)
-    Xline -= 155
-    Yline += 25
+    Xline += 155
     AddCheckBox(Xline, (Yline+1), 28, 13, "Dialga", "", checkedPath, uncheckedPath, Dialga, "Txt_Dialga", currentDictionary.Txt_Dialga, (Xline+35), Yline)
-    Xline += 155
+    Xline -= 155
+    Yline += 25
     AddCheckBox(Xline, (Yline+1), 28, 13, "Mew", "", checkedPath, uncheckedPath, Mew, "Txt_Mew", currentDictionary.Txt_Mew, (Xline+35), Yline)
-    Xline -= 155
-    Yline += 25
-    AddCheckBox(Xline, (Yline+1), 28, 13, "Pikachu", "", checkedPath, uncheckedPath, Pikachu, "Txt_Pikachu", currentDictionary.Txt_Pikachu, (Xline+35), Yline)
     Xline += 155
-    AddCheckBox(Xline, (Yline+1), 28, 13, "Charizard", "", checkedPath, uncheckedPath, Charizard, "Txt_Charizard", currentDictionary.Txt_Charizard, (Xline+35), Yline)
+    AddCheckBox(Xline, (Yline+1), 28, 13, "Pikachu", "", checkedPath, uncheckedPath, Pikachu, "Txt_Pikachu", currentDictionary.Txt_Pikachu, (Xline+35), Yline)
     Xline -= 155
     Yline += 25
+    AddCheckBox(Xline, (Yline+1), 28, 13, "Charizard", "", checkedPath, uncheckedPath, Charizard, "Txt_Charizard", currentDictionary.Txt_Charizard, (Xline+35), Yline)
+    Xline += 155
     AddCheckBox(Xline, (Yline+1), 28, 13, "Mewtwo", "", checkedPath, uncheckedPath, Mewtwo, "Txt_Mewtwo", currentDictionary.Txt_Mewtwo, (Xline+35), Yline)
     
     SetPageBtnFont()
@@ -3256,7 +3261,7 @@ return
 CheckBoxToggle:
     varName := A_GuiControl
     ToggleCheckbox(varName)
-    if (varName = "MegaBlaziken" || varName = "MegaGyarados" || varName = "MegaAltaria") {
+    if (varName = "MegaBlaziken" || varName = "MegaGyarados" || varName = "MegaAltaria" || varName = "MegaCharizardY" ) {
         PageVarName := "Page_" . varName
         newValue := %varName%
         GuiControl,, %PageVarName%, % newValue ? checkedPath : uncheckedPath
@@ -3962,6 +3967,8 @@ StartBot:
     confirmMsg := SetUpDictionary.Confirm_SelectedMethod . deleteMethod . "`n"
     
     confirmMsg .= "`n" . SetUpDictionary.Confirm_SelectedPacks . "`n"
+    if (MegaCharizardY)
+        confirmMsg .= "• " . currentDictionary.Txt_MegaCharizardY . "`n"
     if (MegaBlaziken)
         confirmMsg .= "• " . currentDictionary.Txt_MegaBlaziken . "`n"
     if (MegaGyarados)
@@ -4308,6 +4315,8 @@ StartBot:
         Selected.Push("MegaGyarados")
     if(MegaAltaria)
         Selected.Push("MegaAltaria")
+    if(MegaCharizardY)
+        Selected.Push("MegaCharizardY")
     
     for index, value in Selected {
         if(index = Selected.MaxIndex())
