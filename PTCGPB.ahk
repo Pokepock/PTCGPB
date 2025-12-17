@@ -18,7 +18,7 @@ localVersion := "v7.0.9"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
-intro := "Classic and Extras "
+intro := "Crimson Blaze"
 ; GUI dimensions
 global GUI_WIDTH := 377 
 global GUI_HEIGHT := 677
