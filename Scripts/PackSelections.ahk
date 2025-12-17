@@ -7,7 +7,7 @@ SetBatchLines, -1
 ; =================================================================
 
 ; Card Pack List (Format: Option1|Option2|...)
-PackList := "Random|Mewtwo|Charizard|Pikachu|Mew|Dialga|Palkia|Arceus|Shining|Solgaleo|Lunala|Buzzwole|Eevee|HoOh|Lugia|Suicune|Deluxe|MegaBlaziken|MegaGyarados|MegaAltaria"
+PackList := "Random|Mewtwo|Charizard|Pikachu|Mew|Dialga|Palkia|Arceus|Shining|Solgaleo|Lunala|Buzzwole|Eevee|HoOh|Lugia|Suicune|Deluxe|MegaBlaziken|MegaGyarados|MegaAltaria|MegaCharizardY"
 
 ; INI File Path: Assumes settings.ini is two directories up from the script directory
 IniPath := A_ScriptDir . "\..\Settings.ini"
