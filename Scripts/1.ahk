@@ -22,7 +22,7 @@ WinHide % "ahk_id " DllCall("GetConsoleWindow", "ptr")
 global RESTART_LOOP_EXCEPTION := { message: "Restarting main loop" }
 global winTitle, changeDate, failSafe, openPack, Delay, failSafeTime, StartSkipTime, Columns, failSafe, scriptName, GPTest, StatusText, setSpeed, jsonFileName, pauseToggle, SelectedMonitorIndex, swipeSpeed, godPack, scaleParam, deleteMethod, packs, FriendID, friendIDs, Instances, username, friendCode, stopToggle, friended, runMain, Mains, showStatus, injectMethod, packMethod, loadDir, loadedAccount, nukeAccount, CheckShinyPackOnly, TrainerCheck, FullArtCheck, RainbowCheck, ShinyCheck, dateChange, foundGP, friendsAdded, PseudoGodPack, packArray, CrownCheck, ImmersiveCheck, InvalidCheck, slowMotion, screenShot, accountFile, invalid, starCount, keepAccount
 global twoPlusOne, twoPlusDia
-global Mewtwo, Charizard, Pikachu, Mew, Dialga, Palkia, Arceus, Shining, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria
+global Mewtwo, Charizard, Pikachu, Mew, Dialga, Palkia, Arceus, Shining, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria, MegaCharizardY
 global shinyPacks, minStars, minStarsShiny
 global DeadCheck
 global s4tEnabled, s4tSilent, s4t3Dmnd, s4t4Dmnd, s4t1Star, s4tGholdengo, s4tFoil, s4tTrainer, s4tRainbow, s4tFullArt, s4tShiny, s4tDiscordWebhookURL, s4tDiscordUserId, s4tSendAccountXml
@@ -112,9 +112,11 @@ IniRead, minStarsShiny, %A_ScriptDir%\..\Settings.ini, UserSettings, minStarsShi
 IniRead, twoPlusOne, %A_ScriptDir%\..\Settings.ini, UserSettings, twoPlusOne, 0
 IniRead, twoPlusDia, %A_ScriptDir%\..\Settings.ini, UserSettings, twoPlusDia, 0
 
-IniRead, MegaBlaziken, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaBlaziken, 1
-IniRead, MegaGyarados, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaGyarados, 1
-IniRead, MegaAltaria, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaAltaria, 1
+
+IniRead, MegaCharizardY, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaCharizardY, 1
+IniRead, MegaBlaziken, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaBlaziken, 0
+IniRead, MegaGyarados, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaGyarados, 0
+IniRead, MegaAltaria, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaAltaria, 0
 IniRead, Deluxe, %A_ScriptDir%\..\Settings.ini, UserSettings, Deluxe, 0
 IniRead, Suicune, %A_ScriptDir%\..\Settings.ini, UserSettings, Suicune, 0
 IniRead, HoOh, %A_ScriptDir%\..\Settings.ini, UserSettings, HoOh, 0
@@ -185,7 +187,7 @@ IniRead, altdiscordUserId, %A_ScriptDir%\..\Settings.ini, UserSettings, altdisco
 
 
 MuMuv5 := isMuMuv5()
-pokemonList := ["Mewtwo", "Charizard", "Pikachu", "Mew", "Dialga", "Palkia", "Arceus", "Shining", "Solgaleo", "Lunala", "Buzzwole", "Eevee", "HoOh", "Lugia", "Suicune", "Deluxe", "MegaBlaziken", "MegaGyarados", "MegaAltaria"]
+pokemonList := ["Mewtwo", "Charizard", "Pikachu", "Mew", "Dialga", "Palkia", "Arceus", "Shining", "Solgaleo", "Lunala", "Buzzwole", "Eevee", "HoOh", "Lugia", "Suicune", "Deluxe", "MegaBlaziken", "MegaGyarados", "MegaAltaria", "MegaCharizardY"]
 shinyPacks := {"Shining": 1, "Solgaleo": 1, "Lunala": 1, "Buzzwole": 1, "Eevee": 1, "HoOh": 1, "Lugia": 1, "Suicune": 1, "Deluxe": 1, "MegaBlaziken": 1, "MegaGyarados": 1, "MegaAltaria": 1}
 
 PlatinConfig := {}
@@ -1292,6 +1294,28 @@ TradeTutorial() {
         adbClick_wbb(137, 485)
         Delay(1)
     }
+
+    if(FindOrLoseImage(7, 311, 20, 332, , "PrivacyPolicy", 0)) {
+        adbClick_wbb(136, 371)
+        Delay(2)
+    }
+
+    if(FindOrLoseImage(36, 318, 56, 352, , "PrivacyPolicy2", 0)) {
+        adbClick_wbb(138, 335)
+        Delay(2)
+	    adbClick_wbb(138, 486)
+        Delay(2)
+        adbClick_wbb(44, 372)
+        Delay(2)
+    }
+
+    if(FindOrLoseImage(32, 357, 59, 382, , "PolicyChecked", 0)) {
+        Delay(3)
+        adbClick_wbb(138, 486)
+        Delay(1)
+    }
+
+
 
     Delay(1)
 
@@ -3950,7 +3974,6 @@ DoTutorial() {
 
 SelectPack(HG := false) {
     global openPack, packArray
-
     ; define constants
     MiddlePackX := 140
     RightPackX := 215
@@ -3963,8 +3986,11 @@ SelectPack(HG := false) {
     SelectExpansionFirstRowY := 228
     SelectExpansionSecondRowY := 394
 
+    SelectExpansionHomeTopRowY := 307
+    SelectExpansionHomeSecondRowY := 441
     SelectExpansionRightCollumnMiddleX := 203
     SelectExpansionLeftCollumnMiddleX := 73
+    
     3PackExpansionLeft := -40
     3PackExpansionRight := 40
     2PackExpansionLeft := -20
@@ -3973,21 +3999,21 @@ SelectPack(HG := false) {
     inselectexpansionscreen := 0
     
     packy := HomeScreenAllPackY
-    if (openPack == "MegaGyarados") {
+    if (openPack == "Suicune") {
         packx := LeftPackX
-    } else if (openPack == "MegaAltaria") {
+    } else if (openPack == "MegaBlaziken") {
         packx := RightPackX
     } else {
         packx := MiddlePackX
     }
 
-    if(openPack == "MegaBlaziken" || openPack == "MegaGyarados" || openPack == "MegaAltaria") {
+    if(openPack == "MegaCharizardY" || openPack == "MegaBlaziken" || openPack == "Suicune") {
         PackIsInHomeScreen := 1
     } else {
         PackIsInHomeScreen := 0
     }
 
-    if(openPack == "MegaBlaziken") {
+    if(openPack == "MegaCharizardY") {
         PackIsLatest := 1
     } else {
         PackIsLatest := 0
@@ -4074,11 +4100,25 @@ SelectPack(HG := false) {
     if(inselectexpansionscreen) {
         adbClick(61, 472)
         Delay(1)
-        FindImageAndClick(250, 405, 267, 421, , "Apacks", 164, 465, sleepTime)
-        Delay(8)
-        adbSwipe("135 400 135 200 200")
-        Delay(8)
-        if (openPack == "Suicune" || openPack == "HoOh" || openPack == "Lugia" || openPack == "Eevee" || openPack = "Deluxe") {
+        if(openPack == "MegaGyarados" || openPack == "MegaAltaria") {
+            FindImageAndClick(12, 453, 28, 473, , "Bpacks", 58, 464, sleepTime)
+            Delay(1)
+            if (openPack == "MegaGyarados") {
+                packy := SelectExpansionHomeTopRowY
+                packx := SelectExpansionRightCollumnMiddleX + 3PackExpansionLeft
+            } else if (openPack == "MegaAltaria") {
+                packy := SelectExpansionHomeTopRowY
+                packx := SelectExpansionRightCollumnMiddleX + 3PackExpansionRight
+            }
+        }
+
+        else {
+            FindImageAndClick(250, 405, 267, 421, , "Apacks", 164, 465, sleepTime)
+            Delay(8)
+            adbSwipe("135 400 135 200 200")
+            Delay(8)
+
+            if (openPack == "Suicune" || openPack == "HoOh" || openPack == "Lugia" || openPack == "Eevee" || openPack = "Deluxe") {
             ; No swipe, top row
             if (openPack == "Deluxe"){
                 packy := SelectExpansionSecondRowY
@@ -4098,77 +4138,80 @@ SelectPack(HG := false) {
                 packx := SelectExpansionRightCollumnMiddleX
             } 
 
-        } else if(openPack == "Dialga" || openPack == "Palkia" || openPack == "Mew" || openPack = "Charizard" || openPack == "Mewtwo" || openPack == "Pikachu" ){
-            loop {
-                adbSwipe("135 500 135 30 500")
-                Delay(3)
-                adbSwipe("135 500 135 30 500")
-                if(FindOrLoseImage(196, 381, 208, 396, , "selectpackempty", 0))
-                    break
+            } else if(openPack == "Dialga" || openPack == "Palkia" || openPack == "Mew" || openPack = "Charizard" || openPack == "Mewtwo" || openPack == "Pikachu" ){
+                loop {
+                    adbSwipe("135 500 135 30 500")
+                    Delay(3)
+                    adbSwipe("135 500 135 30 500")
+                    if(FindOrLoseImage(196, 381, 208, 396, , "selectpackempty", 0))
+                        break
+                    Delay(5)
+                }
                 Delay(5)
-            }
-            Delay(5)
-            if (openPack = "Dialga") {
-                packy := SelectExpansionFirstRowY
-                packx := SelectExpansionLeftCollumnMiddleX + 2PackExpansionLeft
-            } else if (openPack = "Palkia") {
-                packy := SelectExpansionFirstRowY
-                packx := SelectExpansionLeftCollumnMiddleX + 2PackExpansionRight
-            } else if (openPack = "Mew") {
-                packy := SelectExpansionFirstRowY
-                packx := SelectExpansionRightCollumnMiddleX
-            } else if (openPack = "Charizard") {
-                packy := SelectExpansionSecondRowY
-                packx := SelectExpansionLeftCollumnMiddleX + 3PackExpansionLeft
-            } else if (openPack = "Mewtwo") {
-                packy := SelectExpansionSecondRowY
-                packx := SelectExpansionLeftCollumnMiddleX
-            } else if (openPack = "Pikachu") {
-                packy := SelectExpansionSecondRowY
-                packx := SelectExpansionLeftCollumnMiddleX + 3PackExpansionRight
-            }
+                if (openPack = "Dialga") {
+                    packy := SelectExpansionFirstRowY
+                    packx := SelectExpansionLeftCollumnMiddleX + 2PackExpansionLeft
+                } else if (openPack = "Palkia") {
+                    packy := SelectExpansionFirstRowY
+                    packx := SelectExpansionLeftCollumnMiddleX + 2PackExpansionRight
+                } else if (openPack = "Mew") {
+                    packy := SelectExpansionFirstRowY
+                    packx := SelectExpansionRightCollumnMiddleX
+                } else if (openPack = "Charizard") {
+                    packy := SelectExpansionSecondRowY
+                    packx := SelectExpansionLeftCollumnMiddleX + 3PackExpansionLeft
+                } else if (openPack = "Mewtwo") {
+                    packy := SelectExpansionSecondRowY
+                    packx := SelectExpansionLeftCollumnMiddleX
+                } else if (openPack = "Pikachu") {
+                    packy := SelectExpansionSecondRowY
+                    packx := SelectExpansionLeftCollumnMiddleX + 3PackExpansionRight
+                }
 
-        } else if (openPack = "Shining" || openPack = "Arceus" ){
-            loop {
-                adbSwipe("135 500 135 30 500")
-                Delay(3)
-                adbSwipe("135 500 135 30 500")
-                if(FindOrLoseImage(196, 381, 208, 396, , "selectpackempty", 0))
-                    break
+            } else if (openPack = "Shining" || openPack = "Arceus" ){
+                loop {
+                    adbSwipe("135 500 135 30 500")
+                    Delay(3)
+                    adbSwipe("135 500 135 30 500")
+                    if(FindOrLoseImage(196, 381, 208, 396, , "selectpackempty", 0))
+                        break
+                    Delay(5)
+                }
+                Delay(8)
+                adbSwipe("135 300 135 450 2000")
                 Delay(5)
-            }
-            Delay(8)
-            adbSwipe("135 300 135 450 2000")
-            Delay(5)
-            ninemodPackPosY := 0
-            if(!slowMotion){
-                adbSwipe("135 360 135 450 2000")
-            }
-            if (openPack = "Shining") {
-                packy := SelectExpansionFirstRowY - 20
-                packx := SelectExpansionLeftCollumnMiddleX
-            } else if (openPack = "Arceus") {
-                packy := SelectExpansionFirstRowY - 20 
-                packx := SelectExpansionRightCollumnMiddleX
-            }
-        } else {
-            adbSwipe("135 400 135 175 2000")
-            Delay(5)
-            if(!slowMotion){
-                adbSwipe("135 400 135 350 2000")
+                ninemodPackPosY := 0
+                if(!slowMotion){
+                    adbSwipe("135 360 135 450 2000")
+                }
+                if (openPack = "Shining") {
+                    packy := SelectExpansionFirstRowY - 20
+                    packx := SelectExpansionLeftCollumnMiddleX
+                } else if (openPack = "Arceus") {
+                    packy := SelectExpansionFirstRowY - 20 
+                    packx := SelectExpansionRightCollumnMiddleX
+                }
+            } else {
+                adbSwipe("135 400 135 175 2000")
                 Delay(5)
-            }
-            if (openPack = "Buzzwole") {
-                packy := SelectExpansionSecondRowY - 12
-                packx := SelectExpansionLeftCollumnMiddleX
-            }  else if (openPack = "Solgaleo") {
-                packy := SelectExpansionSecondRowY - 12 
-                packx := SelectExpansionRightCollumnMiddleX + 2PackExpansionLeft
-            }  else if (openPack = "Lunala") {
-                packy := SelectExpansionSecondRowY - 12 
-                packx := SelectExpansionRightCollumnMiddleX + 2PackExpansionRight
+                if(!slowMotion){
+                    adbSwipe("135 400 135 350 2000")
+                    Delay(5)
+                }
+                if (openPack = "Buzzwole") {
+                    packy := SelectExpansionSecondRowY - 12
+                    packx := SelectExpansionLeftCollumnMiddleX
+                }  else if (openPack = "Solgaleo") {
+                    packy := SelectExpansionSecondRowY - 12 
+                    packx := SelectExpansionRightCollumnMiddleX + 2PackExpansionLeft
+                }  else if (openPack = "Lunala") {
+                    packy := SelectExpansionSecondRowY - 12 
+                    packx := SelectExpansionRightCollumnMiddleX + 2PackExpansionRight
+                }
             }
         }
+
+        
 
         FindImageAndClick(233, 400, 264, 428, , "Points", packx, packy, , 200)
         IniWrite, %openPack%, %A_ScriptDir%\%scriptName%.ini, UserSettings, Pack
