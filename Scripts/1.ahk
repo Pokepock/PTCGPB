@@ -1300,26 +1300,32 @@ TradeTutorial() {
         Delay(2)
     }
 
-    if(FindOrLoseImage(36, 318, 56, 352, , "PrivacyPolicy2", 0)) {
-        adbClick_wbb(138, 335)
-        Delay(2)
-	    adbClick_wbb(138, 486)
-        Delay(2)
-        adbClick_wbb(44, 372)
-        Delay(2)
-    }
-
-    if(FindOrLoseImage(32, 357, 59, 382, , "PolicyChecked", 0)) {
-        Delay(3)
-        adbClick_wbb(138, 486)
-        Delay(1)
-    }
-
-
+    if(FindOrLoseImage(36, 318, 56, 352, , "PrivacyPolicy2", 0)) 
+        PolicyCheckScript() 
 
     Delay(1)
 
     
+}
+
+PolicyCheckScript() {
+    Sleep, 1250
+    adbClick_wbb(138, 335)
+    Sleep, 1250
+    adbClick_wbb(138, 486)
+    Sleep, 1250
+    loop {
+        adbClick_wbb(44, 372)
+        Sleep, 500
+        if(FindOrLoseImage(32, 357, 59, 382, , "PolicyChecked", 0))
+            break
+        else if(FindOrLoseImage(233, 400, 264, 428, , "Points", 0))
+            Break
+        adbClick_wbb(138, 486)
+        Sleep, 500
+    }
+    adbClick_wbb(138, 486)
+    Sleep, 1250
 }
 
 AddFriends(renew := false, getFC := false) {
@@ -2525,7 +2531,9 @@ FindGodPack(invalidPack := false) {
     requiredStars := (shinyPacks.HasKey(openPack)) ? minStarsShiny : minStars
     ; Check if pack meets minimum stars requirement
     if (!invalidPack && requiredStars > 0) {
-        starCount := FindBorders("fullart") + FindBorders("rainbow") + FindBorders("trainer")
+        ;starCount := FindBorders("fullart") + FindBorders("rainbow") + FindBorders("trainer")
+        totalCardsInPack := (openPack == "Deluxe") ? 4 : 5
+        starCount := totalCardsinPack - FindBorders("1star")
         if (starCount < requiredStars) {
             CreateStatusMessage("Pack doesn't contain enough 2 stars...",,,, false)
             invalidPack := true
@@ -2558,7 +2566,9 @@ GodPackFound(validity) {
     
     ; Calculate star count by only counting valid 2-star cards (fullart, rainbow, trainer)
     ; Don't subtract invalid cards, instead count only the valid ones
-    starCount := FindBorders("fullart") + FindBorders("rainbow") + FindBorders("trainer")
+    ;starCount := FindBorders("fullart") + FindBorders("rainbow") + FindBorders("trainer")
+    totalCardsInPack := (openPack == "Deluxe") ? 4 : 5
+    starCount := totalCardsinPack - FindBorders("1star")
     
     screenShot := Screenshot(validity)
     accountFullPath := ""
@@ -2596,8 +2606,9 @@ GodPackFound(validity) {
         FileDelete, %usernameScreenshotFile%
     }
 
+    
     CreateStatusMessage(Interjection . (invalid ? " " . invalid : "") . " God Pack found!",,,, false)
-    logMessage := Interjection . "\n" . username . " (" . friendCode . ")\n[" . starCount . "/5][" . packsInPool . "P][" . openPack . "] " . invalid . " God Pack found in instance: " . scriptName . "\nFile name: " . accountFile . "\nBacking up to the Accounts\\GodPacks folder and continuing..."
+    logMessage := Interjection . "\n" . username . " (" . friendCode . ")\n[" . starCount . "/" . totalCardsInPack . "][" . packsInPool . "P][" . openPack . "] " . invalid . " God Pack found in instance: " . scriptName . "\nFile name: " . accountFile . "\nBacking up to the Accounts\\GodPacks folder and continuing..."
     LogToFile(StrReplace(logMessage, "\n", " "), "GPlog.txt")
 
     ; Adjust the below to only send a 'ping' to Discord friends on Valid packs
@@ -4118,7 +4129,7 @@ SelectPack(HG := false) {
             adbSwipe("135 400 135 200 200")
             Delay(8)
 
-            if (openPack == "Suicune" || openPack == "HoOh" || openPack == "Lugia" || openPack == "Eevee" || openPack = "Deluxe") {
+            if (openPack == "Suicune" || openPack == "HoOh" || openPack == "Lugia" || openPack == "Eevee" || openPack == "Deluxe") {
             ; No swipe, top row
             if (openPack == "Deluxe"){
                 packy := SelectExpansionSecondRowY
