@@ -224,6 +224,38 @@ Notice() {
         adbClick_wbb(137, 485)
         Delay(1)
     }
+    
+    if(FindOrLoseImage(7, 311, 20, 332, , "PrivacyPolicy", 0)) {
+        adbClick_wbb(136, 371)
+        Delay(2)
+    }
+
+    if(FindOrLoseImage(36, 318, 56, 352, , "PrivacyPolicy2", 0)) 
+        PolicyCheckScript() 
+
+    Delay(1)
+
+    
+}
+
+PolicyCheckScript() {
+    Sleep, 1250
+    adbClick_wbb(138, 335)
+    Sleep, 1250
+    adbClick_wbb(138, 486)
+    Sleep, 1250
+    loop {
+        adbClick_wbb(44, 372)
+        Sleep, 500
+        if(FindOrLoseImage(32, 357, 59, 382, , "PolicyChecked", 0))
+            break
+        else if(FindOrLoseImage(233, 400, 264, 428, , "Points", 0))
+            Break
+        adbClick_wbb(138, 486)
+        Sleep, 500
+    }
+    adbClick_wbb(138, 486)
+    Sleep, 1250
 }
 
 FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", clickx := 0, clicky := 0, sleepTime := "", skip := false, safeTime := 0) {
