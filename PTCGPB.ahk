@@ -14,7 +14,7 @@ global STATIC_BRUSH := 0
 
 githubUser := "Pokepock"
 repoName := "PTCGPB"
-localVersion := "v7.0.9"
+localVersion := "v7.0.9.1"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
@@ -30,7 +30,7 @@ global UI_ELEMENT_SCALE := 0.85
 ; Added new global variable for background image toggle
 global useBackgroundImage := true
 global scaleParam := 283
-global scriptName, winTitle, FriendID, Instances, instanceStartDelay, jsonFileName, PacksText, runMain, Mains, AccountName
+global scriptName, winTitle, FriendID, Instances, instanceStartDelay, jsonFileName, PacksTgitext, runMain, Mains, AccountName
 global autoUseGPTest, TestTime
 global CurrentVisibleSection
 global FriendID_Divider, Instance_Divider3
