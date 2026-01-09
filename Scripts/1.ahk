@@ -912,7 +912,7 @@ Loop {
 			
 			; Bonus Week
             IniRead, claimBonusWeek, %A_ScriptDir%\..\Settings.ini, UserSettings, claimBonusWeek, 0
-            if (A_NowUTC > 20251116060000)
+            if (A_NowUTC > 20260111060000)
                 claimBonusWeek := 0
             if (claimBonusWeek = 1) {
 				if (!openExtraPack) {
@@ -936,7 +936,7 @@ Loop {
 
             IniRead, claimFutureBonusPrep, %A_ScriptDir%\..\Settings.ini, UserSettings, claimFutureBonusPrep, 0
             if (futureBonusPrepDone)
-                futureBonusPrepDone := 0
+                claimFutureBonusPrep := 0
             if (claimFutureBonusPrep = 1) {
                 if (!openExtraPack) {
                     GoToMain(true)
