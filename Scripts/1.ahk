@@ -4010,7 +4010,7 @@ SelectPack(HG := false) {
     inselectexpansionscreen := 0
     
     packy := HomeScreenAllPackY
-    if (openPack == "Suicune") {
+    if (openPack == "Deluxe") {
         packx := LeftPackX
     } else if (openPack == "MegaBlaziken") {
         packx := RightPackX
@@ -4018,7 +4018,7 @@ SelectPack(HG := false) {
         packx := MiddlePackX
     }
 
-    if(openPack == "MegaCharizardY" || openPack == "MegaBlaziken" || openPack == "Suicune") {
+    if(openPack == "MegaCharizardY" || openPack == "MegaBlaziken" || openPack == "Deluxe") {
         PackIsInHomeScreen := 1
     } else {
         PackIsInHomeScreen := 0
