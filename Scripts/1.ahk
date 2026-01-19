@@ -2532,8 +2532,15 @@ FindGodPack(invalidPack := false) {
     ; Check if pack meets minimum stars requirement
     if (!invalidPack && requiredStars > 0) {
         ;starCount := FindBorders("fullart") + FindBorders("rainbow") + FindBorders("trainer")
-        totalCardsInPack := (openPack == "Deluxe") ? 4 : 5
-        starCount := totalCardsinPack - FindBorders("1star")
+        mistakeCount := FindBorders("fullart") + FindBorders("rainbow") + FindBorders("trainer") + FindBorders("1star")
+        
+        if(mistakeCount){
+            totalCardsInPack := (openPack == "Deluxe") ? 4 : 5
+            starCount := totalCardsinPack - FindBorders("1star")
+        }
+        else
+            starCount := 0
+        
         if (starCount < requiredStars) {
             CreateStatusMessage("Pack doesn't contain enough 2 stars...",,,, false)
             invalidPack := true
