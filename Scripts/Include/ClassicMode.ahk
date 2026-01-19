@@ -5,7 +5,7 @@
 
 global githubUser := "Pokepock"
 global repoName := "PTCGPB"
-global localVersion := "7.0.9.3(C)" 
+global localVersion := "7.0.9.4(C)" 
 global jsonFileName := ""
 global scaleParam
 
@@ -181,6 +181,8 @@ LoadSettingsFromIni() {
 
 
     IniRead, captureWebhookURL, %A_ScriptDir%\..\..\Settings.ini, UserSettings, captureWebhookURL, ""
+    IniRead, insMonitorCD , %A_ScriptDir%\..\..\Settings.ini, UserSettings, insMonitorCD , 10
+    
     
     
     ; Validate numeric values
@@ -217,7 +219,7 @@ SaveAllSettings() {
   global spendHourGlass, openExtraPack, injectSortMethod, rowGap, SortByDropdown
   global waitForEligibleAccounts, maxWaitHours, skipMissionsInjectMissions, NineMod, Bankai, classicModeOnly
   global renameMode, renameAndSaveAndReload, targetUsername, renameXML, renameXMLwithFC, ChangeLNMode, targetLN
-  global redeemTokens, ClaimBonusWeek, claimAnnivCountdown, ClaimMail, AnnivPos, BonusWeekPos, FutureBonusPos, claimFutureBonusPrep, captureWebhookURL
+  global redeemTokens, ClaimBonusWeek, claimAnnivCountdown, ClaimMail, AnnivPos, BonusWeekPos, FutureBonusPos, claimFutureBonusPrep, captureWebhookURL, insMonitorCD 
 
   
   ; === MISSING ADVANCED SETTINGS VARIABLES ===
@@ -394,6 +396,8 @@ SaveAllSettings() {
   IniWrite, %FutureBonusPos%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, FutureBonusPos
   IniWrite, %ClaimMail%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, ClaimMail
   IniWrite, %captureWebhookURL%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, captureWebhookURL
+  IniWrite, %insMonitorCD%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, insMonitorCD
+  
   
 
   ; FIXED: Debug logging if enabled
@@ -530,7 +534,8 @@ Gui, Add, Checkbox, % (tesseractOption ? "Checked" : "") " vtesseractOption x20 
 Gui, Add, Text, x20 y540 %sectionColor%, % currentDictionary.Txt_InstanceLaunchDelay
 Gui, Add, Edit, vinstanceLaunchDelay w50 x170 y538 h20 -E0x200 Background2A2A2A cWhite Center, %instanceLaunchDelay%
 Gui, Add, Checkbox, % (autoLaunchMonitor ? "Checked" : "") " vautoLaunchMonitor x20 y565 " . sectionColor, % currentDictionary.Txt_autoLaunchMonitor
-
+Gui, Add, Edit, vinsMonitorCD w30 x170 y563 h20 -E0x200 Background2A2A2A cWhite Center, %insMonitorCD%
+Gui, Add, Text, x205 y565 %sectionColor%, Mins
 
 ; ========== God Pack Settings Section ==========
 sectionColor := "c39FF14" ; Neon green
