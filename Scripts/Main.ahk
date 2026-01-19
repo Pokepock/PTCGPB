@@ -174,11 +174,24 @@ Loop {
 
         failSafe := A_TickCount
         failSafeTime := 0
+
+
         Loop {
             if(FindOrLoseImage(99Leftx, 110, 99Rightx, 127, , 99Path, 0, failSafeTime)) {
                 if (autoUseGPTest && autotest_time >= TestTime) {
                     A_gptest := 1
                     ToggleTestScript()
+                }
+                nowEpoch := A_NowUTC
+                EnvSub, nowEpoch, 1970, seconds
+                IniRead, LastAcceptEpoch, %A_ScriptDir%\%scriptName%.ini, Metrics, LastAcceptEpoch , 0
+                secondsSinceLastEnd := nowEpoch - LastAcceptEpoch
+
+                if(LastAcceptEpoch = 0 || secondsSinceLastEnd > (2 * 60)){
+                    now := A_NowUTC
+                    IniWrite, %now%, %A_ScriptDir%\%scriptName%.ini, Metrics, LastAcceptTimeUTC
+                    EnvSub, now, 1970, seconds
+                    IniWrite, %now%, %A_ScriptDir%\%scriptName%.ini, Metrics, LastAcceptEpoch
                 }
                 adbClick(143, 493)
                 break
@@ -187,6 +200,17 @@ Loop {
             } else if(FindOrLoseImage(186, 496, 206, 518, , "Accept", 0, failSafeTime)) {
                 if(heartBeat)
                     IniWrite, 1, %A_ScriptDir%\..\HeartBeat.ini, HeartBeat, Main
+                nowEpoch := A_NowUTC
+                EnvSub, nowEpoch, 1970, seconds
+                IniRead, LastAcceptEpoch, %A_ScriptDir%\%scriptName%.ini, Metrics, LastAcceptEpoch , 0
+                secondsSinceLastEnd := nowEpoch - LastAcceptEpoch
+
+                if(LastAcceptEpoch = 0 || secondsSinceLastEnd > (2 * 60)){
+                    now := A_NowUTC
+                    IniWrite, %now%, %A_ScriptDir%\%scriptName%.ini, Metrics, LastAcceptTimeUTC
+                    EnvSub, now, 1970, seconds
+                    IniWrite, %now%, %A_ScriptDir%\%scriptName%.ini, Metrics, LastAcceptEpoch
+                }
                 adbClick(143, 493)
                 break
             } else if(FindOrLoseImage(84, 463, 100, 475, 5, "Friends", 0, failSafeTime)) {
@@ -276,6 +300,8 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
         CreateStatusMessage("Error message in " . scriptName . ". Clicking retry...")
         LogToFile("Error message in " . scriptName . ". Clicking retry...")
         adbClick(139, 386)
+        Sleep, 250
+        adbClick(226, 417)
         Sleep, 1000
     }
     if(imageName = "Country" || imageName = "Social")
@@ -373,6 +399,8 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
             CreateStatusMessage("Error message in " . scriptName . ". Clicking retry...")
             LogToFile("Error message in " . scriptName . ". Clicking retry...")
             adbClick(139, 386)
+            Sleep, 1000
+            adbClick(226, 417)
             Sleep, 1000
         }
 
