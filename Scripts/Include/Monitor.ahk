@@ -17,6 +17,11 @@ IniRead, instanceLaunchDelay, %settingsPath%, UserSettings, instanceLaunchDelay,
 IniRead, waitAfterBulkLaunch, %settingsPath%, UserSettings, waitAfterBulkLaunch, 40000
 IniRead, Instances, %settingsPath%, UserSettings, Instances, 1
 IniRead, folderPath, %settingsPath%, UserSettings, folderPath, C:\Program Files\Netease
+IniRead, insMonitorCD, %settingsPath%, UserSettings, insMonitorCD, 10
+IniRead, mainsMonitorCD, %settingsPath%, UserSettings, mainsMonitorCD, 20
+IniRead, runMain,  %A_ScriptDir%\..\..\Settings.ini, UserSettings, runMain, 0
+IniRead, Mains,  %A_ScriptDir%\..\..\Settings.ini, UserSettings, Mains, 1
+IniRead, mainMonitor, %A_ScriptDir%\..\..\Settings.ini, UserSettings, mainMonitor , 0
 mumuFolder = %folderPath%\MuMuPlayerGlobal-12.0
 if !FileExist(mumuFolder)
     mumuFolder = %folderPath%\MuMu Player 12
@@ -36,7 +41,7 @@ Loop {
         
         IniRead, LastEndEpoch, %A_ScriptDir%\..\%instanceNum%.ini, Metrics, LastEndEpoch, 0
         secondsSinceLastEnd := nowEpoch - LastEndEpoch
-        if(LastEndEpoch > 0 && secondsSinceLastEnd > (10 * 60))
+        if(LastEndEpoch > 0 && secondsSinceLastEnd > (insMonitorCD * 60))
         {
             ; msgbox, Killing Instance %instanceNum%! Last Run Completed %secondsSinceLastEnd% Seconds Ago
             msg := "Killing Instance " . instanceNum . "! Last Run Completed " . secondsSinceLastEnd . " Seconds Ago"
@@ -52,7 +57,7 @@ Loop {
             pID := checkInstance(instanceNum)
             if not pID && not cntAHK {
                 ; Change the last end date to now so that we don't keep trying to restart this beast
-                IniWrite, %nowEpoch%, %A_ScriptDir%\..\%instanceNum%.ini, Metrics, LastEndEpoch
+                IniWrite, %nowEpoch%, %A_ScriptDir%\..\%instanceNum%.ini, Metrics, LastAcceptEpoch
                 
                 launchInstance(instanceNum)
                 
@@ -66,6 +71,48 @@ Loop {
                 ;Run, %Command%
                 scriptPath := A_ScriptDir "\.." "\" scriptName
                 Run, "%A_AhkPath%" /restart "%scriptPath%"
+            }
+        }
+
+        
+    }
+    
+    if(mainMonitor && runMain){
+    
+        Loop %Mains% {
+            instanceNum := "Main"
+            if(A_Index > 1)
+                instanceNum .= Format("{:u}", A_Index)
+            IniRead, LastAcceptEpoch, %A_ScriptDir%\..\%instanceNum%.ini, Metrics, LastAcceptEpoch, 0
+            secondsSinceLastEnd := nowEpoch - LastAcceptEpoch
+            if(LastAcceptEpoch > 0 && secondsSinceLastEnd > (mainsMonitorCD * 60))
+            {
+                ; msgbox, Killing Instance %instanceNum%! Last Run Completed %secondsSinceLastEnd% Seconds Ago
+                msg := "Killing Instance Main ! Last Accept Completed " . secondsSinceLastEnd . " Seconds Ago"
+                LogToFile(msg, "Monitor.txt")
+                scriptName := instanceNum . ".ahk"
+                
+                killedAHK := killAHK(scriptName)
+                killedInstance := killInstance(instanceNum)
+                Sleep, 3000
+                
+                cntAHK := checkAHK(scriptName)
+                pID := checkInstance(instanceNum)
+                if not pID && not cntAHK {
+                    ; Change the last end date to now so that we don't keep trying to restart this beast
+                    IniWrite, %nowEpoch%, %A_ScriptDir%\..\%instanceNum%.ini, Metrics, LastAcceptEpoch
+                    
+                    launchInstance(instanceNum)
+                    
+                    sleepTime := instanceLaunchDelay * 1000
+                    Sleep, % sleepTime
+                    Sleep, %waitAfterBulkLaunch%
+                    
+                    ;Command := "Scripts\" . scriptName
+                    ;Run, %Command%
+                    scriptPath := A_ScriptDir "\.." "\" scriptName
+                    Run, "%A_AhkPath%" /restart "%scriptPath%"
+                }
             }
         }
     }
