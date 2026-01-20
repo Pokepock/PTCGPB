@@ -57,7 +57,7 @@ Loop {
             pID := checkInstance(instanceNum)
             if not pID && not cntAHK {
                 ; Change the last end date to now so that we don't keep trying to restart this beast
-                IniWrite, %nowEpoch%, %A_ScriptDir%\..\%instanceNum%.ini, Metrics, LastAcceptEpoch
+                IniWrite, %nowEpoch%, %A_ScriptDir%\..\%instanceNum%.ini, Metrics, LastEndEpoch
                 
                 launchInstance(instanceNum)
                 
