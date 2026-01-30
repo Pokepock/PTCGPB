@@ -25,6 +25,12 @@ IniRead, mainMonitor, %A_ScriptDir%\..\..\Settings.ini, UserSettings, mainMonito
 mumuFolder = %folderPath%\MuMuPlayerGlobal-12.0
 if !FileExist(mumuFolder)
     mumuFolder = %folderPath%\MuMu Player 12
+if !FileExist(mumuFolder)
+    mumuFolder = %folderPath%\MuMu
+if !FileExist(mumuFolder)
+    mumuFolder = %folderPath%\MuMuPlayerGlobal
+if !FileExist(mumuFolder)
+    mumuFolder = %folderPath%\MuMuPlayer
 if !FileExist(mumuFolder){
     MsgBox, 16, , Double check your folder path! It should be the one that contains the MuMuPlayer 12 folder! `nDefault is just C:\Program Files\Netease
     ExitApp
