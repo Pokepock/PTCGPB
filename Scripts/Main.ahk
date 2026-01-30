@@ -291,6 +291,16 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
         restartGameInstance("*Stuck at " . imageName . "...")
     }
     pBitmap := from_window(WinExist(winTitle))
+    
+    Path = %imagePath%MumuHomeScreen.png
+    pNeedle := GetNeedle(Path)
+    vRet := Gdip_ImageSearch(pBitmap, pNeedle, vPosXY, 222, 341, 255, 388, searchVariation)
+    if (vRet = 1) {
+        CreateStatusMessage("Stuck at  " . scriptName . ". Clicking retry...",,,, false)
+        adbClick(239, 217)
+        Sleep, 1000
+    }
+
     Path = %imagePath%Error.png
     pNeedle := GetNeedle(Path)
     ; ImageSearch within the region
@@ -301,7 +311,7 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
         LogToFile("Error message in " . scriptName . ". Clicking retry...")
         adbClick(139, 386)
         Sleep, 250
-        adbClick(226, 417)
+        adbClick(239, 217)
         Sleep, 1000
     }
     if(imageName = "Country" || imageName = "Social")
@@ -390,6 +400,15 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
             restartGameInstance("*Stuck at " . imageName . "...")
         }
         pBitmap := from_window(WinExist(winTitle))
+        Path = %imagePath%MumuHomeScreen.png
+        pNeedle := GetNeedle(Path)
+        vRet := Gdip_ImageSearch(pBitmap, pNeedle, vPosXY, 222, 341, 255, 388, searchVariation)
+        if (vRet = 1) {
+            CreateStatusMessage("Stuck at  " . scriptName . ". Clicking retry...",,,, false)
+            adbClick(239, 217)
+            Sleep, 1000
+        }
+
         Path = %imagePath%Error.png
         pNeedle := GetNeedle(Path)
         ; ImageSearch within the region
@@ -399,8 +418,8 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
             CreateStatusMessage("Error message in " . scriptName . ". Clicking retry...")
             LogToFile("Error message in " . scriptName . ". Clicking retry...")
             adbClick(139, 386)
-            Sleep, 1000
-            adbClick(226, 417)
+            Sleep, 250
+            adbClick(239, 217)
             Sleep, 1000
         }
 
