@@ -66,6 +66,12 @@ ConnectAdb(folderPath := "C:\Program Files\Netease") {
         adbPath := folderPath . "\MuMuPlayerGlobal-12.0\nx_main\adb.exe"
     if !FileExist(adbPath) ;MuMu Player 12 v5 supported
         adbPath := folderPath . "\MuMu Player 12\nx_main\adb.exe"
+    if !FileExist(adbPath) ;MuMu Player 12 v5 supported
+        adbPath := folderPath . "\MuMuPlayerGlobal\nx_main\adb.exe"
+    if !FileExist(adbPath) ;MuMu Player 12 v5 supported
+        adbPath := folderPath . "\MuMu\nx_main\adb.exe"
+    if !FileExist(adbPath) ;MuMu Player 12 v5 supported
+        adbPath := folderPath . "\MuMuPlayer\nx_main\adb.exe"
 
     if !FileExist(adbPath)
         MsgBox Double check your folder path! It should be the one that contains the MuMuPlayer 12 folder! `nDefault is just C:\Program Files\Netease
