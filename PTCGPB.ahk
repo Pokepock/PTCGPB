@@ -3641,24 +3641,24 @@ ArrangeWindows:
     ;WinGetPos, winX, winY, winW, winH, %title%
     ;ControlGetPos, cx, cy, cw, ch, , %title%
     ;titleHeight := cy - winY
-    mumuFolder = %folderPath%\MuMuPlayerGlobal-12.0
-    if !FileExist(mumuFolder)
+    ;mumuFolder = %folderPath%\MuMuPlayerGlobal-12.0
+    ;if !FileExist(mumuFolder)
         mumuFolder = %folderPath%\MuMu Player 12
-    if !FileExist(mumuFolder){
-        MsgBox, 16, , Double check your folder path! It should be the one that contains the MuMuPlayer 12 folder! `nDefault is just C:\Program Files\Netease
-        ExitApp
-    }
-    if FileExist(mumuFolder . "\nx_main") {
+    ;if !FileExist(mumuFolder){
+        ;MsgBox, 16, , Double check your folder path! It should be the one that contains the MuMuPlayer 12 folder! `nDefault is just C:\Program Files\Netease
+        ;ExitApp
+    ;}
+    ;if FileExist(mumuFolder . "\nx_main") {
         if (defaultLanguage = "Scale125")
             titleHeight := 50
         else if (defaultLanguage = "Scale100")
             titleHeight := 40
-    } else {
-        if (defaultLanguage = "Scale125")
-            titleHeight := 45
-        else if (defaultLanguage = "Scale100")
-            titleHeight := 36
-    }
+    ;} else {
+        ;if (defaultLanguage = "Scale125")
+            ;titleHeight := 45
+        ;else if (defaultLanguage = "Scale100")
+            ;titleHeight := 36
+    ;}
     windowsPositioned := 0
     borderWidth := 4 - 1
     rowHeight := titleHeight + 489 + 4 ; Adjust the height of each row
