@@ -1555,9 +1555,11 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
     pNeedle := GetNeedle(Path)
     vRet := Gdip_ImageSearch_wbb(pBitmap, pNeedle, vPosXY, 222, 341, 255, 388, searchVariation)
     if (vRet = 1) {
-        CreateStatusMessage("Stuck at  " . scriptName . ". Clicking retry...")
-        adbClick_wbb(239, 217)
-        Sleep, 1000
+        ;CreateStatusMessage("Stuck at  " . scriptName . ". Clicking retry...")
+        ;adbClick_wbb(239, 217)
+        ;Sleep, 1000
+        Gdip_DisposeImage(pBitmap)
+        restartGameInstance("*Stuck at " . imageName . "...")
     }
 
 
@@ -1710,9 +1712,11 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
         pNeedle := GetNeedle(Path)
         vRet := Gdip_ImageSearch_wbb(pBitmap, pNeedle, vPosXY, 222, 341, 255, 388, searchVariation)
         if (vRet = 1) {
-            CreateStatusMessage("Stuck at  " . scriptName . ". Clicking retry...",,,, false)
-            adbClick_wbb(239, 217)
-            Sleep, 1000
+            ;CreateStatusMessage("Stuck at  " . scriptName . ". Clicking retry...",,,, false)
+            ;adbClick_wbb(239, 217)
+            ;Sleep, 1000
+            Gdip_DisposeImage(pBitmap)
+            restartGameInstance("*Stuck at " . imageName . "...")
         }
 
         Path = %imagePath%Error.png ; Search for communication error
