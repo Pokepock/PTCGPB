@@ -1221,16 +1221,8 @@ ArrangeWindows:
     else
         scaleParam := 287
         
-    mumuFolder := folderPath . "\MuMuPlayerGlobal-12.0"
-    if !FileExist(mumuFolder)
-        mumuFolder := folderPath . "\MuMu Player 12"
-        
 
-    if FileExist(mumuFolder . "\nx_main") {
-        titleHeight := (defaultLanguage = "Scale125") ? 50 : 40
-    } else {
-        titleHeight := (defaultLanguage = "Scale125") ? 45 : 36
-    }
+    titleHeight := (defaultLanguage = "Scale125") ? 50 : 40
 
     borderWidth := 3
     rowHeight := titleHeight + 489 + 4
