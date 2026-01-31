@@ -61,7 +61,7 @@ IniRead, autoUseGPTest, %A_ScriptDir%\..\Settings.ini, UserSettings, autoUseGPTe
 IniRead, TestTime, %A_ScriptDir%\..\Settings.ini, UserSettings, TestTime, 3600
 IniRead, captureWebhookURL, %A_ScriptDir%\..\Settings.ini, UserSettings, captureWebhookURL, ""
 global MuMuv5
-MuMuv5 := isMuMuv5()
+MuMuv5 := 1
 ; connect adb
 instanceSleep := scriptName * 1000
 Sleep, %instanceSleep%
