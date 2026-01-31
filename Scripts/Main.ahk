@@ -69,6 +69,11 @@ Sleep, %instanceSleep%
 ; Attempt to connect to ADB
 ConnectAdb(folderPath)
 
+now := A_NowUTC
+IniWrite, %now%, %A_ScriptDir%\%scriptName%.ini, Metrics, LastAcceptTimeUTC
+EnvSub, now, 1970, seconds
+IniWrite, %now%, %A_ScriptDir%\%scriptName%.ini, Metrics, LastAcceptEpoch
+
 resetWindows()
 MaxRetries := 10
 RetryCount := 0
