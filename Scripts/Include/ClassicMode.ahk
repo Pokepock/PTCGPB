@@ -5,7 +5,7 @@
 
 global githubUser := "Pokepock"
 global repoName := "PTCGPB"
-global localVersion := "7.1.0(C)" 
+global localVersion := "7.1.0.1(C)" 
 global jsonFileName := ""
 global scaleParam
 
