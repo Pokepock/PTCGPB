@@ -60,7 +60,7 @@ IniRead, captureWebhookURL, %A_ScriptDir%\..\Settings.ini, UserSettings, capture
 IniRead, folderPosX, %A_ScriptDir%\..\Settings.ini, UserSettings, folderPosX, 0
 global fileDir, selectedFilePath, fileName, FDaddfriend, FDwishlist
 global MuMuv5
-MuMuv5 := isMuMuv5()
+MuMuv5 := 1
 ; connect adb
 instanceSleep := scriptName * 1000
 Sleep, %instanceSleep%
