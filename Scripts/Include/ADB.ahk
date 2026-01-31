@@ -14,6 +14,14 @@ findAdbPorts(baseFolder := "C:\Program Files\Netease") {
     mumuFolder = %baseFolder%\MuMuPlayerGlobal-12.0\vms\*
     if !FileExist(mumuFolder)
         mumuFolder = %baseFolder%\MuMu Player 12\vms\*
+    if !FileExist(mumuFolder)
+        mumuFolder = %baseFolder%\MuMuPlayer\vms\*
+
+    if !FileExist(mumuFolder)
+        mumuFolder = %baseFolder%\MuMuPlayerGlobal\vms\*
+    if !FileExist(mumuFolder)
+        mumuFolder = %baseFolder%\MuMu\vms\*
+
 
     if !FileExist(mumuFolder){
         MsgBox, 16, , Double check your folder path! It should be the one that contains the MuMuPlayer 12 folder! `nDefault is just C:\Program Files\Netease
