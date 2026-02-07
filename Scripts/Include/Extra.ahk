@@ -49,6 +49,9 @@ LoadSettingsFromIni() {
     IniRead, folderNO, %A_ScriptDir%\..\..\Settings.ini, UserSettings, folderNO, 10000
     IniRead, mainMonitor, %A_ScriptDir%\..\..\Settings.ini, UserSettings, mainMonitor, 0
     IniRead, mainsMonitorCD, %A_ScriptDir%\..\..\Settings.ini, UserSettings, mainsMonitorCD, 20
+    IniRead, autoRestartTimes, %A_ScriptDir%\..\..\Settings.ini, UserSettings, autoRestartTimes, 30
+    IniRead, autoRestartMode, %A_ScriptDir%\..\..\Settings.ini, UserSettings, autoRestartMode, 0
+    
     ; Return success
     return true
   } else {
@@ -61,7 +64,7 @@ LoadSettingsFromIni() {
 SaveAllSettings() {
   global altWebhookSettings, altDiscordWebhookURL, altDiscordUserId, altheartBeat, altheartBeatWebhookURL, altheartBeatName, altheartBeatDelay
   global altmainIdsURL, altvipIdsURL
-  global offlineReminder, DashBoard, folderPosX, CheckFolder, folderWebhookURL, folderNO , mainMonitor, mainsMonitorCD
+  global offlineReminder, DashBoard, folderPosX, CheckFolder, folderWebhookURL, folderNO , mainMonitor, mainsMonitorCD, autoRestartMode, autoRestartTimes
   
   ; FIXED: Make sure all values are properly synced from GUI before saving
   Gui, Submit, NoHide
@@ -84,6 +87,8 @@ SaveAllSettings() {
   IniWrite, %folderNO%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, folderNO
   IniWrite, %mainMonitor%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, mainMonitor
   IniWrite, %mainsMonitorCD%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, mainsMonitorCD
+  IniWrite, %autoRestartMode%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, autoRestartMode
+  IniWrite, %autoRestartTimes%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, autoRestartTimes
   
 
   ; FIXED: Debug logging if enabled
@@ -179,19 +184,22 @@ if (CheckFolder) {
 
 ; ========== Other Settings Section ==========
 sectionColor := "cE5CAFF"
-Gui, Add, GroupBox, xp-95 yp+35 w240 h130 %sectionColor%, Other Settings
+Gui, Add, GroupBox, xp-95 yp+35 w240 h160 %sectionColor%, Other Settings
 Gui, Add, Text, vtxt_folderPosX xp+15 yp+25 %sectionColor%, Folder.ahk Pos (Main0 = 1)
 Gui, Add, Edit, vfolderPosX w35 xp+170 yp+0 h20 -E0x200 Background2A2A2A cWhite, %folderPosX%
 Gui, Add, Checkbox, % (offlineReminder ? "Checked" : "") " vofflineReminde xp-170 yp+25 " . sectionColor, Offline Reminder
 Gui, Add, Checkbox, % (DashBoard ? "Checked" : "") " vDashBoard xp+0 yp+25 " . sectionColor, DashBoard (python needed)
 Gui, Add, Checkbox, % (mainMonitor ? "Checked" : "") " vmainMonitor xp+0 yp+25 " . sectionColor, Mains Monitor
 Gui, Add, Edit, vmainsMonitorCD w30 xp+150 yp+0 h20 -E0x200 Background2A2A2A cWhite, %mainsMonitorCD%
-Gui, Add, Text, vtxt_MonitorCD xp+35 yp+0 %sectionColor%, Mins
+Gui, Add, Text, vtxt_MonitorCD xp+30 yp+0 %sectionColor%, Mins
+Gui, Add, Checkbox, % (autoRestartMode ? "Checked" : "") " vautoRestartMode xp-180 yp+25 " . sectionColor, Auto Restart after
+Gui, Add, Edit, vautoRestartTimes w30 xp+150 yp+0 h20 -E0x200 Background2A2A2A cWhite, %autoRestartTimes%
+Gui, Add, Text, vtxt_autoRestartTimesCD xp+30 yp+0 %sectionColor%, Runs
 
 ; ========== Action Buttons ==========
-Gui, Add, Button, gPackSelector xp-200 yp+40 w240 h35, Detailed Pack Selects
+Gui, Add, Button, gPackSelector xp-195 yp+40 w240 h35, Detailed Pack Selects
 Gui, Add, Button, gRemoveMetadata xp+0 yp+45 w240 h35, Metadata Renamer
-Gui, Add, Button, gSave xp+0 yp+45 w240 h85, Save Settings
+Gui, Add, Button, gSave xp+0 yp+45 w240 h60, Save Settings
 
 
 
