@@ -5915,7 +5915,7 @@ checkfolderscript(){
             adbClick_wbb(241, 409)
             Delay(1)
             break
-        } else if(FindOrLoseImage(235, 300, 247, 350, , "FolderRare2", 0, failSafeTime))
+        } else if(FindOrLoseImage(235, 300, 247, 350, , "FolderRare2", 0, failSafeTime)) {
             adbClick_wbb(241, 409)
             Delay(1)
             break
