@@ -71,7 +71,7 @@ dbg_bbox_click :=0
 
 global newPlayerName, renameMode, renameAndSaveAndReload, targetUsername, renameXML, renameOcrText, renameXMLwithFC, userFriendCode
 global ChangeLNMode, targetLN, Checkfolder, sendAccountXml, folderWebhookURL, folderNO, stardustValue
-global ModSets, NineModStatus, indivPackMode, changeLNposY, Dashboard, claimMail, altWebhookSettings, altdiscordWebhookURL, AltdiscordUserId
+global ModSets, NineModStatus, indivPackMode, changeLNposY, Dashboard, claimMail, altWebhookSettings, altdiscordWebhookURL, AltdiscordUserId, autoRestartMode, autoRestartTimes
 
 scriptName := StrReplace(A_ScriptName, ".ahk")
 winTitle := scriptName
@@ -184,6 +184,9 @@ IniRead, Dashboard, %A_ScriptDir%\..\Settings.ini, UserSettings, Dashboard, 0
 IniRead, altWebhookSettings, %A_ScriptDir%\..\Settings.ini, UserSettings, altWebhookSettings, 0
 IniRead, altdiscordWebhookURL, %A_ScriptDir%\..\Settings.ini, UserSettings, altdiscordWebhookURL
 IniRead, altdiscordUserId, %A_ScriptDir%\..\Settings.ini, UserSettings, altdiscordUserId
+IniRead, autoRestartMode, %A_ScriptDir%\..\Settings.ini, UserSettings, autoRestartMode, 0
+IniRead, autoRestartTimes, %A_ScriptDir%\..\Settings.ini, UserSettings, autoRestartTimes, 30
+
 
 
 
@@ -1426,6 +1429,7 @@ AddFriends(renew := false, getFC := false) {
         failSafe := A_TickCount
         failSafeTime := 0
         Loop {
+            Delay(1)
             adbClick_wbb(232, 453)
             if(FindOrLoseImage(165, 250, 190, 275, , "Send", 0, failSafeTime)) {
                 adbClick_wbb(243, 258)
@@ -1434,6 +1438,7 @@ AddFriends(renew := false, getFC := false) {
                 break
             }
             else if(FindOrLoseImage(165, 240, 255, 270, , "Withdraw", 0, failSafeTime)) {
+                Delay(1)
                 break
             }
             else if(FindOrLoseImage(165, 250, 190, 275, , "Accepted", 0, failSafeTime)) {
@@ -1451,6 +1456,7 @@ AddFriends(renew := false, getFC := false) {
             CreateStatusMessage("Waiting for AddFriends4`n(" . failSafeTime . "/45 seconds)")
         }
         if(index != friendIDs.maxIndex()) {
+            Delay(2)
             FindImageAndClick(205, 430, 255, 475, , "Search2", 143, 518)
             EraseInput(index, n)
         }
@@ -2676,6 +2682,17 @@ loadAccount() {
     AnnivCountdownDone := 0
     futureBonusPrepDone := 0
 
+    
+    if (rerolls_local > autoRestartTimes && autoRestartMode)
+    {
+        stopToggle := True
+        now := A_NowUTC
+        EnvSub, now, 1970, seconds
+        now := now - 600
+        IniWrite, %now%, %A_ScriptDir%\%scriptName%.ini, Metrics, LastEndEpoch
+        LogToFile("Auto Restarting...")
+    }
+
     if (stopToggle) {
         CreateStatusMessage("Stopping...",,,, false)
         ExitApp
@@ -3112,13 +3129,13 @@ Screenshot_dev(fileType := "Dev",subDir := "") {
         KeyWait, LButton, D
         MouseGetPos , X1, Y1, OutputVarWin, OutputVarControl
         KeyWait, LButton, U
-        Y1 -= 31 + yBias
+        Y1 -= 26 + yBias
         ;MsgBox, The cursor is at X%X1% Y%Y1%.
 
         KeyWait, LButton, D
         MouseGetPos , X2, Y2, OutputVarWin, OutputVarControl
         KeyWait, LButton, U
-        Y2 -= 31 + yBias
+        Y2 -= 26 + yBias
         ;MsgBox, The cursor is at X%X2% Y%Y2%.
 
         W:=X2-X1
@@ -3137,7 +3154,10 @@ Screenshot_dev(fileType := "Dev",subDir := "") {
         KeyWait, LButton, D
         MouseGetPos , X3, Y3, OutputVarWin, OutputVarControl
         KeyWait, LButton, U
-        Y3 -= 31 + yBias
+        Y3 -= 26 + yBias
+
+        Y1 := Y1 - 5
+        Y2 := Y2 + 5
 
         MsgBox,
         (LTrim
@@ -5887,19 +5907,18 @@ checkfolderscript(){
     failSafeTime := 0
     loop{
         if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
-            adbClick_wbb(243, 189)
+            adbClick_wbb(248, 461)
         else if (FindOrLoseImage(133, 479, 147, 493, , "noticex", 0)){
             adbClick_wbb(222, 485)
             Delay(3)
-        } else if (FindOrLoseImage(43, 425, 55, 439, , "folderfind", 0, failSafeTime))
+        } else if(FindOrLoseImage(234, 300, 250, 350, , "FolderRare", 0, failSafeTime)) {
+            adbClick_wbb(241, 409)
+            Delay(1)
             break
-        else if (FindOrLoseImage(23, 208, 45, 224, , "folderfliterfind", 0, failSafeTime)){
-            adbClick_wbb(207, 120)
+        } else if(FindOrLoseImage(235, 300, 247, 350, , "FolderRare2", 0, failSafeTime))
+            adbClick_wbb(241, 409)
             Delay(1)
-            adbSwipe("35 250 35 500 400")
-            Delay(1)
-            adbClick_wbb(243, 189)
-            Delay(2)
+            break
         } else if (FindOrLoseImage(103, 65, 118, 80, , "CardLN", 0, failSafeTime)){
             adbClick_wbb(138, 510)
             Delay(1)
@@ -5910,12 +5929,15 @@ checkfolderscript(){
         } else if (FindOrLoseImage(8, 285, 24, 305, , "cardtutorial2", 0, failSafeTime)){
             adbClick_wbb(194, 483)
             Delay(1)
-        } else
-            adbSwipe("35 250 35 500 400")
+        } else if (FindOrLoseImage(43, 425, 55, 439, , "folderfind", 0, failSafeTime))
+            break
         Delay(2)
         failSafeTime := (A_TickCount - failSafe) // 1000
         CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
     }
+
+    FindImageAndClick(43, 425, 55, 439, , "folderfind", 243, 189, 500)
+    Delay(3)
     
     IniRead, folderNO, %A_ScriptDir%\..\Settings.ini, UserSettings, folderNO
     folderNO += 1
@@ -5973,23 +5995,10 @@ checkfolderscript(){
         ScreenshotFile3 := Screenshot("Folder_2","Folder")
         Delay(5)
     
-
-        adbSwipe("35 35 35 500 1000")
+        FindImageAndClick(234, 300, 250, 350, , "FolderRare", 248, 461, 500)
+        Delay(3)
+        adbClick_wbb(241, 319)
         Delay(2)
-        adbSwipe("35 300 35 500 500")
-        Delay(2)
-        adbSwipe("35 300 35 500 500")
-        Delay(2)
-        failSafe := A_TickCount
-        failSafeTime := 0
-        loop{
-            adbSwipe("35 300 35 500 500")
-            if(FindOrLoseImage(153, 176, 174, 199, , "infolder", 0, failSafeTime))
-                break
-            Delay(1)
-            failSafeTime := (A_TickCount - failSafe) // 1000
-            CreateStatusMessage("In failsafe for FolderCheck. " . failSafeTime "/45 seconds")
-        }
         failSafe := A_TickCount
         failSafeTime := 0
         loop{
@@ -6043,6 +6052,7 @@ checkfolderscript(){
     LogToDCwithEmbed(discordMessage, ScreenshotFile2, false, (s4tSendAccountXml ? accountFullPath : ""), (noTwoStarCard ? "" : ScreenshotFile3 ), folderWebhookURL, s4tDiscordUserId, ScreenshotFile4, ScreenshotFile, true, FolderNO, stardustValue, userFriendCode)   
     folderCheckDone := 1 
     setMetaData()
+    
 
     if (Dashboard) {
         basePath := RegExReplace(ScreenshotFile4, "_\d+\.png$", "")
@@ -6057,7 +6067,7 @@ checkfolderscript(){
 
         FileAppend, %basePath%, %targetTxtFile%
     }
-    
+
 }
 
 
