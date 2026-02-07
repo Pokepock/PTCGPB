@@ -5,7 +5,7 @@
 
 global githubUser := "Pokepock"
 global repoName := "PTCGPB"
-global localVersion := "7.1.0.1(C)" 
+global localVersion := "7.2.0(C)" 
 global jsonFileName := ""
 global scaleParam
 
@@ -574,7 +574,7 @@ else if (injectSortMethod = "PacksAsc")
   sortOption := 3
 else if (injectSortMethod = "PacksDesc")
   sortOption := 4
-Gui, Add, DropDownList, vSortByDropdow gSortByDropdownHandler choose%sortOption% x350 y163 w130 Background2A2A2A cWhite, Oldest First|Newest First|Fewest Packs First|Most Packs First
+Gui, Add, DropDownList, vSortByDropdown gSortByDropdownHandler choose%sortOption% x350 y163 w130 Background2A2A2A cWhite, Oldest First|Newest First|Fewest Packs First|Most Packs First
 
 ; ========== Card Detection Section ==========
 sectionColor := "cFF4500" ; Orange Red
