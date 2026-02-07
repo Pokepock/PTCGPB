@@ -302,7 +302,7 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
     vRet := Gdip_ImageSearch(pBitmap, pNeedle, vPosXY, 222, 341, 255, 388, searchVariation)
     if (vRet = 1) {
         CreateStatusMessage("Stuck at  " . scriptName . ". Clicking retry...",,,, false)
-        adbClick(239, 217)
+        adbClick(239, 226)
         Sleep, 1000
     }
 
@@ -316,7 +316,7 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
         LogToFile("Error message in " . scriptName . ". Clicking retry...")
         adbClick(139, 386)
         Sleep, 250
-        adbClick(239, 217)
+        adbClick(239, 226)
         Sleep, 1000
     }
     if(imageName = "Country" || imageName = "Social")
@@ -410,7 +410,7 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
         vRet := Gdip_ImageSearch(pBitmap, pNeedle, vPosXY, 222, 341, 255, 388, searchVariation)
         if (vRet = 1) {
             CreateStatusMessage("Stuck at  " . scriptName . ". Clicking retry...",,,, false)
-            adbClick(239, 217)
+            adbClick(239, 226)
             Sleep, 1000
         }
 
@@ -424,7 +424,7 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
             LogToFile("Error message in " . scriptName . ". Clicking retry...")
             adbClick(139, 386)
             Sleep, 250
-            adbClick(239, 217)
+            adbClick(239, 226)
             Sleep, 1000
         }
 
@@ -1037,8 +1037,10 @@ ParseFriendInfo(ByRef friendCode, ByRef friendName, ByRef parseFriendCodeResult,
         adbTakeScreenshot(fullScreenshotFile)
 
         ; Parse friend identifiers
-        if (!parseFriendCodeResult)
-            parseFriendCodeResult := ParseFriendInfoLoop(fullScreenshotFile, 267, 57, 197, 28, "0123456789", "^\d{14,17}$", friendCode)
+        if (!parseFriendCodeResult) {
+            parseFriendCodeResult := ParseFriendInfoLoop(fullScreenshotFile, 267, 57, 197, 28, "0123456789 ", "^[\d\s]{14,18}$", friendCode)
+            parseFriendCodeResult := StrReplace(parseFriendCodeResult, " ", "")
+        }
         if (includesIdsAndNames && !parseFriendNameResult)
             parseFriendNameResult := ParseFriendInfoLoop(fullScreenshotFile, 107, 427, 325, 46, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-", "^[a-zA-Z0-9\-]{5,20}$", friendName)
         if (parseFriendCodeResult && (!includesIdsAndNames || parseFriendNameResult))
