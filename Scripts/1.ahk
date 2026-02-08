@@ -5951,12 +5951,21 @@ checkfolderscript(){
     pTempBitmap := Gdip_CreateBitmapFromFile(ScreenshotFile)
     Gdip_GetImageDimensions(pTempBitmap, imgW, imgH) 
 
-    if (RefinedOCRText(ScreenshotFile, 0, 0, imgW, imgH, allowedChars, validPattern, stardustValue)) {
-        stardustValue := StrReplace(stardustValue, ",", "")
-        LogToFile("OCR Success: " . stardustValue, "FolderCheck.txt")
-    } else 
-        LogToFile("OCR Failed, could not read stardusts.", "FolderCheck.txt")
-    
+    MaxStarDusts := 0
+    loop 5 {
+        if (FindOrLoseImage(187, 65, 248, 90, , "folder99999", 0, failSafeTime)) {
+            MaxStarDusts := 1
+            stardustValue := 99999
+            break
+        }
+    }
+    if(!MaxStarDusts) {
+        if (RefinedOCRText(ScreenshotFile, 0, 0, imgW, imgH, allowedChars, validPattern, stardustValue)) {
+            stardustValue := StrReplace(stardustValue, ",", "")
+            LogToFile("OCR Success: " . stardustValue, "FolderCheck.txt")
+        } else 
+            LogToFile("OCR Failed, could not read stardusts.", "FolderCheck.txt")
+    }
 
     Delay(5)
     adbClick_wbb(222, 391)
