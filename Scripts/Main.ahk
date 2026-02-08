@@ -1038,8 +1038,9 @@ ParseFriendInfo(ByRef friendCode, ByRef friendName, ByRef parseFriendCodeResult,
 
         ; Parse friend identifiers
         if (!parseFriendCodeResult) {
-            parseFriendCodeResult := ParseFriendInfoLoop(fullScreenshotFile, 267, 57, 197, 28, "0123456789 ", "^[\d\s]{14,18}$", friendCode)
-            parseFriendCodeResult := StrReplace(parseFriendCodeResult, " ", "")
+            parseFriendCodeResult := ParseFriendInfoLoop(fullScreenshotFile, 267, 57, 197, 28, "0123456789 ", "^[\d\s]{14,17}$", friendCode)
+            if(parseFriendCodeResult)
+                friendCode := StrReplace(friendCode, " ", "")
         }
         if (includesIdsAndNames && !parseFriendNameResult)
             parseFriendNameResult := ParseFriendInfoLoop(fullScreenshotFile, 107, 427, 325, 46, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-", "^[a-zA-Z0-9\-]{5,20}$", friendName)
@@ -1082,9 +1083,11 @@ ParseFriendInfoLoop(screenshotFile, x, y, w, h, allowedChars, validPattern, ByRe
         ; Get the formatted pBitmap
         pBitmap := CropAndFormatForOcr(screenshotFile, x, y, w, h, blowUp[A_Index])
         ; Run OCR
-        output := GetTextFromBitmap(pBitmap, allowedChars)
-        ; Validate result
-        if (RegExMatch(output, validPattern)) {
+        rawText := GetTextFromBitmap(pBitmap, allowedChars)
+        cleanText := RegExReplace(rawText, "\s", "")
+
+        if (RegExMatch(cleanText, validPattern)) {
+            output := cleanText
             success := True
             break
         }
