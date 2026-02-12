@@ -916,8 +916,13 @@ Loop {
 			
 			; Bonus Week
             IniRead, claimBonusWeek, %A_ScriptDir%\..\Settings.ini, UserSettings, claimBonusWeek, 0
-            if (A_NowUTC > 20260111060000)
+            IniRead, bonusWeekDate, %A_ScriptDir%\..\Settings.ini, UserSettings, bonusWeekDate, 0214
+            targetTime := "2026" . bonusWeekDate . "060000"
+            EnvAdd, targetTime, 0, Seconds
+
+            if (A_NowUTC > targetTime)
                 claimBonusWeek := 0
+
             if (claimBonusWeek = 1) {
 				if (!openExtraPack) {
 					GoToMain(true)
@@ -2682,15 +2687,17 @@ loadAccount() {
     AnnivCountdownDone := 0
     futureBonusPrepDone := 0
 
-    
-    if (rerolls_local > autoRestartTimes && autoRestartMode)
-    {
-        stopToggle := True
-        now := A_NowUTC
-        EnvSub, now, 1970, seconds
-        now := now - 600
-        IniWrite, %now%, %A_ScriptDir%\%scriptName%.ini, Metrics, LastEndEpoch
-        LogToFile("Auto Restarting...")
+    if (autoRestartMode) {
+        if (rerolls_local > autoRestartTimes)
+        {
+            stopToggle := True
+            now := A_NowUTC
+            EnvSub, now, 1970, seconds
+            IniRead, insMonitorCD, %A_ScriptDir%\..\Settings.ini, UserSettings, insMonitorCD, 10
+            now := now - (insMonitorCD * 60)
+            IniWrite, %now%, %A_ScriptDir%\%scriptName%.ini, Metrics, LastEndEpoch
+            LogToFile("Auto Restarting...")
+        }
     }
 
     if (stopToggle) {
