@@ -5,7 +5,7 @@
 
 global githubUser := "Pokepock"
 global repoName := "PTCGPB"
-global localVersion := "7.2.0.1(C)" 
+global localVersion := "7.2.0.2(C)" 
 global jsonFileName := ""
 global scaleParam
 
@@ -178,7 +178,7 @@ LoadSettingsFromIni() {
     IniRead, claimFutureBonusPrep, %A_ScriptDir%\..\..\Settings.ini, UserSettings, claimFutureBonusPrep, 0
     IniRead, FutureBonusPos, %A_ScriptDir%\..\..\Settings.ini, UserSettings, FutureBonusPos, -1
     IniRead, ClaimMail, %A_ScriptDir%\..\..\Settings.ini, UserSettings, ClaimMail, 0
-
+    IniRead, bonusWeekDate, %A_ScriptDir%\..\..\Settings.ini, UserSettings, bonusWeekDate, 0214
     
 
 
@@ -221,7 +221,7 @@ SaveAllSettings() {
   global spendHourGlass, openExtraPack, injectSortMethod, rowGap, SortByDropdown
   global waitForEligibleAccounts, maxWaitHours, skipMissionsInjectMissions, NineMod, Bankai, classicModeOnly
   global renameMode, renameAndSaveAndReload, targetUsername, renameXML, renameXMLwithFC, ChangeLNMode, targetLN
-  global redeemTokens, ClaimBonusWeek, claimAnnivCountdown, ClaimMail, AnnivPos, BonusWeekPos, FutureBonusPos, claimFutureBonusPrep, captureWebhookURL, insMonitorCD 
+  global redeemTokens, ClaimBonusWeek, claimAnnivCountdown, ClaimMail, AnnivPos, BonusWeekPos, FutureBonusPos, claimFutureBonusPrep, captureWebhookURL, insMonitorCD, bonusWeekDate
 
   
   ; === MISSING ADVANCED SETTINGS VARIABLES ===
@@ -401,6 +401,8 @@ SaveAllSettings() {
   IniWrite, %ClaimMail%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, ClaimMail
   IniWrite, %captureWebhookURL%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, captureWebhookURL
   IniWrite, %insMonitorCD%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, insMonitorCD
+  IniWrite, %bonusWeekDate%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, bonusWeekDate
+  
   
   
 
@@ -596,7 +598,8 @@ Gui, Add, Checkbox, % (ImmersiveCheck ? "Checked" : "") " vImmersiveCheck x270 y
 sectionColor := "cFFA64D"
 Gui, Add, GroupBox, x255 y440 w240 h150 %sectionColor%, Claim Bonus Settings
 Gui, Add, Checkbox, % (redeemTokens ? "Checked" : "") " vredeemTokens x270 y465 " . sectionColor, Redeem Tokens
-Gui, Add, Checkbox, % (ClaimBonusWeek ? "Checked" : "") " vClaimBonusWeek x270 y490 " . sectionColor, Claim BonusWeek
+Gui, Add, Checkbox, % (ClaimBonusWeek ? "Checked" : "") " vClaimBonusWeek x270 y490 " . sectionColor, Bonus Week  Date: 
+Gui, Add, Edit, vbonusWeekDate  w35 x410 y488 h20 -E0x200 Background2A2A2A cWhite Center, %bonusWeekDate%
 Gui, Add, Checkbox, % (claimAnnivCountdown ? "Checked" : "") " vclaimAnnivCountdown x270 y515 " . sectionColor , Claim 1st Anniv Bonus
 Gui, Add, Checkbox, % (ClaimMail ? "Checked" : "") " vClaimMail x270 y540 " . sectionColor , Claim Mailbox
 Gui, Add, Checkbox, % (claimFutureBonusPrep ? "Checked" : "") " vclaimFutureBonusPrep x270 y565 " . sectionColor , Future Bonus (Prep)
