@@ -5306,7 +5306,7 @@ GetEventRewards(frommain := true){
     if(BonusWeeklooptime){
         loop %BonusWeeklooptime% {
             adbClick_wbb(10, 465)
-            sleep, 1000
+            sleep, 1500
         }
     } else {
         adbClick_wbb(150, 465)
