@@ -194,75 +194,23 @@ MuMuv5 := 1
 pokemonList := ["Mewtwo", "Charizard", "Pikachu", "Mew", "Dialga", "Palkia", "Arceus", "Shining", "Solgaleo", "Lunala", "Buzzwole", "Eevee", "HoOh", "Lugia", "Suicune", "Deluxe", "MegaBlaziken", "MegaGyarados", "MegaAltaria", "MegaCharizardY", "MegaGardevoir", "Latest"]
 shinyPacks := {"Shining": 1, "Solgaleo": 1, "Lunala": 1, "Buzzwole": 1, "Eevee": 1, "HoOh": 1, "Lugia": 1, "Suicune": 1, "Deluxe": 1, "MegaBlaziken": 1, "MegaGyarados": 1, "MegaAltaria": 1}
 
-PlatinConfig := {}
-PlatinConfig.menuName := "Platin"
-PlatinConfig.menuX1 := 38
-PlatinConfig.menuY1 := 145
-PlatinConfig.menuX2 := 65
-PlatinConfig.menuY2 := 170
-PlatinConfig.menuCX := 18
-PlatinConfig.menuCY := 109
+PlatinConfig := { "menuName": "Platin", "menuX1": 38, "menuY1": 145, "menuX2": 65, "menuY2": 170, "menuCX": 18, "menuCY": 109
+                , "oneName": "One", "oneX1": 9, "oneY1": 170, "oneX2": 25, "oneY2": 190, "oneCX": 26, "oneCY": 180
+                , "twoName": "Two", "twoX1": 100, "twoY1": 170, "twoX2": 113, "twoY2": 190, "twoCX": 107, "twoCY": 180
+                , "threeName": "Three", "threeX1": 182, "threeY1": 170, "threeX2": 194, "threeY2": 190, "threeCX": 187, "threeCY": 180
+                , "adbY": 296 }
 
-PlatinConfig.oneName := "One"
-PlatinConfig.oneX1 := 9
-PlatinConfig.oneY1 := 170
-PlatinConfig.oneX2 := 25
-PlatinConfig.oneY2 := 190
-PlatinConfig.oneCX := 26
-PlatinConfig.oneCY := 180
+NineModConfig := { "menuName": "NineMod", "menuX1": 25, "menuY1": 145, "menuX2": 70, "menuY2": 170, "menuCX": 18, "menuCY": 109
+                 , "oneName": "One9", "oneX1": 9, "oneY1": 170, "oneX2": 25, "oneY2": 190, "oneCX": 26, "oneCY": 180
+                 , "twoName": "Two9", "twoX1": 100, "twoY1": 170, "twoX2": 113, "twoY2": 190, "twoCX": 107, "twoCY": 180
+                 , "threeName": "Three9", "threeX1": 182, "threeY1": 170, "threeX2": 194, "threeY2": 190, "threeCX": 187, "threeCY": 180
+                 , "adbY": 296 }
 
-PlatinConfig.twoName := "Two"
-PlatinConfig.twoX1 := 100
-PlatinConfig.twoY1 := 170
-PlatinConfig.twoX2 := 113
-PlatinConfig.twoY2 := 190
-PlatinConfig.twoCX := 107
-PlatinConfig.twoCY := 180
-
-PlatinConfig.threeName := "Three"
-PlatinConfig.threeX1 := 182
-PlatinConfig.threeY1 := 170
-PlatinConfig.threeX2 := 194
-PlatinConfig.threeY2 := 190
-PlatinConfig.threeCX := 187
-PlatinConfig.threeCY := 180
-
-PlatinConfig.adbY := 296
-
-; NineMod Config
-NineModConfig := {}
-NineModConfig.menuName := "NineMod"
-NineModConfig.menuX1 := 25
-NineModConfig.menuY1 := 145
-NineModConfig.menuX2 := 70
-NineModConfig.menuY2 := 170
-NineModConfig.menuCX := 18
-NineModConfig.menuCY := 109
-
-NineModConfig.oneName := "One9"
-NineModConfig.oneX1 := 9
-NineModConfig.oneY1 := 170
-NineModConfig.oneX2 := 25
-NineModConfig.oneY2 := 190
-NineModConfig.oneCX := 26
-NineModConfig.oneCY := 180
-
-NineModConfig.twoX1 := 100
-NineModConfig.twoY1 := 170
-NineModConfig.twoX2 := 113
-NineModConfig.twoY2 := 190
-NineModConfig.twoCX := 107
-NineModConfig.twoCY := 180
-
-NineModConfig.threeName := "Three9"
-NineModConfig.threeX1 := 182
-NineModConfig.threeY1 := 170
-NineModConfig.threeX2 := 194
-NineModConfig.threeY2 := 190
-NineModConfig.threeCX := 187
-NineModConfig.threeCY := 180
-
-NineModConfig.adbY := 296
+SchultzyConfig := { "menuName": "Schultzy", "menuX1": 5, "menuY1": 146, "menuX2": 35, "menuY2": 170, "menuCX": 18, "menuCY": 109
+                 , "oneName": "OneS", "oneX1": 16, "oneY1": 164, "oneX2": 24, "oneY2": 185, "oneCX": 26, "oneCY": 180
+                 , "twoName": "TwoS", "twoX1": 100, "twoY1": 165, "twoX2": 108, "twoY2": 185, "twoCX": 107, "twoCY": 180
+                 , "threeName": "ThreeS", "threeX1": 182, "threeY1": 163, "threeX2": 190, "threeY2": 184, "threeCX": 187, "threeCY": 180
+                 , "adbY": 296 }
 
 packArray := []  ; Initialize an empty array
 
@@ -281,7 +229,8 @@ if (NineModStatus) {
     swipeSpeed := 300
 }
 else {
-    ModSets := PlatinConfig
+    ;ModSets := PlatinConfig
+    ModSets := SchultzyConfig
     swipeSpeed := slowMotion ? 600 : 300
 }
 
@@ -3124,7 +3073,7 @@ Screenshot_dev(fileType := "Dev",subDir := "") {
     try {
         OwnerWND := WinExist(winTitle)
         buttonWidth := 40
-        yBias := titleHeight - 45
+        yBias := titleHeight - 50
 
         Gui, DevMode_ss%winTitle%:New, +LastFound -DPIScale
         Gui, DevMode_ss%winTitle%:Add, Picture, x0 y0 w275 h534, %filePath%
@@ -3136,13 +3085,13 @@ Screenshot_dev(fileType := "Dev",subDir := "") {
         KeyWait, LButton, D
         MouseGetPos , X1, Y1, OutputVarWin, OutputVarControl
         KeyWait, LButton, U
-        Y1 -= 26 + yBias
+        Y1 -= 31 + yBias
         ;MsgBox, The cursor is at X%X1% Y%Y1%.
 
         KeyWait, LButton, D
         MouseGetPos , X2, Y2, OutputVarWin, OutputVarControl
         KeyWait, LButton, U
-        Y2 -= 26 + yBias
+        Y2 -= 31 + yBias
         ;MsgBox, The cursor is at X%X2% Y%Y2%.
 
         W:=X2-X1
