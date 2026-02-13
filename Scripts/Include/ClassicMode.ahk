@@ -463,7 +463,7 @@ Gui, Add, Checkbox, % (NineMod ? "Checked" : "") " vNineMod gCheckMutex x20 y300
 if(!NineMod && !slowMotion)
   Bankai := 1 
 
-Gui, Add, Checkbox, % (Bankai ? "Checked" : "") " vBankai gCheckMutex x20 y320 " . sectionColor, Bankai Mod Menu 3x
+Gui, Add, Checkbox, % (Bankai ? "Checked" : "") " vBankai gCheckMutex x20 y320 " . sectionColor, Schultzy Menu 3x
 
 
 ; ========== System Settings Section ==========
