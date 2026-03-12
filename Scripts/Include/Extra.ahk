@@ -1,9 +1,11 @@
 ﻿#Include %A_ScriptDir%\Dictionary.ahk
+#Include %A_ScriptDir%\ADB.ahk
+#Include %A_ScriptDir%\Logging.ahk
 #SingleInstance Force
 
 ; GUI dimensions
 global GUI_WIDTH := 510
-global GUI_HEIGHT := 445
+global GUI_HEIGHT := 495
 
 if not A_IsAdmin
 {
@@ -151,7 +153,7 @@ if (altheartBeat) {
 
 ; ========== Download Settings Section (Bottom right) ==========
 sectionColor := "cWhite"
-Gui, Add, GroupBox, xp-15 yp+35 w240 h120 %sectionColor%, Alt Download Settings ;
+Gui, Add, GroupBox, xp-15 yp+35 w240 h170 %sectionColor%, Alt Download Settings ;
 
 
 if(StrLen(altmainIdsURL) < 3)
@@ -159,9 +161,9 @@ if(StrLen(altmainIdsURL) < 3)
 if(StrLen(altvipIdsURL) < 3)
   altvipIdsURL =
 
-Gui, Add, Text, xp+15 yp+25 %sectionColor%, Alt ids.txt API:
+Gui, Add, Text, xp+15 yp+30 %sectionColor%, Alt ids.txt API:
 Gui, Add, Edit, valtmainIdsURL w210 xp+0 yp+20 h20 -E0x200 Background2A2A2A cWhite, %altmainIdsURL%
-Gui, Add, Text, xp+0 yp+20 %sectionColor%, Alt vip_ids.txt (GP Test Mode) API:
+Gui, Add, Text, xp+0 yp+40 %sectionColor%, Alt vip_ids.txt (GP Test Mode) API:
 Gui, Add, Edit, valtvipIdsURL w210 xp+0 yp+20 h20 -E0x200 Background2A2A2A cWhite, %AltvipIdsURL%
 
 ; ========== Column 2 ==========
@@ -199,7 +201,8 @@ Gui, Add, Text, vtxt_autoRestartTimesCD xp+30 yp+0 %sectionColor%, Runs
 ; ========== Action Buttons ==========
 Gui, Add, Button, gPackSelector xp-195 yp+40 w240 h35, Detailed Pack Selects
 Gui, Add, Button, gRemoveMetadata xp+0 yp+45 w240 h35, Metadata Renamer
-Gui, Add, Button, gSave xp+0 yp+45 w240 h60, Save Settings
+Gui, Add, Button, gEnableAllPackages xp+0 yp+45 w240 h35, Enable All Packages
+Gui, Add, Button, gSave xp+0 yp+45 w240 h65, Save Settings
 
 
 
@@ -326,6 +329,10 @@ RemoveMetadata:
   Run, %A_ScriptDir%\RemoveMetadata.ahk
 Return
 
+EnableAllPackages:
+  EnableAllScript()
+Return
+
 ; Add this function to kill all related scripts
 KillAllScripts() {
     ; Kill Monitor.ahk if running
@@ -359,4 +366,62 @@ KillAllScripts() {
     
     ; Close any status GUIs that might be open
     Gui, PackStatusGUI:Destroy
+}
+
+
+ReadFile(filename, numbers := false) {
+    idsPath := A_ScriptDir "\..\" . fileName . ".txt"
+    if !FileExist(idsPath)
+        return false
+    FileRead, content, %idsPath%
+
+    if (!content)
+        return false
+
+    values := []
+    for _, val in StrSplit(Trim(content), "`n") {
+        cleanVal := RegExReplace(val, "[^a-zA-Z0-9]") ; Remove non-alphanumeric characters
+        if (cleanVal != "")
+            values.Push(cleanVal)
+    }
+
+    return values.MaxIndex() ? values : false
+}
+
+
+
+EnableAllScript(){
+  global adbPort, adbShell, adbPath
+  global scriptName 
+  
+  IniRead, folderPath, %A_ScriptDir%\..\..\Settings.ini, UserSettings, folderPath
+  IniRead, Instances, %A_ScriptDir%\..\..\Settings.ini, UserSettings, Instances
+
+  Packages := ["com.android.chromium"
+              , "com.android.browser"
+              , "com.mumu.store"
+              , "com.google.android.play.games"
+              , "com.android.vending"]
+
+
+  Loop, %Instances%
+  {
+      scriptName := A_Index
+      adbShell := ""
+      ConnectAdb(folderPath)
+      initializeAdbShell()
+
+      for pkgIndex, pkg in Packages 
+      {
+        adbShell.StdIn.WriteLine("pm enable " . pkg . " 2>&1")
+        waitadb()
+        adbShell.StdIn.WriteLine("stop && sleep 1 && start")
+        waitadb()
+      }
+      
+      adbShell.StdIn.WriteLine("exit")
+      Sleep, 200
+  }
+
+  MsgBox, % "批量啟用完成，共處理 " . Instances . " 個設備。"
 }
