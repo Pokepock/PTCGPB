@@ -3,6 +3,9 @@
 #Include %A_ScriptDir%\Logging.ahk
 #SingleInstance Force
 
+DllCall("AllocConsole")
+WinHide % "ahk_id " DllCall("GetConsoleWindow", "ptr")
+
 ; GUI dimensions
 global GUI_WIDTH := 510
 global GUI_HEIGHT := 495
@@ -389,7 +392,6 @@ ReadFile(filename, numbers := false) {
 }
 
 
-
 EnableAllScript(){
   global adbPort, adbShell, adbPath
   global scriptName 
@@ -414,8 +416,6 @@ EnableAllScript(){
       for pkgIndex, pkg in Packages 
       {
         adbShell.StdIn.WriteLine("pm enable " . pkg . " 2>&1")
-        waitadb()
-        adbShell.StdIn.WriteLine("stop && sleep 1 && start")
         waitadb()
       }
       
