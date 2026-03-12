@@ -14,7 +14,7 @@ global STATIC_BRUSH := 0
 
 githubUser := "Pokepock"
 repoName := "PTCGPB"
-localVersion := "v7.2.0.3"
+localVersion := "v7.3.0"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
@@ -420,7 +420,7 @@ NextStep:
         global autoLaunchMonitor, autoUseGPTest, TestTime
         global CheckShinyPackOnly, TrainerCheck, FullArtCheck, RainbowCheck, ShinyCheck, CrownCheck
         global InvalidCheck, ImmersiveCheck, PseudoGodPack, minStars, Palkia, Dialga, Arceus, Shining
-        global Mew, Pikachu, Charizard, Mewtwo, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria, MegaCharizardY, MegaGardevoir, Latest, slowMotion, ocrLanguage, clientLanguage
+        global Mew, Pikachu, Charizard, Mewtwo, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria, MegaCharizardY, MegaGardevoir, Latest, Paldean, slowMotion, ocrLanguage, clientLanguage
         global CurrentVisibleSection, heartBeatDelay, sendAccountXml, showcaseEnabled, showcaseURL, isDarkTheme
         global useBackgroundImage, tesseractPath, applyRoleFilters, debugMode, tesseractOption, statusMessage
         global s4tEnabled, s4tSilent, s4t3Dmnd, s4t4Dmnd, s4t1Star, s4tGholdengo, s4tWP, s4tWPMinCards
@@ -2137,8 +2137,9 @@ NextStep:
             IniRead, MegaGyarados, Settings.ini, UserSettings, MegaGyarados, 0
             IniRead, MegaAltaria, Settings.ini, UserSettings, MegaAltaria, 0
             IniRead, MegaCharizardY, Settings.ini, UserSettings, MegaCharizardY, 0
-            IniRead, MegaGardevoir, Settings.ini, UserSettings, MegaGardevoir, 1
-            IniRead, Latest, Settings.ini, UserSettings, Latest, 0
+            IniRead, MegaGardevoir, Settings.ini, UserSettings, MegaGardevoir, 0
+            IniRead, Paldean, Settings.ini, UserSettings, Paldean, 0
+            IniRead, Latest, Settings.ini, UserSettings, Latest, 1
             
             
             IniRead, CheckShinyPackOnly, Settings.ini, UserSettings, CheckShinyPackOnly, 0
@@ -4337,6 +4338,8 @@ StartBot:
         Selected.Push("MegaGardevoir")
     if(Latest)
         Selected.Push("Latest")
+    if(Paldean)
+        Selected.Push("Paldean")
 
     for index, value in Selected {
         if(index = Selected.MaxIndex())
