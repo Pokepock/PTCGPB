@@ -1332,6 +1332,12 @@ Screenshot_dev(fileType := "Dev",subDir := "") {
     return filePath
 }
 
+Delay(n) {
+    global Delay
+    msTime := Delay * n
+    Sleep, msTime
+}
+
 
 DevMode:
     ToggleDevMode()
