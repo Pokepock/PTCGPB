@@ -22,7 +22,7 @@ WinHide % "ahk_id " DllCall("GetConsoleWindow", "ptr")
 global RESTART_LOOP_EXCEPTION := { message: "Restarting main loop" }
 global winTitle, changeDate, failSafe, openPack, Delay, failSafeTime, StartSkipTime, Columns, failSafe, scriptName, GPTest, StatusText, setSpeed, jsonFileName, pauseToggle, SelectedMonitorIndex, swipeSpeed, godPack, scaleParam, deleteMethod, packs, FriendID, friendIDs, Instances, username, friendCode, stopToggle, friended, runMain, Mains, showStatus, injectMethod, packMethod, loadDir, loadedAccount, nukeAccount, CheckShinyPackOnly, TrainerCheck, FullArtCheck, RainbowCheck, ShinyCheck, dateChange, foundGP, friendsAdded, PseudoGodPack, packArray, CrownCheck, ImmersiveCheck, InvalidCheck, slowMotion, screenShot, accountFile, invalid, starCount, keepAccount
 global twoPlusOne, twoPlusDia
-global Mewtwo, Charizard, Pikachu, Mew, Dialga, Palkia, Arceus, Shining, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria, MegaCharizardY, MegaGardevoir, Latest
+global Mewtwo, Charizard, Pikachu, Mew, Dialga, Palkia, Arceus, Shining, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria, MegaCharizardY, MegaGardevoir, Latest, Paldean
 global shinyPacks, minStars, minStarsShiny
 global DeadCheck
 global s4tEnabled, s4tSilent, s4t3Dmnd, s4t4Dmnd, s4t1Star, s4tGholdengo, s4tFoil, s4tTrainer, s4tRainbow, s4tFullArt, s4tShiny, s4tDiscordWebhookURL, s4tDiscordUserId, s4tSendAccountXml
@@ -70,7 +70,7 @@ dbg_bboxNpause :=0
 dbg_bbox_click :=0
 
 global newPlayerName, renameMode, renameAndSaveAndReload, targetUsername, renameXML, renameOcrText, renameXMLwithFC, userFriendCode
-global ChangeLNMode, targetLN, Checkfolder, sendAccountXml, folderWebhookURL, folderNO, stardustValue
+global ChangeLNMode, targetLN, Checkfolder, sendAccountXml, folderWebhookURL, folderNO, stardustValue, Packages
 global ModSets, NineModStatus, indivPackMode, changeLNposY, Dashboard, claimMail, altWebhookSettings, altdiscordWebhookURL, AltdiscordUserId, autoRestartMode, autoRestartTimes
 
 scriptName := StrReplace(A_ScriptName, ".ahk")
@@ -113,7 +113,8 @@ IniRead, twoPlusOne, %A_ScriptDir%\..\Settings.ini, UserSettings, twoPlusOne, 0
 IniRead, twoPlusDia, %A_ScriptDir%\..\Settings.ini, UserSettings, twoPlusDia, 0
 
 IniRead, Latest, %A_ScriptDir%\..\Settings.ini, UserSettings, Latest, 0
-IniRead, MegaGardevoir, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaGardevoir, 1
+IniRead, Paldean, %A_ScriptDir%\..\Settings.ini, UserSettings, Paldean, 1
+IniRead, MegaGardevoir, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaGardevoir, 0
 IniRead, MegaCharizardY, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaCharizardY, 0
 IniRead, MegaBlaziken, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaBlaziken, 0
 IniRead, MegaGyarados, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaGyarados, 0
@@ -191,7 +192,7 @@ IniRead, autoRestartTimes, %A_ScriptDir%\..\Settings.ini, UserSettings, autoRest
 
 
 MuMuv5 := 1
-pokemonList := ["Mewtwo", "Charizard", "Pikachu", "Mew", "Dialga", "Palkia", "Arceus", "Shining", "Solgaleo", "Lunala", "Buzzwole", "Eevee", "HoOh", "Lugia", "Suicune", "Deluxe", "MegaBlaziken", "MegaGyarados", "MegaAltaria", "MegaCharizardY", "MegaGardevoir", "Latest"]
+pokemonList := ["Mewtwo", "Charizard", "Pikachu", "Mew", "Dialga", "Palkia", "Arceus", "Shining", "Solgaleo", "Lunala", "Buzzwole", "Eevee", "HoOh", "Lugia", "Suicune", "Deluxe", "MegaBlaziken", "MegaGyarados", "MegaAltaria", "MegaCharizardY", "MegaGardevoir", "Latest", "Paldean"]
 shinyPacks := {"Shining": 1, "Solgaleo": 1, "Lunala": 1, "Buzzwole": 1, "Eevee": 1, "HoOh": 1, "Lugia": 1, "Suicune": 1, "Deluxe": 1, "MegaBlaziken": 1, "MegaGyarados": 1, "MegaAltaria": 1}
 
 PlatinConfig := { "menuName": "Platin", "menuX1": 38, "menuY1": 145, "menuX2": 65, "menuY2": 170, "menuCX": 18, "menuCY": 109
@@ -211,6 +212,13 @@ SchultzyConfig := { "menuName": "Schultzy", "menuX1": 5, "menuY1": 146, "menuX2"
                  , "twoName": "TwoS", "twoX1": 100, "twoY1": 165, "twoX2": 108, "twoY2": 185, "twoCX": 107, "twoCY": 180
                  , "threeName": "ThreeS", "threeX1": 182, "threeY1": 163, "threeX2": 190, "threeY2": 184, "threeCX": 187, "threeCY": 180
                  , "adbY": 296 }
+
+Packages := ["com.android.chromium"
+            , "com.android.browser"
+            , "com.mumu.store"
+            , "com.google.android.play.games"
+            , "com.android.vending"]
+
 
 packArray := []  ; Initialize an empty array
 
@@ -312,6 +320,11 @@ if(InStr(deleteMethod, "Inject"))
 
 initializeAdbShell()
 
+for index, pkg in Packages {
+    adbShell.StdIn.WriteLine("pm disable-user " . pkg . " 2>&1")
+    waitadb()
+}
+
 createAccountList(scriptName)
 
 rerolls_local := 0
@@ -329,6 +342,8 @@ global adbSwipeParams := adbSwipeX1 . " " . adbSwipeY . " " . adbSwipeX2 . " " .
 
 Loop {
     try{
+
+        
         if(DeadCheck = 1 && deleteMethod != "13 Pack") {
             CreateStatusMessage("Account is stuck! Restarting and unfriending...")
             friended := true
@@ -1531,6 +1546,8 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
         CreateStatusMessage("Error message in " . scriptName . ". Clicking retry...",,,, false)
         adbClick_wbb(139, 386)
         Sleep, 250
+        adbClick_wbb(141, 443)
+        Sleep, 250
         adbClick_wbb(239, 217)
         Sleep, 1000
 
@@ -1572,7 +1589,7 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
     
     }
     ;country for new accounts, social for inject with friend id, points for inject without friend id
-    if(imageName = "Country" || imageName = "Social" || imageName = "Points")
+    if(imageName = "Country" || imageName = "Social" || imageName = "Points" || imageName = "GotAllMissions")
         FSTime := 90
     else
         FSTime := 45
@@ -1638,7 +1655,7 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
             confirmed := vPosXY
         } else {
             ElapsedTime := (A_TickCount - StartSkipTime) // 1000
-            if(imageName = "Country" || imageName = "Shop")
+            if(imageName = "Country" || imageName = "Shop" || imageName = "GotAllMissions")
                 FSTime := 90
             else if(imageName = "Proceed") ; Decrease time for Marowak
                 FSTime := 8
@@ -1686,6 +1703,8 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
         if (vRet = 1) {
             CreateStatusMessage("Error message in " . scriptName . ". Clicking retry...",,,, false)
             adbClick_wbb(139, 386)
+            Sleep, 250
+            adbClick_wbb(141, 443)
             Sleep, 250
             adbClick_wbb(239, 217)
             Sleep, 1000
@@ -4029,30 +4048,28 @@ SelectPack(HG := false) {
     
     packy := HomeScreenAllPackY
 
-    Latestlist := ["MegaGardevoir"]
+
+    Latestlist := ["Paldean"]
     Randmax := Latestlist.Length()
     Random, rand, 1, Randmax
     if (openPack == "Latest")
         openPack := Latestlist[rand]
 
-    if (openPack == "MegaBlaziken") {
+    if (openPack == "MegaCharizardY") {
         packx := LeftPackX
-    } else if (openPack == "MegaCharizardY") {
+    } else if (openPack == "MegaGardevoir") {
         packx := RightPackX
-    } else if (openPack == "Deluxe"){
-        packx := MiddlePackX
-        openPack := "MegaGardevoir"
     } else {
         packx := MiddlePackX
     }
 
-    if(openPack == "MegaCharizardY" || openPack == "MegaBlaziken" || openPack == "MegaGardevoir") {
+    if(openPack == "MegaCharizardY" || openPack == "Paldean" || openPack == "MegaGardevoir") {
         PackIsInHomeScreen := 1
     } else {
         PackIsInHomeScreen := 0
     }
 
-    if(openPack == "MegaGardevoir") {
+    if(openPack == "Paldean") {
         PackIsLatest := 1
     } else {
         PackIsLatest := 0
@@ -4139,15 +4156,18 @@ SelectPack(HG := false) {
     if(inselectexpansionscreen) {
         adbClick(61, 472)
         Delay(1)
-        if(openPack == "MegaGyarados" || openPack == "MegaAltaria") {
+        if(openPack == "MegaGyarados" || openPack == "MegaAltaria" || openPack == "MegaBlaziken") {
             FindImageAndClick(12, 453, 28, 473, , "Bpacks", 58, 464, sleepTime)
             Delay(1)
             if (openPack == "MegaGyarados") {
                 packy := SelectExpansionHomeSecondRowY
-                packx := SelectExpansionLeftCollumnMiddleX + 3PackExpansionLeft
+                packx := SelectExpansionRightCollumnMiddleX + 3PackExpansionLeft
+            } else if (openPack == "MegaBlaziken") {
+                packy := SelectExpansionHomeSecondRowY
+                packx := SelectExpansionRightCollumnMiddleX
             } else if (openPack == "MegaAltaria") {
                 packy := SelectExpansionHomeSecondRowY
-                packx := SelectExpansionLeftCollumnMiddleX + 3PackExpansionRight
+                packx := SelectExpansionRightCollumnMiddleX + 3PackExpansionRight
             }
         }
 
@@ -5300,7 +5320,7 @@ GetEventRewards(frommain := true){
         CreateStatusMessage("Waiting for Trace`n(" . failSafeTime . "/45 seconds)")
         Delay(1)
     }
-
+    
     IniRead, BonusWeekPos, %A_ScriptDir%\..\Settings.ini, UserSettings, BonusWeekPos, -1
     BonusWeeklooptime := BonusWeekPos * (-1) -1 
     if(BonusWeeklooptime){
