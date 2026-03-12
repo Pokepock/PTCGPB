@@ -87,6 +87,7 @@
         Lang["SortByText"] := "Sort By:"
 
         Lang["Txt_Latest"] := "Latest"
+        Lang["Txt_Paldean"] := "Paldean"
         Lang["Txt_MegaGardevoir"] := "MegaGardevoir"
         Lang["Txt_MegaCharizardY"] := "MegaCharizardY"
         Lang["Txt_MegaBlaziken"] := "MegaBlaziken"
@@ -222,6 +223,7 @@
         Lang["SortByText"] := "注入排序："
 
         Lang["Txt_Latest"] := "Latest"
+        Lang["Txt_Paldean"] := "帕底亞"
         Lang["Txt_MegaGardevoir"] := "超級沙奈朵"
         Lang["Txt_MegaCharizardY"] := "超級噴火龍Y"
         Lang["Txt_MegaBlaziken"] := "超級火焰雞"
@@ -357,6 +359,7 @@
         Lang["SortByText"] := "注入序列："
 
         Lang["Txt_Latest"] := "Latest"
+        Lang["Txt_Paldean"] := "パルデア"
         Lang["Txt_MegaGardevoir"] := "メガサーナイト"
         Lang["Txt_MegaCharizardY"] := "メガリザードンY"
         Lang["Txt_MegaBlaziken"] := "メガバシャーモ"
@@ -496,6 +499,7 @@
 
 
         Lang["Txt_Latest"] := "Latest"
+        Lang["Txt_Paldean"] := "Paldean"
         Lang["Txt_MegaGardevoir"] := "MegaGardevoir"
         Lang["Txt_MegaGlurakY"] := "MegaGlurakY"
         Lang["Txt_MegaBlaziken"] := "MegaLohgock"
