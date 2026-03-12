@@ -18,7 +18,7 @@ localVersion := "v7.3.0"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
-intro := "Fantastical Parade"
+intro := "Paldean"
 ; GUI dimensions
 global GUI_WIDTH := 377 
 global GUI_HEIGHT := 677
