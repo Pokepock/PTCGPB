@@ -301,9 +301,7 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
     pNeedle := GetNeedle(Path)
     vRet := Gdip_ImageSearch(pBitmap, pNeedle, vPosXY, 222, 341, 255, 388, searchVariation)
     if (vRet = 1) {
-        CreateStatusMessage("Stuck at  " . scriptName . ". Clicking retry...",,,, false)
-        adbClick(239, 226)
-        Sleep, 1000
+        restartGameInstance("*Stuck at " . imageName . "...")
     }
 
     Path = %imagePath%Error.png
@@ -409,9 +407,7 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
         pNeedle := GetNeedle(Path)
         vRet := Gdip_ImageSearch(pBitmap, pNeedle, vPosXY, 222, 341, 255, 388, searchVariation)
         if (vRet = 1) {
-            CreateStatusMessage("Stuck at  " . scriptName . ". Clicking retry...",,,, false)
-            adbClick(239, 226)
-            Sleep, 1000
+            restartGameInstance("*Stuck at " . imageName . "...")
         }
 
         Path = %imagePath%Error.png
