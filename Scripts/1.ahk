@@ -71,7 +71,7 @@ dbg_bbox_click :=0
 
 global newPlayerName, renameMode, renameAndSaveAndReload, targetUsername, renameXML, renameOcrText, renameXMLwithFC, userFriendCode
 global ChangeLNMode, targetLN, Checkfolder, sendAccountXml, folderWebhookURL, folderNO, stardustValue, Packages
-global ModSets, NineModStatus, indivPackMode, changeLNposY, Dashboard, claimMail, altWebhookSettings, altdiscordWebhookURL, AltdiscordUserId, autoRestartMode, autoRestartTimes
+global ModSets, NineModStatus, indivPackMode, changeLNposY, Dashboard, claimMail, altWebhookSettings, altdiscordWebhookURL, AltdiscordUserId, autoRestartMode, autoRestartTimes, restartGameCount, needToReturnSocial
 
 scriptName := StrReplace(A_ScriptName, ".ahk")
 winTitle := scriptName
@@ -1160,11 +1160,14 @@ RemoveFriends() {
         friended := false
         return false
     }
+    
 
     packsInPool := 0 ; if friends are removed, clear the pool
 
     CreateStatusMessage("Starting friend removal process...",,,, false)
-
+    
+    clearAllTrigger := 0
+    needToReturnSocial := 1
     failSafe := A_TickCount
     failSafeTime := 0
     Loop {
@@ -1196,8 +1199,9 @@ RemoveFriends() {
         failSafeTime := (A_TickCount - failSafe) // 1000
         CreateStatusMessage("Waiting for Social`n(" . failSafeTime . "/90 seconds)")
     }
-
+    needToReturnSocial := 1
     FindImageAndClick(226, 100, 270, 135, , "Add", 38, 460)
+    returnClearAll:
     FindImageAndClick(97, 452, 104, 476, 10, "requests", 174, 467)
     failSafe := A_TickCount
     failSafeTime := 0
@@ -1206,17 +1210,38 @@ RemoveFriends() {
             break
         adbClick(205, 510)
         Delay(1)
-        if (FindOrLoseImage(135, 355, 160, 385, , "Remove", 0, failSafeTime))
+        if (FindOrLoseImage(135, 355, 160, 385, , "Remove", 0, failSafeTime)){
             adbClick(210, 372)
+            clearAllTrigger := 1
+            Delay(1)
+        }
+        if(FindOrLoseImage(120, 178, 155, 210, , "Error", 0)) {
+            adbClick_wbb(139, 371)
+            Delay(1)
+            adbClick_wbb(139, 386)
+            Delay(2)
+            returnToSocial()
+            restartGameCount := 0
+            goto, returnClearAll
+        }
         failSafeTime := (A_TickCount - failSafe) // 1000
-        CreateStatusMessage("Waiting for clearaAll`n(" . failSafeTime . "/45 seconds)")
+        CreateStatusMessage("Waiting for clearaAll`n(" . failSafeTime . "/45 seconds) --Counting " . restartGameCount . "/10 ")
     }
+    
+    if(clearAllTrigger)
+        restartGameCount++
+        
     FindImageAndClick(84, 463, 100, 475, 10, "Friends", 22, 464)
     startOfRemoving := A_TickCount
+    removefriendsCount := 0
     friendsProcessed := 0
     failSafe := A_TickCount
     failSafeTime := 0
     Loop {
+        ;if(restartGameCount > 10){
+            ;restartGameScript()
+            ;restartGameCount := 0
+        ;}
         adbClick(58, 190)
         Delay(1)
         if(FindOrLoseImage(87, 401, 99, 412, , "Accepted2", 0, failSafeTime)){
@@ -1232,10 +1257,21 @@ RemoveFriends() {
             adbClick(143, 507)
             Delay(1)
             friendsProcessed++
+            restartGameCount++
             failSafe := A_TickCount
         }
+        if(FindOrLoseImage(120, 178, 155, 210, , "Error", 0)) {
+            adbClick_wbb(139, 371)
+            Delay(2)
+            adbClick_wbb(139, 386)
+            Delay(2)
+            returnToSocial()
+            restartGameCount := 0
+        }
         failSafeTime := (A_TickCount - failSafe) // 1000
-        CreateStatusMessage("Waiting for Accepted2`n(" . failSafeTime . "/45 seconds)")
+        CreateStatusMessage("Waiting for Accepted2`n(" . restartGameCount . "/45 seconds) --Counting " . restartGameCount . "/10 ")
+	    Sleep, 1000
+       
     }
     endOfRemoving := A_TickCount
     ; Exit friend removal process
@@ -1244,6 +1280,7 @@ RemoveFriends() {
     CreateStatusMessage("Friends removed successfully!",,,, false)
     DeadCheck := 0
     IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
+    needToReturnSocial := 0
 }
 
 TradeTutorial() {
@@ -1379,11 +1416,19 @@ AddFriends(renew := false, getFC := false) {
     }
     */
     startOfAdding := A_TickCount
+    restartGameCount := 0
+    needToReturnSocial := 1
     for index, value in friendIDs {
         if (StrLen(value) != 16) {
             ; Wrong id value
             continue
         }
+        reAdd:
+        restartGameCount++
+        ;if(restartGameCount > 10){
+            ;restartGameScript(true)
+            ;restartGameCount := 1
+        ;}
         failSafe := A_TickCount
         failSafeTime := 0
         Loop {
@@ -1419,29 +1464,84 @@ AddFriends(renew := false, getFC := false) {
                     adbClick_wbb(243, 258)
                 }
                 break
+            } else if(FindOrLoseImage(120, 178, 155, 210, , "Error", 0)) {
+                    adbClick_wbb(139, 371)
+                    Delay(2)
+                    adbClick_wbb(139, 392)
+                    Delay(2)
+                    adbClick_wbb(139, 386)
+                    Delay(2)
+                    returnToSocial(true)
+                    restartGameCount := 0
+                    Goto, reAdd
             }
             Delay(1)
             failSafeTime := (A_TickCount - failSafe) // 1000
-            CreateStatusMessage("Waiting for AddFriends4`n(" . failSafeTime . "/45 seconds)")
+            CreateStatusMessage("Waiting for AddFriends4`n(" . failSafeTime . "/45 seconds) --Counting " . restartGameCount . "/10 ")
         }
         if(index != friendIDs.maxIndex()) {
-            Delay(2)
-            FindImageAndClick(205, 430, 255, 475, , "Search2", 143, 518)
+            
+            ;FindImageAndClick(205, 430, 255, 475, , "Search2", 143, 518)
+            Loop {
+                
+                if(FindOrLoseImage(120, 178, 155, 210, , "Error", 0)) {
+                    adbClick_wbb(139, 371)
+                    Delay(2)
+                    adbClick_wbb(139, 392)
+                    Delay(2)
+                    adbClick_wbb(139, 386)
+                    Delay(2)
+                    returnToSocial(true)
+                    restartGameCount := 0
+                    Goto, reAdd
+                } else if(FindOrLoseImage(205, 430, 255, 475, , "Search2",0)){
+                    Delay(2)
+                    break
+                }
+                adbClick_wbb(143, 518)
+                Delay(2)
+            }
             EraseInput(index, n)
+        }
+        else {
+            Sleep, 3000
+            loop 5 {
+                if(FindOrLoseImage(120, 178, 155, 210, , "Error", 0)){
+                    adbClick_wbb(139, 371)
+                    Delay(2)
+                    adbClick_wbb(139, 392)
+                    Delay(2)
+                    adbClick_wbb(139, 386)
+                    Delay(2)
+                    returnToSocial(true)
+                    restartGameCount := 0
+                    Goto, reAdd
+                }
+                Delay(1)
+            }
         }
     }
     endOfAdding := A_TickCount
-    FindImageAndClick(120, 500, 155, 530, , "Social", 143, 518, 500)
+    
 
-    FindImageAndClick(20, 500, 55, 530, , "Home", 40, 516, 500)
-
-    Loop %waitTime% {
-        CreateStatusMessage("Waiting for friends to accept request`n(" . A_Index . "/" . waitTime . " seconds)")
-        sleep, 1000
-    }
+    ;if(friendIDs.Length() < 11 && friendIDs.Length() > 5){
+        ;Delay(6)
+        ;restartHomeScript()
+        ;restartGameCount := 0
+    ;}
+    
+    ;else {
+        FindImageAndClick(120, 500, 155, 530, , "Social", 143, 518, 500)
+        FindImageAndClick(20, 500, 55, 530, , "Home", 40, 516, 500)
+        Loop %waitTime% {
+            CreateStatusMessage("Waiting for friends to accept request`n(" . A_Index . "/" . waitTime . " seconds)")
+            sleep, 1000
+        }
+    ;}
     
     IniWrite, 1, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
     DeadCheck := 1
+    needToReturnSocial := 0
     return n ;return added friends so we can dynamically update the .txt in the middle of a run without leaving friends at the end
 }
 
@@ -1537,20 +1637,21 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
         restartGameInstance("*Stuck at " . imageName . "...")
     }
 
+    if(!needToReturnSocial){
+        Path = %imagePath%Error.png ; Search for communication error
+        pNeedle := GetNeedle(Path)
+        ; ImageSearch within the region
+        vRet := Gdip_ImageSearch_wbb(pBitmap, pNeedle, vPosXY, 120, 178, 155, 210, searchVariation)
+        if (vRet = 1) {
+            CreateStatusMessage("Error message in " . scriptName . ". Clicking retry...",,,, false)
+            adbClick_wbb(139, 386)
+            Sleep, 250
+            adbClick_wbb(141, 443)
+            Sleep, 250
+            adbClick_wbb(239, 217)
+            Sleep, 1000
 
-    Path = %imagePath%Error.png ; Search for communication errorㄥ
-    pNeedle := GetNeedle(Path)
-    ; ImageSearch within the region
-    vRet := Gdip_ImageSearch_wbb(pBitmap, pNeedle, vPosXY, 120, 178, 155, 210, searchVariation)
-    if (vRet = 1) {
-        CreateStatusMessage("Error message in " . scriptName . ". Clicking retry...",,,, false)
-        adbClick_wbb(139, 386)
-        Sleep, 250
-        adbClick_wbb(141, 443)
-        Sleep, 250
-        adbClick_wbb(239, 217)
-        Sleep, 1000
-
+        }
     }
 
 
@@ -1696,19 +1797,22 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
             restartGameInstance("*Stuck at " . imageName . "...")
         }
 
-        Path = %imagePath%Error.png ; Search for communication error
-        pNeedle := GetNeedle(Path)
-        ; ImageSearch within the region
-        vRet := Gdip_ImageSearch_wbb(pBitmap, pNeedle, vPosXY, 120, 178, 155, 210, searchVariation)
-        if (vRet = 1) {
-            CreateStatusMessage("Error message in " . scriptName . ". Clicking retry...",,,, false)
-            adbClick_wbb(139, 386)
-            Sleep, 250
-            adbClick_wbb(141, 443)
-            Sleep, 250
-            adbClick_wbb(239, 217)
-            Sleep, 1000
+        if(!needToReturnSocial){
+            Path = %imagePath%Error.png ; Search for communication error
+            pNeedle := GetNeedle(Path)
+            ; ImageSearch within the region
+            vRet := Gdip_ImageSearch_wbb(pBitmap, pNeedle, vPosXY, 120, 178, 155, 210, searchVariation)
+            if (vRet = 1) {
+                CreateStatusMessage("Error message in " . scriptName . ". Clicking retry...",,,, false)
+                adbClick_wbb(139, 386)
+                Sleep, 250
+                adbClick_wbb(141, 443)
+                Sleep, 250
+                adbClick_wbb(239, 217)
+                Sleep, 1000
+            }
         }
+
         Path = %imagePath%NoResponse.png
         pNeedle := GetNeedle(Path)
         ; ImageSearch within the region
@@ -1804,12 +1908,17 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
             }
         }
 
+        
+
         Gdip_DisposeImage(pBitmap)
         if(imageName = "Points" || imageName = "Home" || imageName = "Shop" || imageName = "ShopInfo") { ;look for level up ok "button"
             LevelUp()
         }
         if(imageName = "Social" || imageName = "Add" || imageName = "Add2") {
             TradeTutorial()
+        }
+        if(imageName = "Send2"){
+            errorTitleClick()
         }
         if(skip) {
             ElapsedTime := (A_TickCount - StartSkipTime) // 1000
@@ -1830,6 +1939,17 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
     }
     Gdip_DisposeImage(pBitmap)
     return confirmed
+}
+
+errorTitleClick(){
+    if(FindOrLoseImage(120, 178, 155, 210, , "Error", 0)) {
+        adbClick_wbb(139, 371)
+        Delay(2)
+        adbClick_wbb(139, 386)
+        Delay(2)
+        returnToSocial()
+        restartGameCount := 0
+    }    
 }
 
 LevelUp() {
@@ -5354,6 +5474,7 @@ GetEventRewards(frommain := true){
 
 GetAllRewards(tomain := true, dailies := false) {
     ;FindImageAndClick(2, 85, 34, 120, , "Missions", 261, 478, 500)
+    Sleep, 8000
     loop{
         if(FindOrLoseImage(175, 490, 198, 515, , "Missions2", 0))
             break
@@ -6397,5 +6518,103 @@ OpenPack:
             }
         }
         failSafeTime := (A_TickCount - failSafe) // 1000
+    }
+}
+
+restartGameScript(adding := false){
+    clearMissionCache()
+    waitadb()
+    adbShell.StdIn.WriteLine("am start -S -n jp.pokemon.pokemontcgp/com.unity3d.player.UnityPlayerActivity -f 0x10018000")
+    waitadb()
+    Sleep, 5000
+    FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
+    if(setSpeed = 3)
+        FindImageAndClick(ModSets.threeX1, ModSets.threeY1, ModSets.threeX2, ModSets.threeY2, , ModSets.threeName, ModSets.threeCX, ModSets.threeCY) ; click mod settings
+    else
+        FindImageAndClick(ModSets.twoX1, ModSets.twoY1, ModSets.twoX2, ModSets.twoY2, , ModSets.twoName, ModSets.twoCX, ModSets.twoCY) ; click mod settings
+    Delay(1)
+    adbClick_wbb(41, ModSets.adbY)
+    Delay(1)
+    FindImageAndClick(120, 500, 155, 530, , "Social", 143, 518, 500)
+    Delay(2)
+    FindImageAndClick(226, 100, 270, 135, , "Add", 38, 460, 500)
+    Delay(2)
+    if(adding){
+        FindImageAndClick(205, 430, 255, 475, , "Search", 240, 120, 1500)
+        Delay(3)
+        adbClick_wbb(141, 453)
+        Delay(3)
+        adbClick_wbb(141, 453)
+        Delay(3)
+    }
+}
+
+restartHomeScript(){
+    clearMissionCache()
+    waitadb()
+    adbShell.StdIn.WriteLine("am start -S -n jp.pokemon.pokemontcgp/com.unity3d.player.UnityPlayerActivity -f 0x10018000")
+    waitadb()
+    Sleep, 5000
+    FindImageAndClick(ModSets.menuX1, ModSets.menuY1, ModSets.menuX2, ModSets.menuY2, , ModSets.menuName, ModSets.menuCX, ModSets.menuCY, 2000) ; click mod settings
+    if(setSpeed = 3)
+        FindImageAndClick(ModSets.threeX1, ModSets.threeY1, ModSets.threeX2, ModSets.threeY2, , ModSets.threeName, ModSets.threeCX, ModSets.threeCY) ; click mod settings
+    else
+        FindImageAndClick(ModSets.twoX1, ModSets.twoY1, ModSets.twoX2, ModSets.twoY2, , ModSets.twoName, ModSets.twoCX, ModSets.twoCY) ; click mod settings
+    Delay(1)
+    adbClick_wbb(41, ModSets.adbY)
+    Delay(1)
+    failSafe := A_TickCount
+    failSafeTime := 0
+    ; Click for hamburger menu and wait for profile
+    Loop {
+        adbClick_wbb(140, 203) ;
+        Delay(1)
+        if(FindOrLoseImage(233, 400, 264, 428, , "Points", 0, failSafeTime)) {
+            break
+        }else if(!renew && !getFC) {
+            if(FindOrLoseImage(241, 377, 269, 407, , "closeduringpack", 0)) {
+                adbClick_wbb(139, 371)
+            }
+            if(FindOrLoseImage(133, 479, 147, 493, , "noticex", 0)){
+                adbClick_wbb(137, 485)
+                Delay(3)
+            }
+        }else if(FindOrLoseImage(175, 165, 255, 235, , "Hourglass3", 0)) {
+            ;TODO hourglass tutorial still broken after injection
+            Delay(3)
+            adbClick_wbb(146, 441) ; 146 440
+            Delay(3)
+            adbClick_wbb(146, 441)
+            Delay(3)
+            adbClick_wbb(146, 441)
+            Delay(3)
+
+            FindImageAndClick(98, 184, 151, 224, , "Hourglass1", 168, 438, 500, 5) ;stop at hourglasses tutorial 2
+            Delay(1)
+
+            adbClick_wbb(203, 436) ; 203 436
+            FindImageAndClick(236, 198, 266, 226, , "Hourglass2", 180, 436, 500) ;stop at hourglasses tutorial 2 180 to 203?
+        }else if(FindOrLoseImage(81, 351, 101, 391, , "titleok", 0, failSafeTime)){
+            adbClick_wbb(141, 370)
+            Delay(3)
+        }
+        failSafeTime := (A_TickCount - failSafe) // 1000
+        CreateStatusMessage("Waiting for Points`n(" . failSafeTime . "/90 seconds)")
+    }
+
+}
+
+returnToSocial(adding := false){
+    FindImageAndClick(120, 500, 155, 530, , "Social", 143, 518, 500)
+    Delay(2)
+    FindImageAndClick(226, 100, 270, 135, , "Add", 38, 460, 500)
+    Delay(2)
+    if(adding){
+        FindImageAndClick(205, 430, 255, 475, , "Search", 240, 120, 1500)
+        Delay(3)
+        adbClick_wbb(141, 453)
+        Delay(3)
+        adbClick_wbb(141, 453)
+        Delay(3)
     }
 }
