@@ -14,11 +14,11 @@ global STATIC_BRUSH := 0
 
 githubUser := "Pokepock"
 repoName := "PTCGPB"
-localVersion := "v7.3.2"
+localVersion := "v7.3.3"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
-intro := "Paldean"
+intro := "Mega Shine"
 ; GUI dimensions
 global GUI_WIDTH := 377 
 global GUI_HEIGHT := 677
@@ -420,7 +420,7 @@ NextStep:
         global autoLaunchMonitor, autoUseGPTest, TestTime
         global CheckShinyPackOnly, TrainerCheck, FullArtCheck, RainbowCheck, ShinyCheck, CrownCheck
         global InvalidCheck, ImmersiveCheck, PseudoGodPack, minStars, Palkia, Dialga, Arceus, Shining
-        global Mew, Pikachu, Charizard, Mewtwo, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria, MegaCharizardY, MegaGardevoir, Latest, Paldean, slowMotion, ocrLanguage, clientLanguage
+        global Mew, Pikachu, Charizard, Mewtwo, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria, MegaCharizardY, MegaGardevoir, Latest, Paldean, MegaShine, slowMotion, ocrLanguage, clientLanguage
         global CurrentVisibleSection, heartBeatDelay, sendAccountXml, showcaseEnabled, showcaseURL, isDarkTheme
         global useBackgroundImage, tesseractPath, applyRoleFilters, debugMode, tesseractOption, statusMessage
         global s4tEnabled, s4tSilent, s4t3Dmnd, s4t4Dmnd, s4t1Star, s4tGholdengo, s4tWP, s4tWPMinCards
@@ -2139,6 +2139,7 @@ NextStep:
             IniRead, MegaCharizardY, Settings.ini, UserSettings, MegaCharizardY, 0
             IniRead, MegaGardevoir, Settings.ini, UserSettings, MegaGardevoir, 0
             IniRead, Paldean, Settings.ini, UserSettings, Paldean, 0
+            IniRead, MegaShine, Settings.ini, UserSettings, MegaShine, 0
             IniRead, Latest, Settings.ini, UserSettings, Latest, 1
             
             
@@ -4340,6 +4341,8 @@ StartBot:
         Selected.Push("Latest")
     if(Paldean)
         Selected.Push("Paldean")
+    if(MegaShine)
+        Selected.Push("MegaShine")
 
     for index, value in Selected {
         if(index = Selected.MaxIndex())
