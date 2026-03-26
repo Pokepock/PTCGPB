@@ -1253,7 +1253,7 @@ RemoveFriends() {
             FindImageAndClick(135, 355, 160, 385, , "Remove", 145, 407)
             Loop{
                 adbClick_wbb(200, 372)
-                if(FindImageAndClick(70, 395, 100, 420, , "Send2",0))
+                if(FindOrLoseImage(70, 395, 100, 420, , "Send2",0))
                     break
                 else if(FindOrLoseImage(120, 178, 155, 210, , "Error", 0)) {
                     adbClick_wbb(139, 371)
@@ -1261,6 +1261,7 @@ RemoveFriends() {
                     adbClick_wbb(139, 386)
                     Delay(2)
                     returnToSocial()
+                    Sleep, 3000
                     restartGameCount := 0
                     Goto, reRemove
                 }
