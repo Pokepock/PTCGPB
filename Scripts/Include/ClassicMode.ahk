@@ -5,7 +5,7 @@
 
 global githubUser := "Pokepock"
 global repoName := "PTCGPB"
-global localVersion := "7.3.2(C)" 
+global localVersion := "7.3.3(C)" 
 global jsonFileName := ""
 global scaleParam
 
@@ -110,7 +110,9 @@ LoadSettingsFromIni() {
     IniRead, MegaAltaria, %A_ScriptDir%\..\..\Settings.ini, UserSettings, MegaAltaria, 0
     IniRead, MegaCharizardY, %A_ScriptDir%\..\..\Settings.ini, UserSettings, MegaCharizardY, 0
     IniRead, MegaGardevoir, %A_ScriptDir%\..\..\Settings.ini, UserSettings, MegaGardevoir, 0
-    IniRead, Paldean, %A_ScriptDir%\..\..\Settings.ini, UserSettings, Paldean, 1
+    IniRead, Paldean, %A_ScriptDir%\..\..\Settings.ini, UserSettings, Paldean, 0
+    IniRead, MegaShine, %A_ScriptDir%\..\..\Settings.ini, UserSettings, MegaShine, 1
+    
     
     
     IniRead, CheckShinyPackOnly, %A_ScriptDir%\..\..\Settings.ini, UserSettings, CheckShinyPackOnly, 0
@@ -214,7 +216,7 @@ SaveAllSettings() {
   global autoLaunchMonitor, autoUseGPTest, TestTime
   global CheckShinyPackOnly, TrainerCheck, FullArtCheck, RainbowCheck, ShinyCheck, CrownCheck
   global InvalidCheck, ImmersiveCheck, PseudoGodPack, minStars, Palkia, Dialga, Arceus, Shining
-  global Mew, Pikachu, Charizard, Mewtwo, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria, MegaCharizardY, MegaGardevoir, Paldean, slowMotion, ocrLanguage, clientLanguage
+  global Mew, Pikachu, Charizard, Mewtwo, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria, MegaCharizardY, MegaGardevoir, Paldean, MegaShine, slowMotion, ocrLanguage, clientLanguage
   global CurrentVisibleSection, heartBeatDelay, sendAccountXml, showcaseEnabled, showcaseURL, isDarkTheme
   global useBackgroundImage, tesseractPath, applyRoleFilters, debugMode, tesseractOption, statusMessage
   global s4tEnabled, s4tSilent, s4t3Dmnd, s4t4Dmnd, s4t1Star, s4tGholdengo, s4tWP, s4tWPMinCards, s4tFoil, s4tTrainer, s4tRainbow, s4tFullart, s4tShiny
@@ -336,6 +338,8 @@ SaveAllSettings() {
   IniWrite, %MegaCharizardY%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, MegaCharizardY
   IniWrite, %MegaGardevoir%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, MegaGardevoir
   IniWrite, %Paldean%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, Paldean
+  IniWrite, %MegaShine%, %A_ScriptDir%\..\..\Settings.ini, UserSettings, MegaShine
+  
     
  
  
@@ -635,8 +639,9 @@ Gui, Add, DropDownList, vFutureBonusPos choose%defaultFutureBonusPos% x450 y563 
 sectionColor := "cFFD700" ; Gold
 Gui, Add, Tab3, x505 y5 w240 h130 vBPacks Theme0 cFFD700, B2s|B1s 
 Gui, Tab, 1 
-Gui, Add, Checkbox, % (Paldean ? "Checked" : "") " vPaldean x520 y35 " . sectionColor, % currentDictionary.Txt_Paldean
-Gui, Add, Checkbox, % (MegaGardevoir ? "Checked" : "") " vMegaGardevoir x520 y60 " . sectionColor, % currentDictionary.Txt_MegaGardevoir
+Gui, Add, Checkbox, % (MegaShine ? "Checked" : "") " vMegaShine x520 y35 " . sectionColor, % currentDictionary.Txt_MegaShine
+Gui, Add, Checkbox, % (Paldean ? "Checked" : "") " vPaldean x520 y60 " . sectionColor, % currentDictionary.Txt_Paldean
+Gui, Add, Checkbox, % (MegaGardevoir ? "Checked" : "") " vMegaGardevoir x520 y85 " . sectionColor, % currentDictionary.Txt_MegaGardevoir
 ; B1 Series Group Box (3 items)
 Gui, Tab, 2
 Gui, Add, Checkbox, % (MegaCharizardY ? "Checked" : "") " vMegaCharizardY x520 y35 " . sectionColor, % currentDictionary.Txt_MegaCharizardY
@@ -1726,6 +1731,8 @@ StartBot:
         Selected.Push("MegaGardevoir")
     if(Paldean)
         Selected.Push("Paldean")
+    if(MegaShine)
+        Selected.Push("MegaShine")
     
     for index, value in Selected {
         if(index = Selected.MaxIndex())
