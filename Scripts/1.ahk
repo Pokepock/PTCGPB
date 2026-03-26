@@ -1222,6 +1222,7 @@ RemoveFriends() {
             Delay(2)
             returnToSocial()
             restartGameCount := 0
+            failSafe := A_TickCount
             goto, returnClearAll
         }
         failSafeTime := (A_TickCount - failSafe) // 1000
@@ -1232,8 +1233,11 @@ RemoveFriends() {
         restartGameCount++
         
     FindImageAndClick(84, 463, 100, 475, 10, "Friends", 22, 464)
+
+    reRemove:
     startOfRemoving := A_TickCount
     removefriendsCount := 0
+    errorFlag := 0
     friendsProcessed := 0
     failSafe := A_TickCount
     failSafeTime := 0
@@ -1246,12 +1250,38 @@ RemoveFriends() {
         Delay(1)
         if(FindOrLoseImage(87, 401, 99, 412, , "Accepted2", 0, failSafeTime)){
             FindImageAndClick(135, 355, 160, 385, , "Remove", 145, 407)
-            FindImageAndClick(70, 395, 100, 420, , "Send2", 200, 372)
+            Loop{
+                adbClick_wbb(200, 372)
+                if(FindImageAndClick(70, 395, 100, 420, , "Send2",0))
+                    break
+                else if(FindOrLoseImage(120, 178, 155, 210, , "Error", 0)) {
+                    adbClick_wbb(139, 371)
+                    Delay(2)
+                    adbClick_wbb(139, 386)
+                    Delay(2)
+                    returnToSocial()
+                    restartGameCount := 0
+                    Goto, reRemove
+                }
+                Delay(1)
+            }
         }
-        else if(FindOrLoseImage(84, 463, 100, 475, 10, "Friends", 0, failSafeTime)) {
+        else if(FindOrLoseImage(84, 463, 100, 475, 10, "Friends", 0, failSafeTime)) { 
             if(FindOrLoseImage(42, 163, 66, 185, 10, "empty", 0, failSafeTime)) {
                 Break
             }
+        }
+        else if(FindOrLoseImage(120, 178, 155, 210, , "Error", 0, failSafeTime)) {
+            adbClick_wbb(139, 371)
+            Delay(2)
+            adbClick_wbb(139, 386)
+            Delay(2)
+            returnToSocial()
+            restartGameCount := 0
+            errorFlag := 1
+            failSafe := A_TickCount
+            failSafeTime := 0
+            break
         }
         if(FindOrLoseImage(70, 395, 100, 420, , "Send2", 0, failSafeTime)) {
             adbClick(143, 507)
@@ -1260,20 +1290,14 @@ RemoveFriends() {
             restartGameCount++
             failSafe := A_TickCount
         }
-        if(FindOrLoseImage(120, 178, 155, 210, , "Error", 0)) {
-            adbClick_wbb(139, 371)
-            Delay(2)
-            adbClick_wbb(139, 386)
-            Delay(2)
-            returnToSocial()
-            restartGameCount := 0
-        }
         failSafeTime := (A_TickCount - failSafe) // 1000
-        CreateStatusMessage("Waiting for Accepted2`n(" . restartGameCount . "/45 seconds) --Counting " . restartGameCount . "/10 ")
+        CreateStatusMessage("Waiting for Accepted2`n(" . failSafeTime . "/45 seconds) --Counting " . restartGameCount . "/10 ")
 	    Sleep, 1000
        
     }
     endOfRemoving := A_TickCount
+    if(errorFlag)
+        Goto, reRemove
     ; Exit friend removal process
     CreateStatusMessage("Friend removal completed. Processed " . friendsProcessed . " friends. Returning to main...",,,, false)
     friended := false
@@ -1473,6 +1497,7 @@ AddFriends(renew := false, getFC := false) {
                     Delay(2)
                     returnToSocial(true)
                     restartGameCount := 0
+                    failSafe := A_TickCount
                     Goto, reAdd
             }
             Delay(1)
@@ -1798,7 +1823,7 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
         }
 
         if(!needToReturnSocial){
-            Path = %imagePath%Error.png ; Search for communication error
+            Path = %imagePath%.png ; Search for communication error
             pNeedle := GetNeedle(Path)
             ; ImageSearch within the region
             vRet := Gdip_ImageSearch_wbb(pBitmap, pNeedle, vPosXY, 120, 178, 155, 210, searchVariation)
@@ -1917,9 +1942,6 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
         if(imageName = "Social" || imageName = "Add" || imageName = "Add2") {
             TradeTutorial()
         }
-        if(imageName = "Send2"){
-            errorTitleClick()
-        }
         if(skip) {
             ElapsedTime := (A_TickCount - StartSkipTime) // 1000
             if(ElapsedTime - messageTime > 0.5 || firstTime) {
@@ -1941,16 +1963,6 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
     return confirmed
 }
 
-errorTitleClick(){
-    if(FindOrLoseImage(120, 178, 155, 210, , "Error", 0)) {
-        adbClick_wbb(139, 371)
-        Delay(2)
-        adbClick_wbb(139, 386)
-        Delay(2)
-        returnToSocial()
-        restartGameCount := 0
-    }    
-}
 
 LevelUp() {
     Leveled := FindOrLoseImage(100, 86, 167, 116, , "LevelUp", 0)
