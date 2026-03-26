@@ -22,7 +22,7 @@ WinHide % "ahk_id " DllCall("GetConsoleWindow", "ptr")
 global RESTART_LOOP_EXCEPTION := { message: "Restarting main loop" }
 global winTitle, changeDate, failSafe, openPack, Delay, failSafeTime, StartSkipTime, Columns, failSafe, scriptName, GPTest, StatusText, setSpeed, jsonFileName, pauseToggle, SelectedMonitorIndex, swipeSpeed, godPack, scaleParam, deleteMethod, packs, FriendID, friendIDs, Instances, username, friendCode, stopToggle, friended, runMain, Mains, showStatus, injectMethod, packMethod, loadDir, loadedAccount, nukeAccount, CheckShinyPackOnly, TrainerCheck, FullArtCheck, RainbowCheck, ShinyCheck, dateChange, foundGP, friendsAdded, PseudoGodPack, packArray, CrownCheck, ImmersiveCheck, InvalidCheck, slowMotion, screenShot, accountFile, invalid, starCount, keepAccount
 global twoPlusOne, twoPlusDia
-global Mewtwo, Charizard, Pikachu, Mew, Dialga, Palkia, Arceus, Shining, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria, MegaCharizardY, MegaGardevoir, Latest, Paldean
+global Mewtwo, Charizard, Pikachu, Mew, Dialga, Palkia, Arceus, Shining, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria, MegaCharizardY, MegaGardevoir, Latest, Paldean, MegaShine
 global shinyPacks, minStars, minStarsShiny
 global DeadCheck
 global s4tEnabled, s4tSilent, s4t3Dmnd, s4t4Dmnd, s4t1Star, s4tGholdengo, s4tFoil, s4tTrainer, s4tRainbow, s4tFullArt, s4tShiny, s4tDiscordWebhookURL, s4tDiscordUserId, s4tSendAccountXml
@@ -113,7 +113,8 @@ IniRead, twoPlusOne, %A_ScriptDir%\..\Settings.ini, UserSettings, twoPlusOne, 0
 IniRead, twoPlusDia, %A_ScriptDir%\..\Settings.ini, UserSettings, twoPlusDia, 0
 
 IniRead, Latest, %A_ScriptDir%\..\Settings.ini, UserSettings, Latest, 0
-IniRead, Paldean, %A_ScriptDir%\..\Settings.ini, UserSettings, Paldean, 1
+IniRead, MegaShine, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaShine, 1
+IniRead, Paldean, %A_ScriptDir%\..\Settings.ini, UserSettings, Paldean, 0
 IniRead, MegaGardevoir, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaGardevoir, 0
 IniRead, MegaCharizardY, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaCharizardY, 0
 IniRead, MegaBlaziken, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaBlaziken, 0
@@ -192,7 +193,7 @@ IniRead, autoRestartTimes, %A_ScriptDir%\..\Settings.ini, UserSettings, autoRest
 
 
 MuMuv5 := 1
-pokemonList := ["Mewtwo", "Charizard", "Pikachu", "Mew", "Dialga", "Palkia", "Arceus", "Shining", "Solgaleo", "Lunala", "Buzzwole", "Eevee", "HoOh", "Lugia", "Suicune", "Deluxe", "MegaBlaziken", "MegaGyarados", "MegaAltaria", "MegaCharizardY", "MegaGardevoir", "Latest", "Paldean"]
+pokemonList := ["Mewtwo", "Charizard", "Pikachu", "Mew", "Dialga", "Palkia", "Arceus", "Shining", "Solgaleo", "Lunala", "Buzzwole", "Eevee", "HoOh", "Lugia", "Suicune", "Deluxe", "MegaBlaziken", "MegaGyarados", "MegaAltaria", "MegaCharizardY", "MegaGardevoir", "Latest", "Paldean", "MegaShine"]
 shinyPacks := {"Shining": 1, "Solgaleo": 1, "Lunala": 1, "Buzzwole": 1, "Eevee": 1, "HoOh": 1, "Lugia": 1, "Suicune": 1, "Deluxe": 1, "MegaBlaziken": 1, "MegaGyarados": 1, "MegaAltaria": 1}
 
 PlatinConfig := { "menuName": "Platin", "menuX1": 38, "menuY1": 145, "menuX2": 65, "menuY2": 170, "menuCX": 18, "menuCY": 109
@@ -2788,7 +2789,7 @@ loadAccount() {
     futureBonusPrepDone := 0
 
     if (autoRestartMode) {
-        if (rerolls_local > autoRestartTimes)
+        if (rerolls_local >= autoRestartTimes)
         {
             stopToggle := True
             now := A_NowUTC
@@ -4181,27 +4182,27 @@ SelectPack(HG := false) {
     packy := HomeScreenAllPackY
 
 
-    Latestlist := ["Paldean"]
+    Latestlist := ["MegaShine"]
     Randmax := Latestlist.Length()
     Random, rand, 1, Randmax
     if (openPack == "Latest")
         openPack := Latestlist[rand]
 
-    if (openPack == "MegaCharizardY") {
+    if (openPack == "MegaGardevoir") {
         packx := LeftPackX
-    } else if (openPack == "MegaGardevoir") {
+    } else if (openPack == "Paldean") {
         packx := RightPackX
     } else {
         packx := MiddlePackX
     }
 
-    if(openPack == "MegaCharizardY" || openPack == "Paldean" || openPack == "MegaGardevoir") {
+    if(openPack == "MegaShine" || openPack == "Paldean" || openPack == "MegaGardevoir") {
         PackIsInHomeScreen := 1
     } else {
         PackIsInHomeScreen := 0
     }
 
-    if(openPack == "Paldean") {
+    if(openPack == "MegaShine") {
         PackIsLatest := 1
     } else {
         PackIsLatest := 0
@@ -4288,18 +4289,33 @@ SelectPack(HG := false) {
     if(inselectexpansionscreen) {
         adbClick(61, 472)
         Delay(1)
-        if(openPack == "MegaGyarados" || openPack == "MegaAltaria" || openPack == "MegaBlaziken") {
+
+        if(openPack == "MegaGyarados" || openPack == "MegaAltaria" || openPack == "MegaBlaziken" || openPack == "MegaCharizardY") {
             FindImageAndClick(12, 453, 28, 473, , "Bpacks", 58, 464, sleepTime)
             Delay(1)
-            if (openPack == "MegaGyarados") {
-                packy := SelectExpansionHomeSecondRowY
-                packx := SelectExpansionRightCollumnMiddleX + 3PackExpansionLeft
-            } else if (openPack == "MegaBlaziken") {
+            if (openPack == "MegaCharizardY")
+            {
                 packy := SelectExpansionHomeSecondRowY
                 packx := SelectExpansionRightCollumnMiddleX
-            } else if (openPack == "MegaAltaria") {
-                packy := SelectExpansionHomeSecondRowY
-                packx := SelectExpansionRightCollumnMiddleX + 3PackExpansionRight
+            }
+            else {
+                loop 3 {
+                    adbSwipe("135 500 135 30 500")
+                    Delay(2)
+                    adbSwipe("135 500 135 30 500")
+                    Delay(2)
+                }
+                Delay(5)
+                if (openPack == "MegaGyarados") {
+                    packy := SelectExpansionSecondRowY
+                    packx := SelectExpansionLeftCollumnMiddleX + 3PackExpansionLeft
+                } else if (openPack == "MegaBlaziken") {
+                    packy := SelectExpansionSecondRowY
+                    packx := SelectExpansionLeftCollumnMiddleX
+                } else if (openPack == "MegaAltaria") {
+                    packy := SelectExpansionSecondRowY
+                    packx := SelectExpansionLeftCollumnMiddleX + 3PackExpansionRight
+                }
             }
         }
 
