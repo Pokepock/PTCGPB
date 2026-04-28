@@ -1415,7 +1415,7 @@ AddFriends(renew := false, getFC := false) {
     }
 
     FindImageAndClick(226, 100, 270, 135, , "Add", 38, 460, 500)
-    FindImageAndClick(204, 196, 225, 228, , "SearchInfo", 240, 120, 1500)
+    FindImageAndClick(130, 297, 140, 312, , "SearchInfo", 240, 120, 1500)
     FindImageAndClick(143, 349, 161, 398, , "SearchFriend", 76, 453, 1500)
     if(getFC) {
         Delay(3)
@@ -1564,7 +1564,7 @@ AddFriends(renew := false, getFC := false) {
     ;else {
 	    adbClick_wbb(143, 518)
         Delay(1)
-	    FindImageAndClick(204, 196, 225, 228, , "SearchInfo", 78, 378, 1500)
+	    FindImageAndClick(130, 297, 140, 312, , "SearchInfo", 78, 378, 1500)
         FindImageAndClick(120, 500, 155, 530, , "Social", 143, 518, 500)
         FindImageAndClick(20, 500, 55, 530, , "Home", 40, 516, 500)
         Loop %waitTime% {
@@ -6578,7 +6578,7 @@ restartGameScript(adding := false){
     FindImageAndClick(226, 100, 270, 135, , "Add", 38, 460, 500)
     Delay(2)
     if(adding){
-        FindImageAndClick(204, 196, 225, 228, , "SearchInfo", 240, 120, 1500)
+        FindImageAndClick(41, 248, 59, 296, , "SearchInput", 240, 120, 1500)
         Delay(3)
         adbClick_wbb(141, 453)
         Delay(3)
@@ -6648,7 +6648,7 @@ returnToSocial(adding := false){
     FindImageAndClick(226, 100, 270, 135, , "Add", 38, 460, 500)
     Delay(2)
     if(adding){
-        FindImageAndClick(204, 196, 225, 228, , "SearchInfo", 240, 120, 1500)
+        FindImageAndClick(41, 248, 59, 296, , "SearchInput", 240, 120, 1500)
         Delay(3)
         adbClick_wbb(141, 453)
         Delay(3)
