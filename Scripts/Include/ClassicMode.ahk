@@ -5,7 +5,7 @@
 
 global githubUser := "Pokepock"
 global repoName := "PTCGPB"
-global localVersion := "7.3.3.1(C)" 
+global localVersion := "7.4.0(C)" 
 global jsonFileName := ""
 global scaleParam
 
@@ -2005,9 +2005,7 @@ InitializeJsonFile() {
     if !FileExist(fileName) {
         FileAppend, [], %fileName%
         jsonFileName := fileName
-    } else {
-        jsonFileName := fileName
-    }
+    } 
 }
 
 SumVariablesInJsonFile() {
