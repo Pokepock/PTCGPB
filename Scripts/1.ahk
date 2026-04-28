@@ -22,7 +22,7 @@ WinHide % "ahk_id " DllCall("GetConsoleWindow", "ptr")
 global RESTART_LOOP_EXCEPTION := { message: "Restarting main loop" }
 global winTitle, changeDate, failSafe, openPack, Delay, failSafeTime, StartSkipTime, Columns, failSafe, scriptName, GPTest, StatusText, setSpeed, jsonFileName, pauseToggle, SelectedMonitorIndex, swipeSpeed, godPack, scaleParam, deleteMethod, packs, FriendID, friendIDs, Instances, username, friendCode, stopToggle, friended, runMain, Mains, showStatus, injectMethod, packMethod, loadDir, loadedAccount, nukeAccount, CheckShinyPackOnly, TrainerCheck, FullArtCheck, RainbowCheck, ShinyCheck, dateChange, foundGP, friendsAdded, PseudoGodPack, packArray, CrownCheck, ImmersiveCheck, InvalidCheck, slowMotion, screenShot, accountFile, invalid, starCount, keepAccount
 global twoPlusOne, twoPlusDia
-global Mewtwo, Charizard, Pikachu, Mew, Dialga, Palkia, Arceus, Shining, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria, MegaCharizardY, MegaGardevoir, Latest, Paldean, MegaShine
+global Mewtwo, Charizard, Pikachu, Mew, Dialga, Palkia, Arceus, Shining, Solgaleo, Lunala, Buzzwole, Eevee, HoOh, Lugia, Suicune, Deluxe, MegaBlaziken, MegaGyarados, MegaAltaria, MegaCharizardY, MegaGardevoir, Latest, Paldean, MegaShine, PulsingAura
 global shinyPacks, minStars, minStarsShiny
 global DeadCheck
 global s4tEnabled, s4tSilent, s4t3Dmnd, s4t4Dmnd, s4t1Star, s4tGholdengo, s4tFoil, s4tTrainer, s4tRainbow, s4tFullArt, s4tShiny, s4tDiscordWebhookURL, s4tDiscordUserId, s4tSendAccountXml
@@ -113,7 +113,8 @@ IniRead, twoPlusOne, %A_ScriptDir%\..\Settings.ini, UserSettings, twoPlusOne, 0
 IniRead, twoPlusDia, %A_ScriptDir%\..\Settings.ini, UserSettings, twoPlusDia, 0
 
 IniRead, Latest, %A_ScriptDir%\..\Settings.ini, UserSettings, Latest, 0
-IniRead, MegaShine, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaShine, 1
+IniRead, PulsingAura, %A_ScriptDir%\..\Settings.ini, UserSettings, PulsingAura, 1
+IniRead, MegaShine, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaShine, 0
 IniRead, Paldean, %A_ScriptDir%\..\Settings.ini, UserSettings, Paldean, 0
 IniRead, MegaGardevoir, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaGardevoir, 0
 IniRead, MegaCharizardY, %A_ScriptDir%\..\Settings.ini, UserSettings, MegaCharizardY, 0
@@ -194,7 +195,7 @@ IniRead, secondWebhook, %A_ScriptDir%\..\Settings.ini, UserSettings, secondWebho
 
 
 MuMuv5 := 1
-pokemonList := ["Mewtwo", "Charizard", "Pikachu", "Mew", "Dialga", "Palkia", "Arceus", "Shining", "Solgaleo", "Lunala", "Buzzwole", "Eevee", "HoOh", "Lugia", "Suicune", "Deluxe", "MegaBlaziken", "MegaGyarados", "MegaAltaria", "MegaCharizardY", "MegaGardevoir", "Latest", "Paldean", "MegaShine"]
+pokemonList := ["Mewtwo", "Charizard", "Pikachu", "Mew", "Dialga", "Palkia", "Arceus", "Shining", "Solgaleo", "Lunala", "Buzzwole", "Eevee", "HoOh", "Lugia", "Suicune", "Deluxe", "MegaBlaziken", "MegaGyarados", "MegaAltaria", "MegaCharizardY", "MegaGardevoir", "Latest", "Paldean", "MegaShine", "PulsingAura"]
 shinyPacks := {"Shining": 1, "Solgaleo": 1, "Lunala": 1, "Buzzwole": 1, "Eevee": 1, "HoOh": 1, "Lugia": 1, "Suicune": 1, "Deluxe": 1, "MegaBlaziken": 1, "MegaGyarados": 1, "MegaAltaria": 1}
 
 PlatinConfig := { "menuName": "Platin", "menuX1": 38, "menuY1": 145, "menuX2": 65, "menuY2": 170, "menuCX": 18, "menuCY": 109
@@ -1416,14 +1417,14 @@ AddFriends(renew := false, getFC := false) {
 
     FindImageAndClick(226, 100, 270, 135, , "Add", 38, 460, 500)
     FindImageAndClick(130, 297, 140, 312, , "SearchInfo", 240, 120, 1500)
-    FindImageAndClick(143, 349, 161, 398, , "SearchFriend", 76, 453, 1500)
     if(getFC) {
         Delay(3)
-        adbClick_wbb(210, 342)
+        adbClick_wbb(219, 216)
         Delay(3)
         friendCode := Clipboard
         return friendCode
     }
+    FindImageAndClick(143, 349, 161, 398, , "SearchFriend", 76, 453, 1500)
 
     ; start adding friends
     if(!friendIDs)
@@ -1525,7 +1526,7 @@ AddFriends(renew := false, getFC := false) {
                     returnToSocial(true)
                     restartGameCount := 0
                     Goto, reAdd
-                } else if(FindOrLoseImage(41, 248, 59, 296, , "SearchInput", 0)){
+                } else if(FindOrLoseImage(46, 249, 62, 270, , "SearchInput2", 0)){
                     Delay(2)
                     break
                 }
@@ -1790,7 +1791,7 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
             confirmed := vPosXY
         } else {
             ElapsedTime := (A_TickCount - StartSkipTime) // 1000
-            if(imageName = "Country" || imageName = "Shop" || imageName = "GotAllMissions")
+            if(imageName = "Country" || imageName = "Shop" || imageName = "GotAllMissions" || imageName = "Social" )
                 FSTime := 90
             else if(imageName = "Proceed") ; Decrease time for Marowak
                 FSTime := 8
@@ -2465,7 +2466,7 @@ FoundTradeable(foundCards) {
             allowedUsernameChars := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+"
             usernamePattern := "[\w-]+"
 
-            if(RefinedOCRText(usernameScreenshotFile, 125, 490, 290, 50, allowedUsernameChars, usernamePattern, playerName)) {
+            if(RefinedOCRText(usernameScreenshotFile, 175, 230, 188, 48, allowedUsernameChars, usernamePattern, playerName)) {
                 username := playerName
             }
         }
@@ -2552,7 +2553,7 @@ FoundStars(star) {
                 allowedUsernameChars := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+"
                 usernamePattern := "[\w-]+"
 
-                if(RefinedOCRText(usernameScreenshotFile, 125, 490, 290, 50, allowedUsernameChars, usernamePattern, playerName)) {
+                if(RefinedOCRText(usernameScreenshotFile, 175, 230, 188, 48, allowedUsernameChars, usernamePattern, playerName)) {
                     username := playerName
                 }
             }
@@ -2756,7 +2757,7 @@ GodPackFound(validity) {
             allowedUsernameChars := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+"
             usernamePattern := "[\w-]+"
 
-            if(RefinedOCRText(usernameScreenshotFile, 125, 490, 290, 50, allowedUsernameChars, usernamePattern, playerName)) {
+            if(RefinedOCRText(usernameScreenshotFile, 175, 230, 188, 48, allowedUsernameChars, usernamePattern, playerName)) {
                 username := playerName
             }
         }
@@ -3333,7 +3334,7 @@ Screenshot(fileType := "Valid", subDir := "", ByRef fileName := "") {
         pBitmap := Gdip_CloneBitmapArea(pBitmapW, 3, 50 , 270, 449)
         fileName := folderNO . "_" . userFriendCode . "_" . stardustValue . "_" . Date_MMDD . "_3.png"
     } else
-        pBitmap := Gdip_CloneBitmapArea(pBitmapW, 18, 175+yBias, 240, 227)
+        pBitmap := Gdip_CloneBitmapArea(pBitmapW, 85, 64, 130, 160)
     
     filePath := fileDir "\" . fileName
     Gdip_DisposeImage(pBitmapW)
@@ -4192,27 +4193,27 @@ SelectPack(HG := false) {
     packy := HomeScreenAllPackY
 
 
-    Latestlist := ["MegaShine"]
+    Latestlist := ["PulsingAura"]
     Randmax := Latestlist.Length()
     Random, rand, 1, Randmax
     if (openPack == "Latest")
         openPack := Latestlist[rand]
 
-    if (openPack == "MegaGardevoir") {
+    if (openPack == "Paldean") {
         packx := LeftPackX
-    } else if (openPack == "Paldean") {
+    } else if (openPack == "MegaShine") {
         packx := RightPackX
     } else {
         packx := MiddlePackX
     }
 
-    if(openPack == "MegaShine" || openPack == "Paldean" || openPack == "MegaGardevoir") {
+    if(openPack == "MegaShine" || openPack == "Paldean" || openPack == "PulsingAura") {
         PackIsInHomeScreen := 1
     } else {
         PackIsInHomeScreen := 0
     }
 
-    if(openPack == "MegaShine") {
+    if(openPack == "PulsingAura") {
         PackIsLatest := 1
     } else {
         PackIsLatest := 0
@@ -4303,7 +4304,7 @@ SelectPack(HG := false) {
         if(openPack == "MegaGyarados" || openPack == "MegaAltaria" || openPack == "MegaBlaziken" || openPack == "MegaCharizardY") {
             FindImageAndClick(12, 453, 28, 473, , "Bpacks", 58, 464, sleepTime)
             Delay(1)
-            if (openPack == "MegaCharizardY")
+            if (openPack == "MegaGyarados")
             {
                 packy := SelectExpansionHomeSecondRowY
                 packx := SelectExpansionRightCollumnMiddleX
@@ -4316,14 +4317,17 @@ SelectPack(HG := false) {
                     Delay(2)
                 }
                 Delay(5)
-                if (openPack == "MegaGyarados") {
-                    packy := SelectExpansionSecondRowY
-                    packx := SelectExpansionLeftCollumnMiddleX + 3PackExpansionLeft
-                } else if (openPack == "MegaBlaziken") {
+                if (openPack == "MegaCharizardY"){
                     packy := SelectExpansionSecondRowY
                     packx := SelectExpansionLeftCollumnMiddleX
-                } else if (openPack == "MegaAltaria") {
+                } else if (openPack == "MegaGyarados") {
                     packy := SelectExpansionSecondRowY
+                    packx := SelectExpansionRightCollumnMiddleX + 3PackExpansionLeft
+                } else if (openPack == "MegaBlaziken") {
+                    packy := SelectExpansionSecondRowY
+                    packx := SelectExpansionRightCollumnMiddleX
+                } else if (openPack == "MegaAltaria") {
+                    packy := SelectExpansionRightRowY
                     packx := SelectExpansionLeftCollumnMiddleX + 3PackExpansionRight
                 }
             }
@@ -6024,9 +6028,9 @@ checkfolderscript(){
         Delay(3)
     }
     Delay(3)
-    FindImageAndClick(249,70,260,82, , "profilecopyidbutton", 259, 79)
+    FindImageAndClick(130, 297, 140, 312, , "SearchInfo", 259, 79)
     Delay(3)
-    adbClick_wbb(259, 79)
+    adbClick_wbb(217, 216)
     Delay(3)
     userFriendCode := Clipboard
     Delay(5)
@@ -6578,7 +6582,7 @@ restartGameScript(adding := false){
     FindImageAndClick(226, 100, 270, 135, , "Add", 38, 460, 500)
     Delay(2)
     if(adding){
-        FindImageAndClick(41, 248, 59, 296, , "SearchInput", 240, 120, 1500)
+        FindImageAndClick(46, 249, 62, 270, , "SearchInput2", 240, 120, 1500)
         Delay(3)
         adbClick_wbb(141, 453)
         Delay(3)
@@ -6648,7 +6652,7 @@ returnToSocial(adding := false){
     FindImageAndClick(226, 100, 270, 135, , "Add", 38, 460, 500)
     Delay(2)
     if(adding){
-        FindImageAndClick(41, 248, 59, 296, , "SearchInput", 240, 120, 1500)
+        FindImageAndClick(46, 249, 62, 270, , "SearchInput2", 240, 120, 1500)
         Delay(3)
         adbClick_wbb(141, 453)
         Delay(3)
