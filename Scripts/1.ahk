@@ -3333,9 +3333,11 @@ Screenshot(fileType := "Valid", subDir := "", ByRef fileName := "") {
     } else if (fileType = "Folder_3"){
         pBitmap := Gdip_CloneBitmapArea(pBitmapW, 3, 50 , 270, 449)
         fileName := folderNO . "_" . userFriendCode . "_" . stardustValue . "_" . Date_MMDD . "_3.png"
-    } else
+    } else if (fileType = "FRIENDCODE"){
         pBitmap := Gdip_CloneBitmapArea(pBitmapW, 85, 64, 130, 160)
-    
+    } else {
+        pBitmap := Gdip_CloneBitmapArea(pBitmapW, 18, 175+yBias, 240, 227))
+    }
     filePath := fileDir "\" . fileName
     Gdip_DisposeImage(pBitmapW)
     Gdip_SaveBitmapToFile(pBitmap, filePath)
