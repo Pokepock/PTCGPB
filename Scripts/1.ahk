@@ -72,7 +72,7 @@ dbg_bbox_click :=0
 global newPlayerName, renameMode, renameAndSaveAndReload, targetUsername, renameXML, renameOcrText, renameXMLwithFC, userFriendCode
 global ChangeLNMode, targetLN, Checkfolder, sendAccountXml, folderWebhookURL, folderNO, stardustValue, Packages
 global ModSets, NineModStatus, indivPackMode, changeLNposY, Dashboard, claimMail, altWebhookSettings, altdiscordWebhookURL, AltdiscordUserId, autoRestartMode, autoRestartTimes, restartGameCount, needToReturnSocial
-
+global secondWebhook
 scriptName := StrReplace(A_ScriptName, ".ahk")
 winTitle := scriptName
 foundGP := false
@@ -188,6 +188,7 @@ IniRead, altdiscordWebhookURL, %A_ScriptDir%\..\Settings.ini, UserSettings, altd
 IniRead, altdiscordUserId, %A_ScriptDir%\..\Settings.ini, UserSettings, altdiscordUserId
 IniRead, autoRestartMode, %A_ScriptDir%\..\Settings.ini, UserSettings, autoRestartMode, 0
 IniRead, autoRestartTimes, %A_ScriptDir%\..\Settings.ini, UserSettings, autoRestartTimes, 30
+IniRead, secondWebhook, %A_ScriptDir%\..\Settings.ini, UserSettings, secondWebhook,""
 
 
 
@@ -1414,7 +1415,8 @@ AddFriends(renew := false, getFC := false) {
     }
 
     FindImageAndClick(226, 100, 270, 135, , "Add", 38, 460, 500)
-    FindImageAndClick(205, 430, 255, 475, , "Search", 240, 120, 1500)
+    FindImageAndClick(204, 196, 225, 228, , "SearchInfo", 240, 120, 1500)
+    FindImageAndClick(143, 349, 161, 398, , "SearchFriend", 76, 453, 1500)
     if(getFC) {
         Delay(3)
         adbClick_wbb(210, 342)
@@ -1426,7 +1428,7 @@ AddFriends(renew := false, getFC := false) {
     ; start adding friends
     if(!friendIDs)
         friendIDs := [friendID]  ; Use an array to hold the single friend ID
-    FindImageAndClick(0, 475, 25, 495, , "OK2", 138, 454)
+    FindImageAndClick(212, 499, 218, 519, , "SearchOK", 141, 280)
 
     ;randomize friend id list to not back up mains if running in groups since they'll be sent in a random order.
     n := friendIDs.MaxIndex()
@@ -1460,9 +1462,11 @@ AddFriends(renew := false, getFC := false) {
         Loop {
             adbInput(value)
             Delay(1)
-            if(FindOrLoseImage(205, 430, 255, 475, , "Search2", 0, failSafeTime)) {
+            if(FindOrLoseImage(143, 350, 160, 395, , "SearchOK1", 0, failSafeTime)) {
                 break
             }
+	    else if(FindOrLoseImage(146, 351, 163, 395, , "SearchOK2", 0, failSafeTime))
+		break
             failSafeTime := (A_TickCount - failSafe) // 1000
             CreateStatusMessage("Waiting for AddFriends3`n(" . failSafeTime . "/45 seconds)")
         }
@@ -1470,7 +1474,7 @@ AddFriends(renew := false, getFC := false) {
         failSafeTime := 0
         Loop {
             Delay(1)
-            adbClick_wbb(232, 453)
+            adbClick_wbb(200, 375)
             if(FindOrLoseImage(165, 250, 190, 275, , "Send", 0, failSafeTime)) {
                 adbClick_wbb(243, 258)
                 adbClick_wbb(243, 258)
@@ -1521,7 +1525,7 @@ AddFriends(renew := false, getFC := false) {
                     returnToSocial(true)
                     restartGameCount := 0
                     Goto, reAdd
-                } else if(FindOrLoseImage(205, 430, 255, 475, , "Search2",0)){
+                } else if(FindOrLoseImage(41, 248, 59, 296, , "SearchInput", 0)){
                     Delay(2)
                     break
                 }
@@ -1558,6 +1562,9 @@ AddFriends(renew := false, getFC := false) {
     ;}
     
     ;else {
+	    adbClick_wbb(143, 518)
+        Delay(1)
+	    FindImageAndClick(204, 196, 225, 228, , "SearchInfo", 78, 378, 1500)
         FindImageAndClick(120, 500, 155, 530, , "Social", 143, 518, 500)
         FindImageAndClick(20, 500, 55, 530, , "Home", 40, 516, 500)
         Loop %waitTime% {
@@ -1599,7 +1606,7 @@ EraseInput(num := 0, total := 0) {
     failSafeTime := 0
 
     Loop {
-        FindImageAndClick(0, 475, 25, 495, , "OK2", 138, 454)
+        FindImageAndClick(212, 499, 218, 519, , "SearchOK", 141, 280)
         adbInputEvent("59 122 67") ; Press Shift + Home + Backspace to select all and delete
         if(FindOrLoseImage(15, 500, 68, 520, , "Erase", 0, failSafeTime))
             break
@@ -1926,7 +1933,7 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
             }
         }
 
-        if(imageName = "CommunityShowcase" || imageName = "Add" || imageName = "Search" || imageName = "requests") {
+        if(imageName = "CommunityShowcase" || imageName = "Add" || imageName = "SearchInfo" || imageName = "requests") {
             Path = %imagePath%Tutorial.png
             pNeedle := GetNeedle(Path)
             vRet := Gdip_ImageSearch_wbb(pBitmap, pNeedle, vPosXY, 111, 115, 167, 121, searchVariation)
@@ -2769,6 +2776,8 @@ GodPackFound(validity) {
     ; Adjust the below to only send a 'ping' to Discord friends on Valid packs
     if (validity = "Valid") {
         LogToDiscord(logMessage, screenShot, true, (sendAccountXml ? accountFullPath : ""), fcScreenshot, (altWebhookSettings ? altdiscordWebhookURL : ""),(altWebhookSettings ? altdiscordUserId : ""))
+        if(secondWebhook != "")
+            LogToDiscord(logMessage, screenShot, true, (sendAccountXml ? accountFullPath : ""), fcScreenshot, secondWebhook)
         ;ChooseTag()
     } else if (!InvalidCheck) {
         LogToDiscord(logMessage, screenShot, true, (sendAccountXml ? accountFullPath : ""),,(altWebhookSettings ? altdiscordWebhookURL : ""),(altWebhookSettings ? altdiscordUserId : ""))
@@ -6569,7 +6578,7 @@ restartGameScript(adding := false){
     FindImageAndClick(226, 100, 270, 135, , "Add", 38, 460, 500)
     Delay(2)
     if(adding){
-        FindImageAndClick(205, 430, 255, 475, , "Search", 240, 120, 1500)
+        FindImageAndClick(204, 196, 225, 228, , "SearchInfo", 240, 120, 1500)
         Delay(3)
         adbClick_wbb(141, 453)
         Delay(3)
@@ -6639,7 +6648,7 @@ returnToSocial(adding := false){
     FindImageAndClick(226, 100, 270, 135, , "Add", 38, 460, 500)
     Delay(2)
     if(adding){
-        FindImageAndClick(205, 430, 255, 475, , "Search", 240, 120, 1500)
+        FindImageAndClick(204, 196, 225, 228, , "SearchInfo", 240, 120, 1500)
         Delay(3)
         adbClick_wbb(141, 453)
         Delay(3)
