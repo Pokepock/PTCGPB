@@ -3336,7 +3336,7 @@ Screenshot(fileType := "Valid", subDir := "", ByRef fileName := "") {
     } else if (fileType = "FRIENDCODE"){
         pBitmap := Gdip_CloneBitmapArea(pBitmapW, 85, 64, 130, 160)
     } else {
-        pBitmap := Gdip_CloneBitmapArea(pBitmapW, 18, 175+yBias, 240, 227))
+        pBitmap := Gdip_CloneBitmapArea(pBitmapW, 18, 175+yBias, 240, 227)
     }
     filePath := fileDir "\" . fileName
     Gdip_DisposeImage(pBitmapW)
