@@ -14,11 +14,11 @@ global STATIC_BRUSH := 0
 
 githubUser := "Pokepock"
 repoName := "PTCGPB"
-localVersion := "v7.3.3.1"
+localVersion := "v7.4.0"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
-intro := "Mega Shine"
+intro := "Pulsing Aura"
 ; GUI dimensions
 global GUI_WIDTH := 377 
 global GUI_HEIGHT := 677
@@ -50,6 +50,7 @@ global SortByText, SortByDropdown
 global showcaseLikes, showcaseURL, skipMissionsInjectMissions
 global waitForEligibleAccounts, maxWaitHours
 global finishSignalFile := A_ScriptDir "\Scripts\Include\finish.signal"
+global backupHBWehook, backupHBWebhookURL
 
 if not A_IsAdmin
 {
@@ -63,6 +64,8 @@ global IsLanguageSet, defaultBotLanguage
 IniRead, IsLanguageSet, Settings.ini, UserSettings, IsLanguageSet, 0
 IniRead, defaultBotLanguage, Settings.ini, UserSettings, defaultBotLanguage, 1
 IniRead, BotLanguage, Settings.ini, UserSettings, BotLanguage, English
+IniRead, backupHBWebhook , Settings.ini, UserSettings, backupHBWebhook, 0
+IniRead, backupHBWebhookURL , Settings.ini, UserSettings, backupHBWebhookURL
 
 if (!IsLanguageSet) {
     ; build language select
@@ -424,7 +427,7 @@ NextStep:
         global CurrentVisibleSection, heartBeatDelay, sendAccountXml, showcaseEnabled, showcaseURL, isDarkTheme
         global useBackgroundImage, tesseractPath, applyRoleFilters, debugMode, tesseractOption, statusMessage
         global s4tEnabled, s4tSilent, s4t3Dmnd, s4t4Dmnd, s4t1Star, s4tGholdengo, s4tWP, s4tWPMinCards
-        global s4tDiscordUserId, s4tDiscordWebhookURL, s4tSendAccountXml, minStarsShiny, instanceLaunchDelay, mainIdsURL, vipIdsURL
+        global s4tDiscordUserId, s4tDiscordWebhookURL, s4tSendAccountXml, minStarsShiny, instanceLaunchDelay, mainIdsURL, vipIdsURL, altIDsURL
         global spendHourGlass, openExtraPack, injectSortMethod, rowGap, SortByDropdown
         global waitForEligibleAccounts, maxWaitHours, skipMissionsInjectMissions
         
@@ -540,6 +543,7 @@ NextStep:
         IniWrite, %clientLanguage%, Settings.ini, UserSettings, clientLanguage
         IniWrite, %mainIdsURL%, Settings.ini, UserSettings, mainIdsURL
         IniWrite, %vipIdsURL%, Settings.ini, UserSettings, vipIdsURL
+        IniWrite, %altIdsURL%, Settings.ini, UserSettings, altIdsURL
         IniWrite, %autoLaunchMonitor%, Settings.ini, UserSettings, autoLaunchMonitor
         IniWrite, %instanceLaunchDelay%, Settings.ini, UserSettings, instanceLaunchDelay
         IniWrite, %spendHourGlass%, Settings.ini, UserSettings, spendHourGlass
@@ -2178,6 +2182,7 @@ NextStep:
             ;download settings
             IniRead, mainIdsURL, Settings.ini, UserSettings, mainIdsURL, ""
             IniRead, vipIdsURL, Settings.ini, UserSettings, vipIdsURL, ""
+            IniRead, altIdsURL, Settings.ini, UserSettings, altIdsURL, ""
             IniRead, showcaseEnabled, Settings.ini, UserSettings, showcaseEnabled, 0
             IniRead, showcaseLikes, Settings.ini, UserSettings, showcaseLikes, 5
             
@@ -4194,6 +4199,13 @@ StartBot:
         DownloadFile(mainIdsURL, "ids.txt")
     }
     
+    if (altIdsURL != ""){
+        DownloadFile(altIdsURL, "alt_ids.txt")
+        FileRead, tempContent, %A_ScriptDir%\alt_ids.txt
+        FileAppend, `n%tempContent%, %A_ScriptDir%\ids.txt
+        FileDelete, %A_ScriptDir%\temp_ids.txt
+    }
+
     ; Download showcase codes if enabled
     if (showcaseEnabled && showcaseURL != "") {
         DownloadFile(showcaseURL, "showcase_codes.txt")
@@ -4403,11 +4415,12 @@ StartBot:
         }
     }
 
+
     if (firstItem) 
         othersMsg .= "None"
     
     
-
+    IdsMsg := "\nIds: [URL](" . mainIdsURL . ")" 
     
     ; === MAIN HEARTBEAT LOOP ===
     Loop {
@@ -4486,6 +4499,7 @@ StartBot:
             discMessage .= typeMsg
             discMessage .= selectMsg
             discMessage .= othersMsg
+            discMessage .= IdsMsg
             
             ; Add special note about Main's test mode status
             if (mainTestMode == "1")
@@ -4495,6 +4509,8 @@ StartBot:
             
             ; Send the message
             LogToDiscord(discMessage,, false,,, heartBeatWebhookURL)
+            if(backupHBWebhook)
+                LogToDiscord(discMessage,, false,,, backupHBWebhookURL)
             
             ; Clear the flag
             IniDelete, HeartBeat.ini, TestMode, Main
@@ -4505,6 +4521,13 @@ StartBot:
             if(mainIdsURL != "") {
                 DownloadFile(mainIdsURL, "ids.txt")
             }
+            if (altIdsURL != ""){
+                DownloadFile(altIdsURL, "alt_ids.txt")
+                FileRead, tempContent, %A_ScriptDir%\alt_ids.txt
+                FileAppend, `n%tempContent%, %A_ScriptDir%\ids.txt
+                FileDelete, %A_ScriptDir%\temp_ids.txt
+            }
+
         }
         
         ; Sum all variable values and write to total.json
@@ -4596,9 +4619,12 @@ StartBot:
                 discMessage .= pphfsMsg
                 discMessage .= detectionMsg
                 discMessage .= othersMsg
+                discMessage .= IdsMsg
                 
                 LogToDiscord(discMessage,, false,,, heartBeatWebhookURL)
-                
+                if(backupHBWebhook)
+                    LogToDiscord(discMessage,, false,,, backupHBWebhookURL)
+            
                 ; Optional debug log
                 if (debugMode) {
                     FileAppend, % A_Now . " - Heartbeat sent at iteration " . A_Index . "`n", %A_ScriptDir%\heartbeat_log.txt
@@ -4668,11 +4694,14 @@ SendAllInstancesOfflineStatus() {
     discMessage .= selectMsg
     discMessage .= pphfsMsg
     discMessage .= detectionMsg
+    discMessage .= othersMsg
+    discMessage .= IdsMsg
     discMessage .= "\n\n All instances marked as OFFLINE"
     
     ; Send the message
     LogToDiscord(discMessage,, false,,, heartBeatWebhookURL)
-    
+    if(backupHBWebhook)
+        LogToDiscord(discMessage,, false,,, backupHBWebhookURL)
     ; Display confirmation in the status bar
     DisplayPackStatus("Discord notification sent: All instances marked as OFFLINE", ((runMain ? Mains * (scaleParam-6) : 0) + 3), 625)
 }
