@@ -5,7 +5,7 @@
 
 global githubUser := "Pokepock"
 global repoName := "PTCGPB"
-global localVersion := "7.4.1(C)" 
+global localVersion := "7.4.2(C)" 
 global jsonFileName := ""
 global scaleParam
 
@@ -2002,6 +2002,9 @@ InitializeJsonFile() {
     fileName := A_ScriptDir . "\..\..\json\Packs.json"
     FileCreateDir, %A_ScriptDir%\..\..\json
     
+    if FileExist(fileName)
+        FileDelete, %fileName%
+
     if !FileExist(fileName) {
         FileAppend, [], %fileName%
         jsonFileName := fileName
