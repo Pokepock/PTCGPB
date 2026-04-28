@@ -87,6 +87,7 @@
         Lang["SortByText"] := "Sort By:"
 
         Lang["Txt_Latest"] := "Latest"
+        Lang["Txt_PulsingAura"] := "PulsingAura"
         Lang["Txt_MegaShine"] := "MegaShine"
         Lang["Txt_Paldean"] := "Paldean"
         Lang["Txt_MegaGardevoir"] := "MegaGardevoir"
@@ -224,6 +225,7 @@
         Lang["SortByText"] := "注入排序："
 
         Lang["Txt_Latest"] := "Latest"
+        Lang["Txt_PulsingAura"] := "波導奏動"
         Lang["Txt_MegaShine"] := "超級異彩"
         Lang["Txt_Paldean"] := "帕底亞"
         Lang["Txt_MegaGardevoir"] := "超級沙奈朵"
@@ -361,6 +363,7 @@
         Lang["SortByText"] := "注入序列："
 
         Lang["Txt_Latest"] := "Latest"
+        Lang["Txt_PulsingAura"] := "PulsingAura"
         Lang["Txt_MegaShine"] := "MegaShine"
         Lang["Txt_Paldean"] := "パルデア"
         Lang["Txt_MegaGardevoir"] := "メガサーナイト"
@@ -502,6 +505,7 @@
 
 
         Lang["Txt_Latest"] := "Latest"
+        Lang["Txt_PulsingAura"] := "PulsingAura"
         Lang["Txt_MegaShine"] := "MegaShine"
         Lang["Txt_Paldean"] := "Paldean"
         Lang["Txt_MegaGardevoir"] := "MegaGardevoir"
