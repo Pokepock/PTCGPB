@@ -1424,6 +1424,7 @@ AddFriends(renew := false, getFC := false) {
         friendCode := Clipboard
         return friendCode
     }
+
     FindImageAndClick(143, 349, 161, 398, , "SearchFriend", 76, 453, 1500)
 
     ; start adding friends
@@ -1529,6 +1530,9 @@ AddFriends(renew := false, getFC := false) {
                 } else if(FindOrLoseImage(46, 249, 62, 270, , "SearchInput2", 0)){
                     Delay(2)
                     break
+                } else if(FindOrLoseImage(130, 297, 140, 312, , "SearchInfo", 0 )){
+                    adbClick_wbb(76, 453)
+                    Delay(2)
                 }
                 adbClick_wbb(143, 518)
                 Delay(2)
@@ -4536,6 +4540,9 @@ PackOpening() {
         Sleep, 10
         if (FindOrLoseImage(225, 273, 235, 290, , "Pack", 1, failSafeTime)){
             ;FindImageAndClick(38, 290, 65, 302, , "Platin", 18, 109, 2000) ; click mod settings
+            Sleep, 20
+            adbSwipe_wbb(adbSwipeParams)
+            Sleep, 250
             if(setSpeed > 1) {
                 if(setSpeed = 3)
                     FindImageAndClick(ModSets.threeX1, ModSets.threeY1, ModSets.threeX2, ModSets.threeY2, , ModSets.threeName, ModSets.threeCX, ModSets.threeCY)  ; click mod settings
@@ -6019,22 +6026,7 @@ isMuMuv5(){
 
 checkfolderscript(){
     GoToMain()
-    loop {
-        adbClick_wbb(139, 82)
-        if(FindOrLoseImage(209,277,224,292, , "playerrenamepencilicon", 0))
-            break
-        else if(FindOrLoseImage(133, 479, 147, 493, , "noticex", 0)){
-            Delay(10)
-            adbClick_wbb(137, 485)
-        }
-        Delay(3)
-    }
-    Delay(3)
-    FindImageAndClick(130, 297, 140, 312, , "SearchInfo", 259, 79)
-    Delay(3)
-    adbClick_wbb(217, 216)
-    Delay(3)
-    userFriendCode := Clipboard
+    userFriendCode := getFriendCode()
     Delay(5)
 
 
@@ -6654,11 +6646,8 @@ returnToSocial(adding := false){
     FindImageAndClick(226, 100, 270, 135, , "Add", 38, 460, 500)
     Delay(2)
     if(adding){
-        FindImageAndClick(46, 249, 62, 270, , "SearchInput2", 240, 120, 1500)
-        Delay(3)
-        adbClick_wbb(141, 453)
-        Delay(3)
-        adbClick_wbb(141, 453)
-        Delay(3)
+        FindImageAndClick(130, 297, 140, 312, , "SearchInfo", 240, 120, 1500)
+        FindImageAndClick(143, 349, 161, 398, , "SearchFriend", 76, 453, 1500)
+        FindImageAndClick(212, 499, 218, 519, , "SearchOK", 141, 280)
     }
 }
