@@ -7,7 +7,6 @@ version = Arturos PTCGP Bot
 #SingleInstance, force
 CoordMode, Mouse, Screen
 SetTitleMatchMode, 3
-
 OnError("ErrorHandler") ; Add this line here
 
 global STATIC_BRUSH := 0
@@ -16,7 +15,7 @@ githubUser := "Pokepock"
 repoName := "PTCGPB"
 localVersion := "v7.4.5"
 scriptFolder := A_ScriptDir
-zipPath := A_Temp . "\update.zip"
+zipPath := A_Temp . "\update.zip"g
 extractPath := A_Temp . "\update"
 intro := "Pulsing Aura"
 ; GUI dimensions
