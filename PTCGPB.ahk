@@ -14,7 +14,7 @@ global STATIC_BRUSH := 0
 
 githubUser := "Pokepock"
 repoName := "PTCGPB"
-localVersion := "v7.4.4.1"
+localVersion := "v7.4.5"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
